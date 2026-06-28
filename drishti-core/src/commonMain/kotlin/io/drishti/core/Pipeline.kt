@@ -1,0 +1,96 @@
+package io.drishti.core
+
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+
+/**
+ * Orchestrates the detection and scene-graph construction pipeline.
+ *
+ * The pipeline runs detectors concurrently on a [Frame], then builds a
+ * [SceneGraph] with real spatial positions and meaningful edges between
+ * related content items.
+ */
+class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
+
+    /**
+     * Run all detectors on the frame concurrently.
+     *
+     * Each [DetectorPlugin] produces at most one [ContentItem] per frame.
+     * Null results (no detection) are filtered out.
+     *
+     * @param frame The input image frame.
+     * @param detectors List of detector plugins to run.
+     * @return Non-null detected content items.
+     */
+    suspend fun detect(frame: Frame, detectors: List<DetectorPlugin>): List<ContentItem> {
+        if (frame.data == null || frame.data.isEmpty()) {
+            return emptyList()
+        }
+        return coroutineScope {
+            detectors.map { detector ->
+                async {
+                    try {
+                        detector.detect(frame)
+                    } catch (e: Exception) {
+                        // Don't let one detector crash the whole pipeline
+                        null
+                    }
+                }
+            }.awaitAll().filterNotNull()
+        }
+    }
+
+    /**
+     * Build a scene graph from detected content items.
+     *
+     * Each content type is mapped to a positioned [SceneNode]:
+     * - [GraphContent] → [SceneNode.DataPointNode] positioned at the centroid of its data points.
+     * - [FormulaContent] → [SceneNode.TextNode] positioned at the bounding box center.
+     * - [MoleculeContent] → [SceneNode.TextNode] positioned at the centroid of its atoms.
+     * - [ShapeContent] → [SceneNode.ShapeNode] positioned by detection order.
+     * - [TableContent] → [SceneNode.TextNode] positioned by detection order.
+     * - Other types → [SceneNode.TextNode] positioned by detection order.
+     *
+     * Edges are generated using three heuristics:
+     * 1. **Spatial proximity** – items within [spatialThreshold] distance.
+     * 2. **Semantic complement** – complementary types (formula ↔ graph, etc.).
+     * 3. **Temporal order** – sequential detection-order edges.
+     *
+     * Scene [SceneBounds] are computed from the extent of all node positions.
+     *
+     * @param items Detected content items from [detect].
+     * @return A fully-connected [SceneGraph] with positions, edges, and bounds.
+     */
+    fun buildSceneGraph(items: List<ContentItem>): SceneGraph {
+        if (items.isEmpty()) {
+            return SceneGraph(
+                nodes = emptyList(),
+                edges = emptyList(),
+                bounds = SceneBounds(0f, 0f)
+            )
+        }
+
+        val nodes = mutableListOf<SceneNode>()
+
+        items.forEachIndexed { index, item ->
+            when (item) {
+                is GraphContent -> buildGraphNode(item, index, nodes)
+                is FormulaContent -> buildFormulaNode(item, index, nodes)
+                is MoleculeContent -> buildMoleculeNode(item, index, nodes)
+                is ShapeContent -> buildShapeNode(item, index, nodes)
+                is TableContent -> buildTableNode(item, index, nodes)
+                else -> buildGenericNode(item, index, nodes)
+            }
+        }
+
+        val edges = generateEdges(items, nodes, config)
+        val bounds = computeBounds(nodes)
+
+        return SceneGraph(
+            nodes = nodes,
+            edges = edges,
+            bounds = bounds
+        )
+    }
+}

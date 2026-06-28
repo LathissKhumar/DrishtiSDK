@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -17,18 +18,20 @@ kotlin {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
+                implementation(project(":drishti-core"))
             }
         }
         val androidMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.android)
-                implementation(libs.opencv)
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.junit)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(project(":drishti-test"))
             }
         }
         val androidUnitTest by getting

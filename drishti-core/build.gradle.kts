@@ -28,6 +28,8 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.junit)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(project(":drishti-test"))
             }
         }
         val androidUnitTest by getting

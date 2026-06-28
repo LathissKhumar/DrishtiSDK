@@ -16,7 +16,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.serialization.json)
+                implementation(project(":drishti-core"))
             }
         }
         val androidMain by getting {
@@ -28,6 +28,9 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.junit)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(project(":drishti-core"))
+                implementation(project(":drishti-test"))
             }
         }
         val androidUnitTest by getting

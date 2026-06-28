@@ -16,19 +16,24 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(project(":drishti-core"))
+                implementation(libs.ktor.client.core)
                 implementation(libs.kotlinx.serialization.json)
             }
         }
         val androidMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.android)
-                implementation(libs.openchemlib)
+                implementation(libs.ktor.client.okhttp)
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.junit)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(project(":drishti-test"))
+                implementation(libs.ktor.client.mock)
             }
         }
         val androidUnitTest by getting

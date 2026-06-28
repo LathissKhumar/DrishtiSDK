@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -16,6 +17,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":drishti-core"))
+                implementation(project(":drishti-android"))
                 implementation(project(":drishti-haptics"))
                 implementation(project(":drishti-audio"))
                 implementation(project(":drishti-voice"))
@@ -28,10 +30,19 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
+                // CameraX
                 implementation(libs.camerax.core)
                 implementation(libs.camerax.camera2)
                 implementation(libs.camerax.lifecycle)
                 implementation(libs.camerax.view)
+
+                // Compose (BOM via string — KMP source sets can't use platform(libs.xxx))
+                implementation(platform("androidx.compose:compose-bom:2025.05.01"))
+                implementation(libs.compose.ui)
+                implementation(libs.compose.ui.graphics)
+                implementation(libs.compose.ui.tooling.preview)
+                implementation(libs.compose.material3)
+                implementation(libs.compose.activity)
             }
         }
     }
@@ -47,6 +58,10 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
+    }
+
+    buildFeatures {
+        compose = true
     }
 
     compileOptions {

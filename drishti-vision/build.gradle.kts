@@ -17,20 +17,25 @@ kotlin {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.serialization.json)
+                implementation(project(":drishti-core"))
             }
         }
         val androidMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.android)
                 implementation(libs.opencv)
-                implementation(libs.litert)
+                implementation(libs.tensorflow.lite)
                 implementation(libs.onnx.runtime)
+                implementation(libs.camerax.core)
+                implementation(libs.camerax.camera2)
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.junit)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(project(":drishti-core"))
             }
         }
         val androidUnitTest by getting

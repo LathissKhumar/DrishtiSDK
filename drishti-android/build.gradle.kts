@@ -30,6 +30,12 @@ kotlin {
                 implementation(project(":drishti-haptics"))
                 implementation(project(":drishti-audio"))
                 implementation(project(":drishti-voice"))
+
+                // CameraX
+                implementation(libs.camerax.core)
+                implementation(libs.camerax.camera2)
+                implementation(libs.camerax.lifecycle)
+                implementation(libs.camerax.view)
             }
         }
         val commonTest by getting {
