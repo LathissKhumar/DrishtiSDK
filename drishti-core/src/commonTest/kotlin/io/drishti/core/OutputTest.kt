@@ -55,4 +55,59 @@ class OutputTest {
         val output = TextOutput(text = "Test summary")
         assertEquals("Test summary", output.text)
     }
+
+    @Test
+    fun audioSourceRangeValidation() {
+        // Valid creation
+        assertNotNull(AudioSource(440f, 0.5f, 0.5f, 0.5f, 0.5f))
+
+        // Invalid frequency
+        assertFailsWith<IllegalArgumentException> {
+            AudioSource(10f, 0.5f)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            AudioSource(25000f, 0.5f)
+        }
+
+        // Invalid amplitude
+        assertFailsWith<IllegalArgumentException> {
+            AudioSource(440f, -0.1f)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            AudioSource(440f, 1.1f)
+        }
+
+        // Invalid spatial parameters
+        assertFailsWith<IllegalArgumentException> {
+            AudioSource(440f, 0.5f, spatialX = -0.1f)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            AudioSource(440f, 0.5f, spatialY = 1.2f)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            AudioSource(440f, 0.5f, spatialZ = 1.05f)
+        }
+    }
+
+    @Test
+    fun speechSegmentRangeValidation() {
+        // Valid creation
+        assertNotNull(SpeechSegment("ok", 1.5f, 1.5f))
+
+        // Invalid rate
+        assertFailsWith<IllegalArgumentException> {
+            SpeechSegment("text", rate = 0.05f)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            SpeechSegment("text", rate = 4.0f)
+        }
+
+        // Invalid pitch
+        assertFailsWith<IllegalArgumentException> {
+            SpeechSegment("text", pitch = 0.05f)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            SpeechSegment("text", pitch = 4.0f)
+        }
+    }
 }

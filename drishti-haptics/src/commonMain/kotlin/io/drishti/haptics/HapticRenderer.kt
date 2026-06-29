@@ -51,7 +51,11 @@ class HapticRenderer {
     /**
      * Render exploration sequence.
      */
-    fun renderExploration(item: ContentItem, direction: ExplorationDirection): HapticOutput {
+    fun renderExploration(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int = -1
+    ): HapticOutput {
         val pulses = when (item) {
             is GraphContent -> renderGraphExploration(item, direction)
             is FormulaContent -> renderFormulaExploration(item, direction)

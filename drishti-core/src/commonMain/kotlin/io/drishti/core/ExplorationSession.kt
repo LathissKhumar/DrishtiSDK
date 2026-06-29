@@ -18,6 +18,7 @@ class ExplorationSession(
 ) {
     private val mutex = Mutex()
     private var currentItemIndex = -1
+    private var currentElementIndex = -1
 
     /**
      * Move to the next element.
@@ -34,6 +35,7 @@ class ExplorationSession(
             return@withLock ExplorationResult.End
         }
         currentItemIndex++
+        currentElementIndex = -1
         val item = contentItems[currentItemIndex]
         ExplorationResult.Item(item, describeItem(item))
     }
@@ -53,8 +55,57 @@ class ExplorationSession(
             return@withLock ExplorationResult.Beginning
         }
         currentItemIndex--
+        currentElementIndex = -1
         val item = contentItems[currentItemIndex]
         ExplorationResult.Item(item, describeItem(item))
+    }
+
+    /**
+     * Move to the next element within the current content item.
+     */
+    suspend fun nextElement(): ExplorationResult = mutex.withLock {
+        if (currentItemIndex !in contentItems.indices) {
+            return@withLock ExplorationResult.End
+        }
+        val item = contentItems[currentItemIndex]
+        val maxElements = getElementCount(item)
+        if (maxElements == 0 || currentElementIndex >= maxElements - 1) {
+            currentElementIndex = maxElements
+            return@withLock ExplorationResult.End
+        }
+        currentElementIndex++
+        ExplorationResult.Item(item, describeElement(item, currentElementIndex))
+    }
+
+    /**
+     * Move to the previous element within the current content item.
+     */
+    suspend fun previousElement(): ExplorationResult = mutex.withLock {
+        if (currentItemIndex !in contentItems.indices) {
+            return@withLock ExplorationResult.Beginning
+        }
+        val item = contentItems[currentItemIndex]
+        if (currentElementIndex <= 0) {
+            currentElementIndex = -1
+            return@withLock ExplorationResult.Beginning
+        }
+        currentElementIndex--
+        ExplorationResult.Item(item, describeElement(item, currentElementIndex))
+    }
+
+    /**
+     * Get the position of the element within the current item.
+     */
+    suspend fun elementPosition(): ExplorationPosition = mutex.withLock {
+        if (currentItemIndex !in contentItems.indices) {
+            return@withLock ExplorationPosition(0, 0)
+        }
+        val item = contentItems[currentItemIndex]
+        val maxElements = getElementCount(item)
+        ExplorationPosition(
+            current = (currentElementIndex + 1).coerceIn(0, maxElements),
+            total = maxElements
+        )
     }
 
     /**
@@ -111,10 +162,69 @@ class ExplorationSession(
         renderer.renderVoice(listOf(contentItems[currentItemIndex]))
     }
 
+    /**
+     * Render exploration feedback using haptics.
+     */
+    suspend fun exploreHaptic(direction: ExplorationDirection): HapticOutput? = mutex.withLock {
+        if (currentItemIndex !in contentItems.indices) return@withLock null
+        val renderer = renderers.filterIsInstance<HapticsRenderer>().firstOrNull()
+            ?: return@withLock null
+        renderer.renderExplorationHaptic(contentItems[currentItemIndex], direction, currentElementIndex)
+    }
+
+    /**
+     * Render exploration feedback using audio.
+     */
+    suspend fun exploreAudio(direction: ExplorationDirection): AudioOutput? = mutex.withLock {
+        if (currentItemIndex !in contentItems.indices) return@withLock null
+        val renderer = renderers.filterIsInstance<AudioRenderer>().firstOrNull()
+            ?: return@withLock null
+        renderer.renderExplorationAudio(contentItems[currentItemIndex], direction, currentElementIndex)
+    }
+
+    /**
+     * Render exploration feedback using voice.
+     */
+    suspend fun exploreVoice(direction: ExplorationDirection): VoiceOutput? = mutex.withLock {
+        if (currentItemIndex !in contentItems.indices) return@withLock null
+        val renderer = renderers.filterIsInstance<VoiceOutputRenderer>().firstOrNull()
+            ?: return@withLock null
+        renderer.renderExplorationVoice(contentItems[currentItemIndex], direction, currentElementIndex)
+    }
+
+    private fun getElementCount(item: ContentItem): Int = when (item) {
+        is GraphContent -> item.dataPoints.size
+        is FormulaContentItem -> item.symbols.size
+        is MoleculeContent -> item.atoms.size
+        else -> 0
+    }
+
+    private fun describeElement(item: ContentItem, index: Int): String = when (item) {
+        is GraphContent -> {
+            val point = item.dataPoints.getOrNull(index)
+            if (point != null) {
+                "Point ${index + 1} of ${item.dataPoints.size}: x = ${point.x}, y = ${point.y}${point.label?.let { ", label = $it" } ?: ""}"
+            } else ""
+        }
+        is FormulaContentItem -> {
+            val symbol = item.symbols.getOrNull(index)
+            if (symbol != null) {
+                "Symbol ${index + 1} of ${item.symbols.size}: ${symbol.value}"
+            } else ""
+        }
+        is MoleculeContent -> {
+            val atom = item.atoms.getOrNull(index)
+            if (atom != null) {
+                "Atom ${index + 1} of ${item.atoms.size}: ${atom.element} at x = ${atom.position.x}, y = ${atom.position.y}"
+            } else ""
+        }
+        else -> ""
+    }
+
     private fun describeItem(item: ContentItem): String {
         return when (item) {
             is GraphContent -> "${item.graphType.name.lowercase().replaceFirstChar { it.uppercase() }} with ${item.dataPoints.size} points"
-            is FormulaContent -> "${item.formulaType.name.lowercase().replaceFirstChar { it.uppercase() }} formula: ${item.expression}"
+            is FormulaContentItem -> "${item.formulaType.name.lowercase().replaceFirstChar { it.uppercase() }} formula: ${item.expression}"
             is MoleculeContent -> "Molecule: ${item.name.ifEmpty { "Unknown" }} with ${item.atoms.size} atoms"
             else -> item.contentType.name.lowercase().replaceFirstChar { it.uppercase() }
         }

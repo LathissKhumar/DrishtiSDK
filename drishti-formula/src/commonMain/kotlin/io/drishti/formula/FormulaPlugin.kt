@@ -95,19 +95,45 @@ class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutpu
 
     override fun renderExplorationHaptic(
         item: ContentItem,
-        direction: ExplorationDirection
+        direction: ExplorationDirection,
+        elementIndex: Int
     ): HapticOutput {
         val base = when (item) {
-            is ParsedFormula -> renderer.renderHaptic(item)
-            is FormulaContent -> renderer.renderHaptic(item)
+            is ParsedFormula -> {
+                val idx = if (elementIndex >= 0) elementIndex else {
+                    when (direction) {
+                        ExplorationDirection.NEXT -> item.symbols.size - 1
+                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.POSITION -> 0
+                    }
+                }
+                renderer.renderHaptic(item).let { baseOutput ->
+                    val singlePulse = baseOutput.pulses.getOrNull(idx)
+                    HapticOutput(
+                        pulses = if (singlePulse != null) listOf(singlePulse.copy(intensity = (singlePulse.intensity * 1.2f).coerceAtMost(1f))) else emptyList(),
+                        pattern = "formula_explore_symbol_$idx"
+                    )
+                }
+            }
+            is FormulaContent -> {
+                val idx = if (elementIndex >= 0) elementIndex else {
+                    when (direction) {
+                        ExplorationDirection.NEXT -> item.symbols.size - 1
+                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.POSITION -> 0
+                    }
+                }
+                renderer.renderHaptic(item).let { baseOutput ->
+                    val singlePulse = baseOutput.pulses.getOrNull(idx)
+                    HapticOutput(
+                        pulses = if (singlePulse != null) listOf(singlePulse.copy(intensity = (singlePulse.intensity * 1.2f).coerceAtMost(1f))) else emptyList(),
+                        pattern = "formula_explore_symbol_$idx"
+                    )
+                }
+            }
             else -> return HapticOutput(pulses = emptyList(), pattern = "exploration")
         }
-        val pulses = when (direction) {
-            ExplorationDirection.NEXT -> base.pulses.takeLast(1).map { it.copy(intensity = (it.intensity * 1.2f).coerceAtMost(1f)) }
-            ExplorationDirection.PREVIOUS -> base.pulses.take(1).map { it.copy(intensity = (it.intensity * 1.2f).coerceAtMost(1f)) }
-            ExplorationDirection.POSITION -> base.pulses
-        }
-        return HapticOutput(pulses = pulses, pattern = "formula_explore_${direction.name.lowercase()}")
+        return base
     }
 
     // ── AudioRenderer ─────────────────────────────────────────────────
@@ -131,19 +157,45 @@ class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutpu
 
     override fun renderExplorationAudio(
         item: ContentItem,
-        direction: ExplorationDirection
+        direction: ExplorationDirection,
+        elementIndex: Int
     ): AudioOutput {
         val base = when (item) {
-            is ParsedFormula -> renderer.renderAudio(item)
-            is FormulaContent -> renderer.renderAudio(item)
+            is ParsedFormula -> {
+                val idx = if (elementIndex >= 0) elementIndex else {
+                    when (direction) {
+                        ExplorationDirection.NEXT -> item.symbols.size - 1
+                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.POSITION -> 0
+                    }
+                }
+                renderer.renderAudio(item).let { baseOutput ->
+                    val singleSource = baseOutput.sources.getOrNull(idx)
+                    AudioOutput(
+                        sources = if (singleSource != null) listOf(singleSource) else emptyList(),
+                        spatial = true
+                    )
+                }
+            }
+            is FormulaContent -> {
+                val idx = if (elementIndex >= 0) elementIndex else {
+                    when (direction) {
+                        ExplorationDirection.NEXT -> item.symbols.size - 1
+                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.POSITION -> 0
+                    }
+                }
+                renderer.renderAudio(item).let { baseOutput ->
+                    val singleSource = baseOutput.sources.getOrNull(idx)
+                    AudioOutput(
+                        sources = if (singleSource != null) listOf(singleSource) else emptyList(),
+                        spatial = true
+                    )
+                }
+            }
             else -> return AudioOutput(sources = emptyList(), spatial = true)
         }
-        val sources = when (direction) {
-            ExplorationDirection.NEXT -> base.sources.takeLast(1)
-            ExplorationDirection.PREVIOUS -> base.sources.take(1)
-            ExplorationDirection.POSITION -> base.sources
-        }
-        return AudioOutput(sources = sources, spatial = true)
+        return base
     }
 
     // ── VoiceOutputRenderer ───────────────────────────────────────────
@@ -186,21 +238,46 @@ class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutpu
 
     override fun renderExplorationVoice(
         item: ContentItem,
-        direction: ExplorationDirection
+        direction: ExplorationDirection,
+        elementIndex: Int
     ): VoiceOutput = when (item) {
         is ParsedFormula -> {
-            val text = when (direction) {
-                ExplorationDirection.NEXT -> "Next symbol in formula: ${item.latex}"
-                ExplorationDirection.PREVIOUS -> "Previous symbol in formula: ${item.latex}"
-                ExplorationDirection.POSITION -> renderer.renderVoice(item).speech.text
+            val idx = if (elementIndex >= 0) elementIndex else {
+                when (direction) {
+                    ExplorationDirection.NEXT -> item.symbols.size - 1
+                    ExplorationDirection.PREVIOUS -> 0
+                    ExplorationDirection.POSITION -> 0
+                }
+            }
+            val symbol = item.symbols.getOrNull(idx)
+            val text = if (symbol != null) {
+                "Symbol ${idx + 1}: ${symbol.value}"
+            } else {
+                when (direction) {
+                    ExplorationDirection.NEXT -> "Next symbol in formula: ${item.latex}"
+                    ExplorationDirection.PREVIOUS -> "Previous symbol in formula: ${item.latex}"
+                    ExplorationDirection.POSITION -> renderer.renderVoice(item).speech.text
+                }
             }
             VoiceOutput(speech = SpeechSegment(text = text, rate = 0.9f, pitch = 1.0f), language = "en-US")
         }
         is FormulaContent -> {
-            val text = when (direction) {
-                ExplorationDirection.NEXT -> "Next symbol: ${item.symbols.lastOrNull()?.value ?: "none"}"
-                ExplorationDirection.PREVIOUS -> "Previous symbol: ${item.symbols.firstOrNull()?.value ?: "none"}"
-                ExplorationDirection.POSITION -> renderer.renderVoice(item).speech.text
+            val idx = if (elementIndex >= 0) elementIndex else {
+                when (direction) {
+                    ExplorationDirection.NEXT -> item.symbols.size - 1
+                    ExplorationDirection.PREVIOUS -> 0
+                    ExplorationDirection.POSITION -> 0
+                }
+            }
+            val symbol = item.symbols.getOrNull(idx)
+            val text = if (symbol != null) {
+                "Symbol ${idx + 1}: ${symbol.value}"
+            } else {
+                when (direction) {
+                    ExplorationDirection.NEXT -> "Next symbol: ${item.symbols.lastOrNull()?.value ?: "none"}"
+                    ExplorationDirection.PREVIOUS -> "Previous symbol: ${item.symbols.firstOrNull()?.value ?: "none"}"
+                    ExplorationDirection.POSITION -> renderer.renderVoice(item).speech.text
+                }
             }
             VoiceOutput(speech = SpeechSegment(text = text, rate = 0.9f, pitch = 1.0f), language = "en-US")
         }

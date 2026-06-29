@@ -125,36 +125,37 @@ class MoleculeParser {
      * @return `true` if input appears to be SMILES notation
      */
     fun isSmiles(input: String): Boolean {
-        if (input.length < 2) return false
+        val trimmed = input.trim()
+        if (trimmed.length < 2) return false
         // Primary SMILES-specific characters (excluding '-' and '.' which appear in IUPAC names)
         val primarySmilesChars = setOf('=', '#', '@', '[', ']', '/', '\\', '%', '+')
-        if (input.any { it in primarySmilesChars }) return true
+        if (trimmed.any { it in primarySmilesChars }) return true
         // Must contain only SMILES-valid characters (letters, digits, parens, hyphens, dots)
-        if (input.any { !it.isLetterOrDigit() && it != '(' && it != ')' && it != '-' && it != '.' }) return false
+        if (trimmed.any { !it.isLetterOrDigit() && it != '(' && it != ')' && it != '-' && it != '.' }) return false
 
-        val hasAromaticSequence = AROMATIC_SEQUENCE.containsMatchIn(input)
-        val hasUppercaseAtoms = input.any { it in "CNOSPFBI" }
-        val hasDigits = input.any { it.isDigit() }
+        val hasAromaticSequence = AROMATIC_SEQUENCE.containsMatchIn(trimmed)
+        val hasUppercaseAtoms = trimmed.any { it in "CNOSPFBI" }
+        val hasDigits = trimmed.any { it.isDigit() }
 
         // All-uppercase atom chains (CCO, CN, CO, etc.) — can only be SMILES since
         // formulas require digits, names have lowercase letters, InChI starts with "InChI="
-        if (input.all { it.isUpperCase() } && !input.contains(' ') && !input.contains('-')) return true
+        if (trimmed.all { it.isUpperCase() } && !trimmed.contains(' ') && !trimmed.contains('-')) return true
 
         // Mixed aromatic: consecutive aromatic atoms with uppercase atom symbols (e.g., Cc1ccccc1)
         if (hasAromaticSequence && hasUppercaseAtoms) return true
 
         // Ring closures: letter followed by digit (not followed by more digits)
         // e.g., C1CCCCC1 (cyclohexane), c1ccccc1 (benzene)
-        if (hasDigits && input[0].isLetter() && !input.contains('-')) {
-            val hasRingClosure = input.indices.any { i ->
-                i < input.length - 1 &&
-                    input[i].isLetter() && input[i + 1].isDigit() &&
-                    (i + 2 >= input.length || input[i + 2].isLetter())
+        if (hasDigits && trimmed[0].isLetter() && !trimmed.contains('-')) {
+            val hasRingClosure = trimmed.indices.any { i ->
+                i < trimmed.length - 1 &&
+                    trimmed[i].isLetter() && trimmed[i + 1].isDigit() &&
+                    (i + 2 >= trimmed.length || trimmed[i + 2].isLetter())
             }
             if (hasRingClosure) {
-                if (isFormula(input)) {
+                if (isFormula(trimmed)) {
                     // Single uppercase element type → ring closure (C1CCCCC1), not formula (C6H12O6)
-                    val uniqueUppercase = input.filter { it.isUpperCase() }.toSet()
+                    val uniqueUppercase = trimmed.filter { it.isUpperCase() }.toSet()
                     if (uniqueUppercase.size == 1) return true
                 } else {
                     // Not a formula pattern but has ring closure digits → SMILES
@@ -164,7 +165,7 @@ class MoleculeParser {
         }
 
         // Branches: parentheses between atom sequences, no spaces (e.g., CC(O)C)
-        if (input.contains('(') && !input.contains(' ') && (hasUppercaseAtoms || hasAromaticSequence)) return true
+        if (trimmed.contains('(') && !trimmed.contains(' ') && (hasUppercaseAtoms || hasAromaticSequence)) return true
 
         return false
     }
@@ -179,8 +180,9 @@ class MoleculeParser {
      * @return `true` if input matches a molecular formula pattern
      */
     fun isFormula(input: String): Boolean {
-        if (input.isEmpty()) return false
-        val normalized = normalizeFormula(input)
+        val trimmed = input.trim()
+        if (trimmed.isEmpty()) return false
+        val normalized = normalizeFormula(trimmed)
         // Must start with uppercase letter
         if (!normalized[0].isUpperCase()) return false
         // Must contain at least one digit (otherwise it's just a name like "C")
@@ -209,10 +211,11 @@ class MoleculeParser {
      * @return `true` if input appears to be a chemical name
      */
     fun isLikelyChemicalName(input: String): Boolean {
-        if (input.isEmpty()) return false
-        if (isFormula(input) || isSmiles(input) || isInchi(input)) return false
+        val trimmed = input.trim()
+        if (trimmed.isEmpty()) return false
+        if (isFormula(trimmed) || isSmiles(trimmed) || isInchi(trimmed)) return false
         // Names are typically alphabetic with optional hyphens and spaces
-        return NAME_PATTERN.matches(input) && input.length >= 2
+        return NAME_PATTERN.matches(trimmed) && trimmed.length >= 2
     }
 
     private fun subscriptDigit(ch: Char): Char? = when (ch) {

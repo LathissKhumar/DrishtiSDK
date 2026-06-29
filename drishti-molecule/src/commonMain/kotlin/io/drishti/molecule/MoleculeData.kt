@@ -44,7 +44,13 @@ data class MoleculeData(
                 points = atoms.map { it.position },
                 boundingBox = computeBoundingBox()
             )
-        } else null
+        } else null,
+        cid = cid,
+        molecularFormula = molecularFormula,
+        molecularWeight = molecularWeight,
+        iupacName = iupacName,
+        canonicalSmiles = canonicalSmiles,
+        inchiKey = inchiKey
     )
 
     private fun computeBoundingBox(): BoundingBox? {

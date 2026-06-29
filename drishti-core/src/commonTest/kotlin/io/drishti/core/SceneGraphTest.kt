@@ -208,4 +208,67 @@ class SceneGraphTest {
         val neighborsA = graph.neighbors("a").toSet()
         assertEquals(setOf("b", "c"), neighborsA)
     }
+
+    @Test
+    fun singleNodeBoundsCalculation() {
+        val nodes = listOf(SceneNode.TextNode("n1", Point(150f, 250f), "n1"))
+        val bounds = computeBounds(nodes)
+        assertEquals(250f, bounds.width)
+        assertEquals(350f, bounds.height)
+    }
+
+    private class TestContentItem(
+        override val contentType: ContentType,
+        override val confidence: Float
+    ) : ContentItem
+
+    @Test
+    fun generateSemanticEdgesWithScaledWeights() {
+        val formulaItem = TestContentItem(ContentType.FORMULA, 0.9f)
+        val graphItem = TestContentItem(ContentType.GRAPH, 0.8f)
+        val items = listOf(formulaItem, graphItem)
+
+        // Semantic edge between nodes at distance 0
+        val nodesSame = listOf(
+            SceneNode.ShapeNode("n1", Point(100f, 100f), ShapeType.CIRCLE),
+            SceneNode.ShapeNode("n2", Point(100f, 100f), ShapeType.CIRCLE)
+        )
+        val edgesSame = generateSemanticEdges(items, nodesSame)
+        assertEquals(1, edgesSame.size)
+        // distance 0 -> proximity 1 -> weight = minOf(0.9, 0.8) * 1 = 0.8
+        assertEquals(0.8f, edgesSame[0].weight, 1e-4f)
+
+        // Semantic edge between nodes at distance 200
+        val nodesFar = listOf(
+            SceneNode.ShapeNode("n1", Point(100f, 100f), ShapeType.CIRCLE),
+            SceneNode.ShapeNode("n2", Point(300f, 100f), ShapeType.CIRCLE)
+        )
+        val edgesFar = generateSemanticEdges(items, nodesFar)
+        assertEquals(1, edgesFar.size)
+        // distance 200 -> proximity 1 / (1 + 200/200) = 0.5 -> weight = 0.8 * 0.5 = 0.4
+        assertEquals(0.4f, edgesFar[0].weight, 1e-4f)
+    }
+
+    @Test
+    fun generateTemporalEdgesWithScaledWeights() {
+        // Temporal edge between nodes at distance 0
+        val nodesSame = listOf(
+            SceneNode.ShapeNode("n1", Point(100f, 100f), ShapeType.CIRCLE),
+            SceneNode.ShapeNode("n2", Point(100f, 100f), ShapeType.CIRCLE)
+        )
+        val edgesSame = generateTemporalEdges(nodesSame)
+        assertEquals(1, edgesSame.size)
+        // distance 0 -> proximity 1 -> weight = 0.5f + 0.5f * 1 = 1.0f
+        assertEquals(1.0f, edgesSame[0].weight, 1e-4f)
+
+        // Temporal edge between nodes at distance 200
+        val nodesFar = listOf(
+            SceneNode.ShapeNode("n1", Point(100f, 100f), ShapeType.CIRCLE),
+            SceneNode.ShapeNode("n2", Point(300f, 100f), ShapeType.CIRCLE)
+        )
+        val edgesFar = generateTemporalEdges(nodesFar)
+        assertEquals(1, edgesFar.size)
+        // distance 200 -> proximity 0.5f -> weight = 0.5f + 0.5f * 0.5f = 0.75f
+        assertEquals(0.75f, edgesFar[0].weight, 1e-4f)
+    }
 }

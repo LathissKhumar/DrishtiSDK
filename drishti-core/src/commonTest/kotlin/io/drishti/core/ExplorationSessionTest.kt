@@ -168,5 +168,79 @@ class ExplorationSessionTest {
         val result = session.next() as ExplorationResult.Item
         assertEquals("Shape", result.description)
     }
+
+    @Test
+    fun elementNavigationAcrossElements() = runTest {
+        val graph = TestFixtures.graphContent(dataPoints = listOf(DataPoint(1f, 2f), DataPoint(3f, 4f)))
+        val session = ExplorationSession(listOf(graph), emptyList())
+
+        // Must select the item first
+        session.next()
+        val pos0 = session.elementPosition()
+        assertEquals(0, pos0.current)
+        assertEquals(2, pos0.total)
+
+        // Navigate elements
+        val el1 = session.nextElement() as ExplorationResult.Item
+        assertTrue(el1.description.contains("Point 1 of 2"))
+        assertEquals(1, session.elementPosition().current)
+
+        val el2 = session.nextElement() as ExplorationResult.Item
+        assertTrue(el2.description.contains("Point 2 of 2"))
+        assertEquals(2, session.elementPosition().current)
+
+        val elEnd = session.nextElement()
+        assertTrue(elEnd is ExplorationResult.End)
+        assertEquals(2, session.elementPosition().current)
+
+        val elPrev = session.previousElement() as ExplorationResult.Item
+        assertTrue(elPrev.description.contains("Point 2 of 2"))
+        assertEquals(2, session.elementPosition().current)
+
+        val elPrev2 = session.previousElement() as ExplorationResult.Item
+        assertTrue(elPrev2.description.contains("Point 1 of 2"))
+        assertEquals(1, session.elementPosition().current)
+
+        val elBeg = session.previousElement()
+        assertTrue(elBeg is ExplorationResult.Beginning)
+        assertEquals(0, session.elementPosition().current)
+    }
+
+    @Test
+    fun continuousNextPreviousCallsDoNotCrash() = runTest {
+        val graph = TestFixtures.graphContent(dataPoints = listOf(DataPoint(1f, 2f)))
+        val session = ExplorationSession(listOf(graph), emptyList())
+
+        // continuous next
+        repeat(5) { session.next() }
+        assertTrue(session.next() is ExplorationResult.End)
+        assertEquals(1, session.position().current)
+
+        // continuous previous
+        repeat(5) { session.previous() }
+        assertTrue(session.previous() is ExplorationResult.Beginning)
+        assertEquals(0, session.position().current)
+    }
+
+    @Test
+    fun exploreFeedbackInvokesRenderers() = runTest {
+        val graph = TestFixtures.graphContent(dataPoints = listOf(DataPoint(1f, 2f)))
+        val haptics = StubHapticsRenderer()
+        val audio = StubAudioRenderer()
+        val voice = StubVoiceRenderer()
+        val session = ExplorationSession(listOf(graph), listOf(haptics, audio, voice))
+
+        session.next()
+        session.nextElement()
+
+        val hOutput = session.exploreHaptic(ExplorationDirection.NEXT)
+        assertNotNull(hOutput)
+
+        val aOutput = session.exploreAudio(ExplorationDirection.NEXT)
+        assertNotNull(aOutput)
+
+        val vOutput = session.exploreVoice(ExplorationDirection.NEXT)
+        assertNotNull(vOutput)
+    }
 }
 

@@ -151,44 +151,94 @@ class MoleculePlugin(
                 speech
             }
         }
+        if (speeches.isEmpty()) {
+            return VoiceOutput(
+                speech = SpeechSegment(text = "No molecule content", rate = 1.0f, pitch = 1.0f),
+                language = "en-US"
+            )
+        }
         val combinedText = speeches.joinToString(" ") { it.text }
         return VoiceOutput(speech = SpeechSegment(text = combinedText, rate = 1.0f, pitch = 1.0f), language = "en-US")
     }
 
     // -- Exploration renderers --
 
-    override fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection): HapticOutput {
+    override fun renderExplorationHaptic(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): HapticOutput {
         val base = when (item) {
-            is MoleculeContent -> renderer.renderHaptic(item)
+            is MoleculeContent -> {
+                val idx = if (elementIndex >= 0) elementIndex else {
+                    when (direction) {
+                        ExplorationDirection.NEXT -> item.atoms.size - 1
+                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.POSITION -> 0
+                    }
+                }
+                renderer.renderHaptic(item).let { baseOutput ->
+                    val singlePulse = baseOutput.pulses.getOrNull(idx)
+                    HapticOutput(
+                        pulses = if (singlePulse != null) listOf(singlePulse.copy(intensity = (singlePulse.intensity * 1.2f).coerceAtMost(1f))) else emptyList(),
+                        pattern = "molecule_explore_atom_$idx"
+                    )
+                }
+            }
             else -> return HapticOutput(pulses = emptyList(), pattern = "exploration")
         }
-        val pulses = when (direction) {
-            ExplorationDirection.NEXT -> base.pulses.takeLast(1).map { it.copy(intensity = (it.intensity * 1.2f).coerceAtMost(1f)) }
-            ExplorationDirection.PREVIOUS -> base.pulses.take(1).map { it.copy(intensity = (it.intensity * 1.2f).coerceAtMost(1f)) }
-            ExplorationDirection.POSITION -> base.pulses
-        }
-        return HapticOutput(pulses = pulses, pattern = "molecule_explore_${direction.name.lowercase()}")
+        return base
     }
 
-    override fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection): AudioOutput {
+    override fun renderExplorationAudio(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): AudioOutput {
         val base = when (item) {
-            is MoleculeContent -> renderer.renderAudio(item)
+            is MoleculeContent -> {
+                val idx = if (elementIndex >= 0) elementIndex else {
+                    when (direction) {
+                        ExplorationDirection.NEXT -> item.atoms.size - 1
+                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.POSITION -> 0
+                    }
+                }
+                renderer.renderAudio(item).let { baseOutput ->
+                    val singleSource = baseOutput.sources.getOrNull(idx)
+                    AudioOutput(
+                        sources = if (singleSource != null) listOf(singleSource) else emptyList(),
+                        spatial = true
+                    )
+                }
+            }
             else -> return AudioOutput(sources = emptyList(), spatial = true)
         }
-        val sources = when (direction) {
-            ExplorationDirection.NEXT -> base.sources.takeLast(1)
-            ExplorationDirection.PREVIOUS -> base.sources.take(1)
-            ExplorationDirection.POSITION -> base.sources
-        }
-        return AudioOutput(sources = sources, spatial = true)
+        return base
     }
 
-    override fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection): VoiceOutput = when (item) {
+    override fun renderExplorationVoice(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): VoiceOutput = when (item) {
         is MoleculeContent -> {
-            val text = when (direction) {
-                ExplorationDirection.NEXT -> "Next atom: ${item.atoms.lastOrNull()?.element ?: "none"}"
-                ExplorationDirection.PREVIOUS -> "Previous atom: ${item.atoms.firstOrNull()?.element ?: "none"}"
-                ExplorationDirection.POSITION -> renderer.renderVoice(item).speech.text
+            val idx = if (elementIndex >= 0) elementIndex else {
+                when (direction) {
+                    ExplorationDirection.NEXT -> item.atoms.size - 1
+                    ExplorationDirection.PREVIOUS -> 0
+                    ExplorationDirection.POSITION -> 0
+                }
+            }
+            val atom = item.atoms.getOrNull(idx)
+            val text = if (atom != null) {
+                "Atom ${idx + 1}: ${atom.element} at coordinates x=${"%.1f".format(atom.position.x)}, y=${"%.1f".format(atom.position.y)}"
+            } else {
+                when (direction) {
+                    ExplorationDirection.NEXT -> "No more atoms"
+                    ExplorationDirection.PREVIOUS -> "No previous atoms"
+                    ExplorationDirection.POSITION -> renderer.renderVoice(item).speech.text
+                }
             }
             VoiceOutput(speech = SpeechSegment(text = text, rate = 0.95f, pitch = 1.0f), language = "en-US")
         }

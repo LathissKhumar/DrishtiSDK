@@ -49,9 +49,10 @@ class VoicePlugin(
      */
     override fun renderExplorationVoice(
         item: ContentItem,
-        direction: ExplorationDirection
+        direction: ExplorationDirection,
+        elementIndex: Int
     ): VoiceOutput {
-        return renderer.renderExplorationVoice(item, direction)
+        return renderer.renderExplorationVoice(item, direction, elementIndex)
     }
 
     /**

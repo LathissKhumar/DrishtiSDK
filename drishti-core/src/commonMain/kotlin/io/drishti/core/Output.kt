@@ -40,8 +40,11 @@ data class AudioSource(
     val spatialZ: Float = 0.5f
 ) {
     init {
-        require(frequency >= 0f) { "frequency must be non-negative, got $frequency" }
+        require(frequency in 20f..20000f) { "frequency must be in auditable range 20Hz-20kHz, got $frequency" }
         require(amplitude in 0f..1f) { "amplitude must be 0.0-1.0, got $amplitude" }
+        require(spatialX in 0f..1f) { "spatialX must be 0.0-1.0, got $spatialX" }
+        require(spatialY in 0f..1f) { "spatialY must be 0.0-1.0, got $spatialY" }
+        require(spatialZ in 0f..1f) { "spatialZ must be 0.0-1.0, got $spatialZ" }
     }
 }
 
@@ -56,7 +59,12 @@ data class SpeechSegment(
     val text: String,
     val rate: Float = 1.0f,
     val pitch: Float = 1.0f
-)
+) {
+    init {
+        require(rate in 0.1f..3.0f) { "rate must be between 0.1 and 3.0, got $rate" }
+        require(pitch in 0.1f..3.0f) { "pitch must be between 0.1 and 3.0, got $pitch" }
+    }
+}
 
 @Serializable
 data class TextOutput(

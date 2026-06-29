@@ -64,15 +64,22 @@ enum class SymbolType {
     RELATION
 }
 
+interface FormulaContentItem : ContentItem {
+    val formulaType: FormulaType
+    val expression: String
+    val symbols: List<FormulaSymbol>
+    val geometry: Geometry?
+}
+
 /**
  * Formula content item.
  */
 data class FormulaContent(
-    val formulaType: FormulaType,
-    val expression: String,
-    val symbols: List<FormulaSymbol> = emptyList(),
-    val geometry: Geometry? = null
-) : ContentItem {
+    override val formulaType: FormulaType,
+    override val expression: String,
+    override val symbols: List<FormulaSymbol> = emptyList(),
+    override val geometry: Geometry? = null
+) : FormulaContentItem {
     override val contentType = ContentType.FORMULA
     override val confidence = 0.88f
 }
@@ -117,7 +124,8 @@ data class Atom(
     val element: String,
     val position: Point,
     val charge: Int = 0,
-    val label: String = element
+    val label: String = element,
+    val z: Float = 0.0f
 )
 
 /**
@@ -138,7 +146,13 @@ data class MoleculeContent(
     val atoms: List<Atom> = emptyList(),
     val bonds: List<Bond> = emptyList(),
     val name: String = "",
-    val geometry: Geometry? = null
+    val geometry: Geometry? = null,
+    val cid: Int = 0,
+    val molecularFormula: String = "",
+    val molecularWeight: Double = 0.0,
+    val iupacName: String = "",
+    val canonicalSmiles: String = "",
+    val inchiKey: String = ""
 ) : ContentItem {
     override val contentType = ContentType.MOLECULE
     override val confidence = 0.92f

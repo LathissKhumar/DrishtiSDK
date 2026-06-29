@@ -7,15 +7,27 @@ interface RendererPlugin {
 interface HapticsRenderer : RendererPlugin {
     fun renderHaptic(items: List<ContentItem>, focusIndex: Int = 0): HapticOutput
 
-    fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection): HapticOutput
+    fun renderExplorationHaptic(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int = -1
+    ): HapticOutput
 }
 
 interface AudioRenderer : RendererPlugin {
     fun renderAudio(items: List<ContentItem>, focusIndex: Int = 0): AudioOutput
-    fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection): AudioOutput
+    fun renderExplorationAudio(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int = -1
+    ): AudioOutput
 }
 
 interface VoiceOutputRenderer : RendererPlugin {
     fun renderVoice(items: List<ContentItem>, focusIndex: Int = 0): VoiceOutput
-    fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection): VoiceOutput
+    fun renderExplorationVoice(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int = -1
+    ): VoiceOutput
 }

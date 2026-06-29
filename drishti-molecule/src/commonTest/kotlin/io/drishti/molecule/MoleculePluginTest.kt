@@ -116,7 +116,7 @@ class MoleculePluginTest {
     fun renderExplorationVoiceWithMolecule() {
         val molecule = TestFixtures.moleculeContent()
         val output = plugin.renderExplorationVoice(molecule, ExplorationDirection.NEXT)
-        assertTrue(output.speech.text.contains("Next atom:"))
+        assertTrue(output.speech.text.contains("Atom"))
     }
 
     @Test

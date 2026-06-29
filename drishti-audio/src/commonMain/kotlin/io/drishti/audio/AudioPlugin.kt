@@ -29,8 +29,12 @@ class AudioPlugin : AudioRenderer {
     /**
      * Render exploration sequence.
      */
-    override fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection): AudioOutput {
-        return renderer.renderExploration(item, direction)
+    override fun renderExplorationAudio(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): AudioOutput {
+        return renderer.renderExploration(item, direction, elementIndex)
     }
 
     // ── SceneGraph-based API ────────────────────────────────────────

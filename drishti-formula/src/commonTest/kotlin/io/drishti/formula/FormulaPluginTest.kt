@@ -587,6 +587,22 @@ class FormulaEvaluatorTest {
     }
 
     @Test
+    fun evaluateIntegral() {
+        val ast = LatexParser.parse("\\int_{0}^{3} x^{2} dx")
+        val result = FormulaEvaluator.evaluate(ast)
+        assertNotNull(result)
+        assertEquals(9.0, result, 0.001)
+    }
+
+    @Test
+    fun evaluateSummation() {
+        val ast = LatexParser.parse("\\sum_{i=1}^{4} i")
+        val result = FormulaEvaluator.evaluate(ast)
+        assertNotNull(result)
+        assertEquals(10.0, result, 0.001)
+    }
+
+    @Test
     fun evaluateUnboundVariableReturnsNull() {
         val ast = LatexParser.parse("x + y")
         val result = FormulaEvaluator.evaluate(ast)

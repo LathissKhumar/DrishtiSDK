@@ -34,26 +34,41 @@ class VisionPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutput
     }
 
     override fun renderHaptic(items: List<ContentItem>, focusIndex: Int): HapticOutput {
-        return renderer.renderHaptic(items)
+        val filtered = if (focusIndex in items.indices) listOf(items[focusIndex]) else items
+        return renderer.renderHaptic(filtered)
     }
 
-    override fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection): HapticOutput {
+    override fun renderExplorationHaptic(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): HapticOutput {
         return renderer.renderHaptic(listOf(item))
     }
 
     override fun renderAudio(items: List<ContentItem>, focusIndex: Int): AudioOutput {
-        return renderer.renderAudio(items)
+        val filtered = if (focusIndex in items.indices) listOf(items[focusIndex]) else items
+        return renderer.renderAudio(filtered)
     }
 
-    override fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection): AudioOutput {
+    override fun renderExplorationAudio(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): AudioOutput {
         return renderer.renderAudio(listOf(item))
     }
 
     override fun renderVoice(items: List<ContentItem>, focusIndex: Int): VoiceOutput {
-        return renderer.renderVoice(items)
+        val filtered = if (focusIndex in items.indices) listOf(items[focusIndex]) else items
+        return renderer.renderVoice(filtered)
     }
 
-    override fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection): VoiceOutput {
+    override fun renderExplorationVoice(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): VoiceOutput {
         return renderer.renderVoice(listOf(item))
     }
 }

@@ -3,6 +3,7 @@ package io.drishti.formula
 import io.drishti.core.ContentItem
 import io.drishti.core.ContentType
 import io.drishti.core.FormulaContent
+import io.drishti.core.FormulaContentItem
 import io.drishti.core.FormulaSymbol
 import io.drishti.core.FormulaType
 import io.drishti.core.Geometry
@@ -27,23 +28,23 @@ data class ParsedFormula(
     val evaluationResult: Double? = null,
     val speechText: String = "",
     val formulaContent: FormulaContent
-) : ContentItem {
+) : FormulaContentItem {
 
     override val contentType: ContentType = ContentType.FORMULA
 
     override val confidence: Float = 0.95f
 
     /** Convenience accessor for formula type. */
-    val formulaType: FormulaType get() = formulaContent.formulaType
+    override val formulaType: FormulaType get() = formulaContent.formulaType
 
     /** Convenience accessor for expression string. */
-    val expression: String get() = formulaContent.expression
+    override val expression: String get() = formulaContent.expression
 
     /** Convenience accessor for symbols. */
-    val symbols: List<FormulaSymbol> get() = formulaContent.symbols
+    override val symbols: List<FormulaSymbol> get() = formulaContent.symbols
 
     /** Convenience accessor for geometry. */
-    val geometry: Geometry? get() = formulaContent.geometry
+    override val geometry: Geometry? get() = formulaContent.geometry
 
     /** True if the expression has been successfully evaluated. */
     val isEvaluable: Boolean get() = evaluationResult != null

@@ -123,17 +123,17 @@ class StubDetector(
 class StubHapticsRenderer : HapticsRenderer {
     override val name = "stub-haptics"
     override fun renderHaptic(items: List<ContentItem>, focusIndex: Int) = HapticOutput(pulses = emptyList(), pattern = "stub")
-    override fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection) = HapticOutput(pulses = emptyList(), pattern = "stub-explore")
+    override fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection, elementIndex: Int) = HapticOutput(pulses = emptyList(), pattern = "stub-explore")
 }
 
 class StubAudioRenderer : AudioRenderer {
     override val name = "stub-audio"
     override fun renderAudio(items: List<ContentItem>, focusIndex: Int) = AudioOutput(sources = emptyList(), spatial = true)
-    override fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection) = AudioOutput(sources = emptyList(), spatial = true)
+    override fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection, elementIndex: Int) = AudioOutput(sources = emptyList(), spatial = true)
 }
 
 class StubVoiceRenderer : VoiceOutputRenderer {
     override val name = "stub-voice"
     override fun renderVoice(items: List<ContentItem>, focusIndex: Int) = VoiceOutput(speech = SpeechSegment(text = "stub", rate = 1.0f, pitch = 1.0f), language = "en-US")
-    override fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection) = VoiceOutput(speech = SpeechSegment(text = "stub", rate = 1.0f, pitch = 1.0f), language = "en-US")
+    override fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection, elementIndex: Int) = VoiceOutput(speech = SpeechSegment(text = "stub", rate = 1.0f, pitch = 1.0f), language = "en-US")
 }

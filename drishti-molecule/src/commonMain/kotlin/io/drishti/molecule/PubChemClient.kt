@@ -338,7 +338,8 @@ class PubChemClient(
                 element = ElementMapper.symbolFor(atomData.element),
                 position = Point(atomData.x.toFloat() * 50f, atomData.y.toFloat() * 50f),
                 charge = 0,
-                label = ElementMapper.symbolFor(atomData.element)
+                label = ElementMapper.symbolFor(atomData.element),
+                z = atomData.z.toFloat() * 50f
             )
         } ?: emptyList()
 

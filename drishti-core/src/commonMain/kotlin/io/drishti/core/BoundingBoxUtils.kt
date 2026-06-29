@@ -69,8 +69,15 @@ fun computeBounds(nodes: List<SceneNode>): SceneBounds {
     val maxX = nodes.maxOf { it.position.x }
     val minY = nodes.minOf { it.position.y }
     val maxY = nodes.maxOf { it.position.y }
-    return SceneBounds(
-        width = maxX - minX + 100f,  // add margin
-        height = maxY - minY + 100f
-    )
+    return if (nodes.size == 1) {
+        SceneBounds(
+            width = maxX + 100f,
+            height = maxY + 100f
+        )
+    } else {
+        SceneBounds(
+            width = maxX - minX + 100f,
+            height = maxY - minY + 100f
+        )
+    }
 }

@@ -157,8 +157,17 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
         if (graphItems.isEmpty()) {
             return HapticOutput(pulses = emptyList(), pattern = "empty")
         }
-        val pulses = graphItems.flatMap { renderer.renderHaptic(it).pulses }
-        return HapticOutput(pulses = pulses, pattern = "graph_haptic")
+        val pulses = items.mapIndexedNotNull { index, item ->
+            if (focusIndex in items.indices && index != focusIndex) return@mapIndexedNotNull null
+            if (item !is GraphContent) return@mapIndexedNotNull null
+            renderer.renderHaptic(item).pulses
+        }.flatten()
+        val pattern = if (items.size > 1 && focusIndex in items.indices) {
+            "graph_haptic_focus_$focusIndex"
+        } else {
+            "graph_haptic"
+        }
+        return HapticOutput(pulses = pulses, pattern = pattern)
     }
 
     // ── AudioRenderer interface ──────────────────────────────────────
@@ -171,7 +180,11 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
         if (graphItems.isEmpty()) {
             return AudioOutput(sources = emptyList(), spatial = true)
         }
-        val sources = graphItems.flatMap { renderer.renderAudio(it).sources }
+        val sources = items.mapIndexedNotNull { index, item ->
+            if (focusIndex in items.indices && index != focusIndex) return@mapIndexedNotNull null
+            if (item !is GraphContent) return@mapIndexedNotNull null
+            renderer.renderAudio(item).sources
+        }.flatten()
         return AudioOutput(sources = sources, spatial = true)
     }
 
@@ -188,7 +201,20 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
                 language = "en-US"
             )
         }
-        val speeches = graphItems.map { renderer.renderVoice(it).speech }
+        val speeches = items.mapIndexedNotNull { index, item ->
+            if (focusIndex in items.indices && index != focusIndex) return@mapIndexedNotNull null
+            if (item !is GraphContent) return@mapIndexedNotNull null
+            val speech = renderer.renderVoice(item).speech
+            if (focusIndex in items.indices && index == focusIndex) {
+                SpeechSegment(
+                    text = "Graph ${index + 1} of ${items.size}. ${speech.text}",
+                    rate = speech.rate,
+                    pitch = speech.pitch
+                )
+            } else {
+                speech
+            }
+        }
         val combinedText = speeches.joinToString(" ") { it.text }
         return VoiceOutput(
             speech = SpeechSegment(text = combinedText, rate = 1.0f, pitch = 1.0f),
@@ -201,52 +227,98 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
     /**
      * Render exploration sequence for haptic.
      */
-    override fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection): HapticOutput {
+    override fun renderExplorationHaptic(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): HapticOutput {
         val base = when (item) {
-            is GraphContent -> renderer.renderHaptic(item)
+            is GraphContent -> {
+                val idx = if (elementIndex >= 0) elementIndex else {
+                    when (direction) {
+                        ExplorationDirection.NEXT -> item.dataPoints.size - 1
+                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.POSITION -> 0
+                    }
+                }
+                val point = item.dataPoints.getOrNull(idx)
+                if (point != null) {
+                    renderer.renderHaptic(item).let { baseOutput ->
+                        val singlePulse = baseOutput.pulses.getOrNull(idx)
+                        HapticOutput(
+                            pulses = if (singlePulse != null) listOf(singlePulse.copy(intensity = (singlePulse.intensity * 1.2f).coerceAtMost(1f))) else emptyList(),
+                            pattern = "graph_explore_point_$idx"
+                        )
+                    }
+                } else {
+                    renderer.renderHaptic(item)
+                }
+            }
             else -> return HapticOutput(pulses = emptyList(), pattern = "exploration")
         }
-        val pulses = when (direction) {
-            ExplorationDirection.NEXT -> base.pulses.takeLast(1).map { it.copy(intensity = (it.intensity * 1.2f).coerceAtMost(1f)) }
-            ExplorationDirection.PREVIOUS -> base.pulses.take(1).map { it.copy(intensity = (it.intensity * 1.2f).coerceAtMost(1f)) }
-            ExplorationDirection.POSITION -> base.pulses
-        }
-        return HapticOutput(pulses = pulses, pattern = "graph_explore_${direction.name.lowercase()}")
+        return base
     }
 
     /**
      * Render exploration sequence for audio.
      */
-    override fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection): AudioOutput {
+    override fun renderExplorationAudio(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): AudioOutput {
         val base = when (item) {
-            is GraphContent -> renderer.renderAudio(item)
+            is GraphContent -> {
+                val idx = if (elementIndex >= 0) elementIndex else {
+                    when (direction) {
+                        ExplorationDirection.NEXT -> item.dataPoints.size - 1
+                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.POSITION -> 0
+                    }
+                }
+                val point = item.dataPoints.getOrNull(idx)
+                if (point != null) {
+                    renderer.renderAudio(item).let { baseOutput ->
+                        val singleSource = baseOutput.sources.getOrNull(idx)
+                        AudioOutput(
+                            sources = if (singleSource != null) listOf(singleSource) else emptyList(),
+                            spatial = true
+                        )
+                    }
+                } else {
+                    renderer.renderAudio(item)
+                }
+            }
             else -> return AudioOutput(sources = emptyList(), spatial = true)
         }
-        val sources = when (direction) {
-            ExplorationDirection.NEXT -> base.sources.takeLast(1)
-            ExplorationDirection.PREVIOUS -> base.sources.take(1)
-            ExplorationDirection.POSITION -> base.sources
-        }
-        return AudioOutput(sources = sources, spatial = true)
+        return base
     }
 
     /**
      * Render exploration sequence for voice.
      */
-    override fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection): VoiceOutput = when (item) {
+    override fun renderExplorationVoice(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): VoiceOutput = when (item) {
         is GraphContent -> {
-            val text = when (direction) {
-                ExplorationDirection.NEXT -> {
-                    val point = item.dataPoints.lastOrNull()
-                    if (point != null) "Next data point: x=${"%.1f".format(point.x)}, y=${"%.1f".format(point.y)}"
-                    else "No more data points"
+            val idx = if (elementIndex >= 0) elementIndex else {
+                when (direction) {
+                    ExplorationDirection.NEXT -> item.dataPoints.size - 1
+                    ExplorationDirection.PREVIOUS -> 0
+                    ExplorationDirection.POSITION -> 0
                 }
-                ExplorationDirection.PREVIOUS -> {
-                    val point = item.dataPoints.firstOrNull()
-                    if (point != null) "Previous data point: x=${"%.1f".format(point.x)}, y=${"%.1f".format(point.y)}"
-                    else "No previous data points"
+            }
+            val point = item.dataPoints.getOrNull(idx)
+            val text = if (point != null) {
+                "Point ${idx + 1}: x=${"%.1f".format(point.x)}, y=${"%.1f".format(point.y)}${point.label?.let { ", label=$it" } ?: ""}"
+            } else {
+                when (direction) {
+                    ExplorationDirection.NEXT -> "No more data points"
+                    ExplorationDirection.PREVIOUS -> "No previous data points"
+                    ExplorationDirection.POSITION -> renderer.renderVoice(item).speech.text
                 }
-                ExplorationDirection.POSITION -> renderer.renderVoice(item).speech.text
             }
             VoiceOutput(speech = SpeechSegment(text = text, rate = 1.0f, pitch = 1.0f), language = "en-US")
         }

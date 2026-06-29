@@ -191,4 +191,23 @@ class MoleculeRendererTest {
         val output = renderer.renderHaptic(molecule)
         assertEquals(0.6f, output.pulses[0].intensity)
     }
+
+    @Test
+    fun renderAudioSpatialZScalesWithAtomZ() {
+        val molecule = MoleculeContent(
+            moleculeType = MoleculeType.SIMPLE,
+            atoms = listOf(
+                Atom(id = 0, element = "O", position = Point(100f, 200f), z = -50f, charge = 0, label = "O"),
+                Atom(id = 1, element = "O", position = Point(100f, 200f), z = 50f, charge = 0, label = "O")
+            ),
+            bonds = emptyList(),
+            name = "Oxygen2"
+        )
+        val output = renderer.renderAudio(molecule)
+        // maxZ should be 50f.
+        // spatialZ for atom 0: (-50 + 50) / 100 = 0.0f -> coerced to 0.05f
+        // spatialZ for atom 1: (50 + 50) / 100 = 1.0f -> coerced to 0.95f
+        assertEquals(0.05f, output.sources[0].spatialZ)
+        assertEquals(0.95f, output.sources[1].spatialZ)
+    }
 }

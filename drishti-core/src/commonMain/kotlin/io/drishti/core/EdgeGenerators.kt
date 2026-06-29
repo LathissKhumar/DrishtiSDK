@@ -111,7 +111,9 @@ fun generateSemanticEdges(items: List<ContentItem>, nodes: List<SceneNode>): Lis
             val pair = items[i].contentType to items[j].contentType
             val reversePair = items[j].contentType to items[i].contentType
             if (pair in complementaryPairs || reversePair in complementaryPairs) {
-                val weight = minOf(items[i].confidence, items[j].confidence)
+                val dist = distance(nodes[i].position, nodes[j].position)
+                val proximity = 1f / (1f + dist / 200f)
+                val weight = minOf(items[i].confidence, items[j].confidence) * proximity
                 edges.add(
                     SceneEdge(
                         sourceId = nodes[i].id,
@@ -134,12 +136,15 @@ fun generateSemanticEdges(items: List<ContentItem>, nodes: List<SceneNode>): Lis
 fun generateTemporalEdges(nodes: List<SceneNode>): List<SceneEdge> {
     val edges = mutableListOf<SceneEdge>()
     for (i in 0 until nodes.size - 1) {
+        val dist = distance(nodes[i].position, nodes[i + 1].position)
+        val proximity = 1f / (1f + dist / 200f)
+        val weight = (0.5f + 0.5f * proximity).coerceIn(0.1f, 1.0f)
         edges.add(
             SceneEdge(
                 sourceId = nodes[i].id,
                 targetId = nodes[i + 1].id,
                 edgeType = EdgeType.TEMPORAL,
-                weight = 0.5f
+                weight = weight
             )
         )
     }

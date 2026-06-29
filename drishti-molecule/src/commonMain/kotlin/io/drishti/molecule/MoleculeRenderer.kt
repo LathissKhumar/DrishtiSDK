@@ -25,7 +25,8 @@ class MoleculeRenderer {
      * @param data Optional rich PubChem data for enhanced rendering
      */
     fun renderHaptic(molecule: MoleculeContent, data: MoleculeData? = null): HapticOutput {
-        val weightScale = data?.let { computeWeightScale(it.molecularWeight) } ?: 1.0f
+        val weight = data?.molecularWeight ?: molecule.molecularWeight
+        val weightScale = if (weight > 0.0) computeWeightScale(weight) else 1.0f
         val pulses = mutableListOf<HapticPulse>()
 
         val maxX = molecule.atoms.maxOfOrNull { it.position.x }?.coerceAtLeast(1f) ?: 1f
@@ -79,6 +80,7 @@ class MoleculeRenderer {
 
         val maxX = molecule.atoms.maxOfOrNull { it.position.x }?.coerceAtLeast(1f) ?: 1f
         val maxY = molecule.atoms.maxOfOrNull { it.position.y }?.coerceAtLeast(1f) ?: 1f
+        val maxZ = molecule.atoms.maxOfOrNull { kotlin.math.abs(it.z) }?.coerceAtLeast(1f) ?: 1f
 
         val sources = molecule.atoms.map { atom ->
             AudioSource(
@@ -86,7 +88,7 @@ class MoleculeRenderer {
                 amplitude = atomAmplitude(atom.element),
                 spatialX = (atom.position.x / maxX).coerceIn(0.05f, 0.95f),
                 spatialY = (atom.position.y / maxY).coerceIn(0.05f, 0.95f),
-                spatialZ = 0.5f
+                spatialZ = ((atom.z + maxZ) / (2 * maxZ)).coerceIn(0.05f, 0.95f)
             )
         }
         return AudioOutput(sources = sources, spatial = true)
@@ -102,10 +104,24 @@ class MoleculeRenderer {
      * @param data Optional rich PubChem data for enhanced description
      */
     fun renderVoice(molecule: MoleculeContent, data: MoleculeData? = null): VoiceOutput {
-        val description = if (data != null) {
-            buildEnhancedVoiceDescription(molecule, data)
-        } else {
-            buildBasicVoiceDescription(molecule)
+        val description = when {
+            data != null -> buildEnhancedVoiceDescription(molecule, data)
+            molecule.molecularFormula.isNotEmpty() -> buildString {
+                append("Molecule: ${molecule.name.ifEmpty { molecule.iupacName }}. ")
+                if (molecule.molecularFormula.isNotEmpty()) {
+                    append("Formula: ${molecule.molecularFormula}. ")
+                }
+                if (molecule.molecularWeight > 0.0) {
+                    append("Molecular weight: ${"%.2f".format(molecule.molecularWeight)} grams per mole. ")
+                }
+                append("Contains ${molecule.atoms.size} atoms: ")
+                append(groupAtoms(molecule.atoms))
+                append(". ${molecule.bonds.size} bonds. ")
+                if (molecule.canonicalSmiles.isNotEmpty()) {
+                    append("SMILES: ${molecule.canonicalSmiles}. ")
+                }
+            }
+            else -> buildBasicVoiceDescription(molecule)
         }
         return VoiceOutput(
             speech = SpeechSegment(text = description, rate = 1.0f, pitch = 1.0f),
@@ -115,7 +131,15 @@ class MoleculeRenderer {
 
     private fun computeWeightScale(molecularWeight: Double): Float {
         // Scale from 0.7 (light molecules like H2) to 1.3 (heavy molecules like proteins)
-        return (0.5 + molecularWeight / 200.0).coerceIn(0.7, 1.3).toFloat()
+        return (BASE_WEIGHT_SCALE + molecularWeight / WEIGHT_NORMALIZATION_FACTOR)
+            .coerceIn(MIN_WEIGHT_SCALE, MAX_WEIGHT_SCALE).toFloat()
+    }
+
+    companion object {
+        private const val BASE_WEIGHT_SCALE = 0.5
+        private const val WEIGHT_NORMALIZATION_FACTOR = 200.0
+        private const val MIN_WEIGHT_SCALE = 0.7
+        private const val MAX_WEIGHT_SCALE = 1.3
     }
 
     private fun computeFrequencyShift(atomCount: Int): Float {

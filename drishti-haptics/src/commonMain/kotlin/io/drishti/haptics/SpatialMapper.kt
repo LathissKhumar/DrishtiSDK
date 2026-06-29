@@ -9,12 +9,21 @@ class SpatialMapper {
     /**
      * Map point to haptic coordinates.
      */
-    fun mapToHaptic(point: Point, width: Float, height: Float): HapticCoordinate {
+    fun mapToHaptic(point: Point, width: Float, height: Float, depth: Int = 0): HapticCoordinate {
+        val zVal = if (depth == 0) 0.5f else (0.5f / (1.0f + depth)).coerceIn(0f, 1f)
         return HapticCoordinate(
             x = (point.x / width).coerceIn(0f, 1f),
             y = (point.y / height).coerceIn(0f, 1f),
-            z = 0.5f
+            z = zVal
         )
+    }
+
+    /**
+     * Compute intensity falloff based on distance using inverse-square law.
+     */
+    fun computeFalloff(distance: Float, referenceDistance: Float = 1.0f): Float {
+        if (distance <= referenceDistance) return 1.0f
+        return (referenceDistance * referenceDistance / (distance * distance)).coerceIn(0f, 1f)
     }
 
     /**

@@ -70,12 +70,16 @@ class SpatialRenderer {
     fun toAudioOutput(scene: SpatialAudioScene): AudioOutput {
         val audioSources = scene.sources.map { source ->
             val cartesian = sphericalToCartesian(source.position)
+            val maxRange = MAX_DISTANCE.coerceAtLeast(1f)
+            val x = ((cartesian.x + maxRange) / (2 * maxRange)).coerceIn(0.05f, 0.95f)
+            val y = ((cartesian.y + maxRange) / (2 * maxRange)).coerceIn(0.05f, 0.95f)
+            val z = ((cartesian.z + maxRange) / (2 * maxRange)).coerceIn(0.05f, 0.95f)
             AudioSource(
                 frequency = source.frequency,
                 amplitude = source.volume,
-                spatialX = cartesian.x,
-                spatialY = cartesian.y,
-                spatialZ = cartesian.z
+                spatialX = x,
+                spatialY = y,
+                spatialZ = z
             )
         }
         return AudioOutput(sources = audioSources, spatial = true)
@@ -101,7 +105,11 @@ class SpatialRenderer {
     /**
      * Render exploration sequence.
      */
-    fun renderExploration(item: ContentItem, direction: ExplorationDirection): AudioOutput {
+    fun renderExploration(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int = -1
+    ): AudioOutput {
         val sources = when (item) {
             is GraphContent -> renderGraphExploration(item, direction)
             is FormulaContent -> renderFormulaExploration(item, direction)

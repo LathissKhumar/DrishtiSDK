@@ -70,7 +70,11 @@ class VoiceRenderer(private val voiceData: VoiceData = VoiceData.default()) {
     /**
      * Render exploration sequence for interactive content navigation.
      */
-    fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection): VoiceOutput {
+    fun renderExplorationVoice(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int = -1
+    ): VoiceOutput {
         val speech = when (item) {
             is GraphContent -> renderGraphExploration(item, direction)
             is FormulaContent -> renderFormulaExploration(item, direction)

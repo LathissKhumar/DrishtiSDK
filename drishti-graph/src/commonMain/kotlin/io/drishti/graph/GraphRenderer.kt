@@ -208,11 +208,13 @@ class GraphRenderer {
 
         return (0 until slices).map { index ->
             val angle = (index.toFloat() / slices) * 360f
+            val cosVal = kotlin.math.cos(Math.toRadians(angle.toDouble())).toFloat()
+            val sinVal = kotlin.math.sin(Math.toRadians(angle.toDouble())).toFloat()
             AudioSource(
                 frequency = 200f + (index * 100f),
                 amplitude = 0.5f,
-                spatialX = kotlin.math.cos(Math.toRadians(angle.toDouble())).toFloat(),
-                spatialY = kotlin.math.sin(Math.toRadians(angle.toDouble())).toFloat(),
+                spatialX = ((cosVal + 1f) / 2f).coerceIn(0.05f, 0.95f),
+                spatialY = ((sinVal + 1f) / 2f).coerceIn(0.05f, 0.95f),
                 spatialZ = 0.5f
             )
         }
@@ -334,6 +336,6 @@ class GraphRenderer {
 
     private fun mapToFrequency(value: Float, range: ClosedFloatingPointRange<Float>): Float {
         val normalized = normalizeIntensity(value, range)
-        return 200f + (normalized * 800f) // 200Hz to 1000Hz
+        return 130f + (normalized * 393f) // 130Hz to 523Hz (musical range)
     }
 }

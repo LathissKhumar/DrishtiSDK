@@ -26,8 +26,12 @@ class HapticsPlugin : HapticsRenderer {
     /**
      * Render exploration sequence.
      */
-    override fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection): HapticOutput {
-        return renderer.renderExploration(item, direction)
+    override fun renderExplorationHaptic(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): HapticOutput {
+        return renderer.renderExploration(item, direction, elementIndex)
     }
 
     // ── SceneGraph facade ────────────────────────────────────────────────

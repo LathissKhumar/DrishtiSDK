@@ -492,10 +492,13 @@ class FeatureExtractor {
         val data = frame.data ?: return VisionFeatures()
         if (data.size < frame.width * frame.height * 3) return VisionFeatures()
 
-        val contours = extractContours(frame)
-        val lines = extractLines(frame)
-        val textRegions = extractTextRegions(frame)
-        val rois = extractROIs(frame)
+        val gray = toGrayscale(data, frame.width, frame.height)
+        val edges = detectEdges(gray, frame.width, frame.height)
+
+        val contours = groupContours(edges, frame.width, frame.height)
+        val lines = findLines(edges, frame.width, frame.height)
+        val textRegions = findTextRegions(edges, frame.width, frame.height)
+        val rois = findROIs(gray, frame.width, frame.height)
         val shapes = contours.mapNotNull { classifyShape(it) }
 
         return VisionFeatures(
