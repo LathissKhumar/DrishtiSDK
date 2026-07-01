@@ -1,9 +1,25 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.molecule
 
 /**
  * Identifies the type of molecule input for routing to the correct PubChem endpoint.
  */
-enum class MoleculeInputType {
+public enum class MoleculeInputType {
     /** SMILES notation (e.g., "CCO", "c1ccccc1") */
     SMILES,
     /** Molecular formula (e.g., "C2H6O", "C₆H₁₂O₆") */
@@ -23,7 +39,7 @@ enum class MoleculeInputType {
  * @property value Original input value
  * @property normalizedValue Normalized value suitable for PubChem API
  */
-data class ParsedMoleculeInput(
+public data class ParsedMoleculeInput(
     val type: MoleculeInputType,
     val value: String,
     val normalizedValue: String
@@ -38,10 +54,10 @@ data class ParsedMoleculeInput(
  *
  * Unicode subscript handling: "C₆H₁₂O₆" is normalized to "C6H12O6".
  */
-class MoleculeParser {
+public class MoleculeParser {
 
     private companion object {
-        val FORMULA_PATTERN = Regex("^[A-Z][a-z]?[0-9]*(?:[A-Z][a-z]?[0-9]*)*$")
+        val FORMULA_PATTERN = Regex("^[A-Z][a-z]?[0-9]*(?:\\([A-Z][a-z]?[0-9]*(?:[A-Z][a-z]?[0-9]*)*\\)[0-9]*)*(?:[A-Z][a-z]?[0-9]*)*$")
         val NAME_PATTERN = Regex("^[A-Za-z0-9][A-Za-z0-9\\-() ]*$")
         val AROMATIC_SEQUENCE = Regex("[cnos]{2,}")
     }
@@ -52,7 +68,7 @@ class MoleculeParser {
      * @param input Raw molecule input (name, formula, SMILES, or InChI)
      * @return [ParsedMoleculeInput] with detected type and normalized value
      */
-    fun parse(input: String): ParsedMoleculeInput {
+    public fun parse(input: String): ParsedMoleculeInput {
         val trimmed = input.trim()
         require(trimmed.isNotEmpty()) { "Molecule input must not be blank" }
         return when {
@@ -92,7 +108,7 @@ class MoleculeParser {
      * @param formula Molecular formula potentially containing Unicode subscripts
      * @return Normalized formula with ASCII digits
      */
-    fun normalizeFormula(formula: String): String {
+    public fun normalizeFormula(formula: String): String {
         val sb = StringBuilder()
         var i = 0
         while (i < formula.length) {
@@ -124,7 +140,7 @@ class MoleculeParser {
      * @param input Input string to test
      * @return `true` if input appears to be SMILES notation
      */
-    fun isSmiles(input: String): Boolean {
+    public fun isSmiles(input: String): Boolean {
         val trimmed = input.trim()
         if (trimmed.length < 2) return false
         // Primary SMILES-specific characters (excluding '-' and '.' which appear in IUPAC names)
@@ -165,7 +181,8 @@ class MoleculeParser {
         }
 
         // Branches: parentheses between atom sequences, no spaces (e.g., CC(O)C)
-        if (trimmed.contains('(') && !trimmed.contains(' ') && (hasUppercaseAtoms || hasAromaticSequence)) return true
+        // Exclude molecular formulas like Ca(OH)2 which also contain parentheses
+        if (trimmed.contains('(') && !trimmed.contains(' ') && (hasUppercaseAtoms || hasAromaticSequence) && !isFormula(trimmed)) return true
 
         return false
     }
@@ -179,7 +196,7 @@ class MoleculeParser {
      * @param input Input string to test
      * @return `true` if input matches a molecular formula pattern
      */
-    fun isFormula(input: String): Boolean {
+    public fun isFormula(input: String): Boolean {
         val trimmed = input.trim()
         if (trimmed.isEmpty()) return false
         val normalized = normalizeFormula(trimmed)
@@ -199,7 +216,7 @@ class MoleculeParser {
      * @param input Input string to test
      * @return `true` if input is an InChI identifier
      */
-    fun isInchi(input: String): Boolean = input.startsWith("InChI=", ignoreCase = true)
+    public fun isInchi(input: String): Boolean = input.startsWith("InChI=", ignoreCase = true)
 
     /**
      * Detect whether the input looks like a chemical name (IUPAC or common).
@@ -210,7 +227,7 @@ class MoleculeParser {
      * @param input Input string to test
      * @return `true` if input appears to be a chemical name
      */
-    fun isLikelyChemicalName(input: String): Boolean {
+    public fun isLikelyChemicalName(input: String): Boolean {
         val trimmed = input.trim()
         if (trimmed.isEmpty()) return false
         if (isFormula(trimmed) || isSmiles(trimmed) || isInchi(trimmed)) return false

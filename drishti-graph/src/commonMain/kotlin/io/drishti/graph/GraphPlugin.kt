@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.graph
 
 import io.drishti.core.*
@@ -37,13 +53,13 @@ import io.drishti.core.*
  * val item = plugin.detect(frame) // returns null (no vision dependency)
  * ```
  */
-class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputRenderer {
+public class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputRenderer {
     private val detector = GraphDetector()
     private val renderer = GraphRenderer()
 
-    override val name = "graph"
-    override val contentType = ContentType.GRAPH
-    override val confidence = detector.confidence
+    override val name: String = "graph"
+    override val contentType: ContentType = ContentType.GRAPH
+    override val confidence: Float = detector.confidence
 
     // ── DetectorPlugin interface ─────────────────────────────────────
 
@@ -68,7 +84,7 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
      * @param json JSON string conforming to the graph data schema
      * @return Parsed [GraphContent], or null if parsing fails
      */
-    fun fromJson(json: String): GraphContent? {
+    public fun fromJson(json: String): GraphContent? {
         return detector.detectFromJson(json)
     }
 
@@ -80,7 +96,7 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
      * @param title Optional chart title
      * @return Parsed [GraphContent], or null if parsing fails
      */
-    fun fromCsv(csv: String, chartType: String? = null, title: String = ""): GraphContent? {
+    public fun fromCsv(csv: String, chartType: String? = null, title: String = ""): GraphContent? {
         return detector.detectFromCsv(csv, chartType, title)
     }
 
@@ -94,7 +110,7 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
      * @param points List of (x, y) number pairs
      * @return Parsed [GraphContent]
      */
-    fun fromDataPoints(
+    public fun fromDataPoints(
         type: String = "line_chart",
         title: String = "",
         xLabel: String = "",
@@ -111,7 +127,7 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
      * @param title Optional title override
      * @return Parsed [GraphContent], or null if parsing fails
      */
-    fun autoDetect(input: String, title: String = ""): GraphContent? {
+    public fun autoDetect(input: String, title: String = ""): GraphContent? {
         return detector.detectAuto(input, title)
     }
 
@@ -123,7 +139,7 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
      * @param graph The graph content
      * @return Vega-Lite v5 JSON specification string
      */
-    fun renderVegaLiteSpec(graph: GraphContent): String {
+    public fun renderVegaLiteSpec(graph: GraphContent): String {
         return renderer.renderVegaLiteSpec(graph)
     }
 
@@ -133,7 +149,7 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
      * @param graph The graph content
      * @return Human-readable accessibility description
      */
-    fun getAccessibilityDescription(graph: GraphContent): String {
+    public fun getAccessibilityDescription(graph: GraphContent): String {
         return renderer.getAccessibilityDescription(graph)
     }
 
@@ -143,7 +159,7 @@ class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputR
      * @param graph The graph content
      * @return [DataSummary] with computed statistics
      */
-    fun getDataSummary(graph: GraphContent): DataSummary {
+    public fun getDataSummary(graph: GraphContent): DataSummary {
         return renderer.getDataSummary(graph)
     }
 

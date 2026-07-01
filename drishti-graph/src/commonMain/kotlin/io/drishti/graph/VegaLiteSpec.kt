@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.graph
 
 import io.drishti.core.*
@@ -28,15 +44,17 @@ import kotlinx.serialization.json.*
  *
  * @see <a href="https://vega.github.io/vega-lite/">Vega-Lite Documentation</a>
  */
-class VegaLiteSpec {
+public class VegaLiteSpec {
 
     /**
      * Generate a Vega-Lite specification as a [JsonObject].
      *
      * @param graph The [GraphContent] to generate a spec for
+     * @param width Optional width in pixels (default 600)
+     * @param height Optional height in pixels (default 400)
      * @return Complete Vega-Lite v5 JSON specification
      */
-    fun generate(graph: GraphContent): JsonObject {
+    public fun generate(graph: GraphContent, width: Int = 600, height: Int = 400): JsonObject {
         val mark = buildMark(graph)
         val encoding = buildEncoding(graph)
         val data = buildData(graph)
@@ -48,8 +66,8 @@ class VegaLiteSpec {
             put("mark", mark)
             put("encoding", encoding)
             put("data", data)
-            put("width", 600)
-            put("height", 400)
+            put("width", width)
+            put("height", height)
         }
     }
 
@@ -57,10 +75,12 @@ class VegaLiteSpec {
      * Generate a Vega-Lite specification as a JSON string.
      *
      * @param graph The [GraphContent] to generate a spec for
+     * @param width Optional width in pixels (default 600)
+     * @param height Optional height in pixels (default 400)
      * @return Pretty-printed Vega-Lite v5 JSON string
      */
-    fun generateString(graph: GraphContent): String {
-        return generate(graph).toString()
+    public fun generateString(graph: GraphContent, width: Int = 600, height: Int = 400): String {
+        return generate(graph, width, height).toString()
     }
 
     /**
@@ -69,7 +89,7 @@ class VegaLiteSpec {
      * @param graphType The type of graph
      * @return The Vega-Lite mark type string
      */
-    fun markTypeForGraph(graphType: GraphType): String {
+    public fun markTypeForGraph(graphType: GraphType): String {
         return when (graphType) {
             GraphType.LINE_CHART -> "line"
             GraphType.BAR_CHART -> "bar"
@@ -125,16 +145,17 @@ class VegaLiteSpec {
     private fun buildCartesianEncoding(graph: GraphContent): JsonObject {
         val xLabel = graph.axes.x.label.ifEmpty { "X" }
         val yLabel = graph.axes.y.label.ifEmpty { "Y" }
+        val xIsNumeric = isNumericAxis(graph)
 
         return buildJsonObject {
             put("x", buildJsonObject {
                 put("field", "x")
-                put("type", if (isNumericAxis(graph.axes.x.range)) "quantitative" else "nominal")
+                put("type", if (xIsNumeric) "quantitative" else "nominal")
                 put("title", xLabel)
                 if (graph.graphType == GraphType.HISTOGRAM) {
                     put("bin", true)
                 }
-                if (isNumericAxis(graph.axes.x.range)) {
+                if (xIsNumeric) {
                     put("scale", buildJsonObject {
                         put("domain", buildJsonArray {
                             add(graph.axes.x.range.start.toJson())
@@ -217,8 +238,17 @@ class VegaLiteSpec {
         return graph.title.ifEmpty { null }
     }
 
-    private fun isNumericAxis(range: ClosedFloatingPointRange<Float>): Boolean {
-        return range.start != 0f || range.endInclusive != 100f
+    /**
+     * Determine whether the x-axis is numeric by inspecting actual data points.
+     *
+     * A numeric axis is one where all x values are parsed from numbers (no string-derived
+     * labels). This replaces the previous range-based heuristic which misclassified real
+     * 0..100% data as categorical.
+     */
+    private fun isNumericAxis(graph: GraphContent): Boolean {
+        if (graph.dataPoints.isEmpty()) return false
+        // If all data points have null labels, x values were originally numeric
+        return graph.dataPoints.all { it.label == null }
     }
 
     private fun Float.toJson(): JsonPrimitive = JsonPrimitive(this)
@@ -230,7 +260,7 @@ class VegaLiteSpec {
  * Contains computed statistics useful for voice descriptions
  * and accessibility information.
  */
-data class DataSummary(
+public data class DataSummary(
     val min: Float,
     val max: Float,
     val mean: Float,
@@ -243,7 +273,7 @@ data class DataSummary(
 /**
  * Direction of the data trend.
  */
-enum class TrendDirection {
+public enum class TrendDirection {
     INCREASING,
     DECREASING,
     STABLE
@@ -255,7 +285,7 @@ enum class TrendDirection {
  * @param dataPoints The data points to summarize
  * @return [DataSummary] with computed statistics
  */
-fun computeDataSummary(dataPoints: List<DataPoint>): DataSummary {
+public fun computeDataSummary(dataPoints: List<DataPoint>): DataSummary {
     if (dataPoints.isEmpty()) {
         return DataSummary(
             min = 0f, max = 0f, mean = 0f, median = 0f,
@@ -296,20 +326,29 @@ private fun computeTrend(dataPoints: List<DataPoint>): TrendResult {
         return TrendResult(TrendDirection.STABLE, 0f)
     }
 
-    val firstY = dataPoints.first().y
-    val lastY = dataPoints.last().y
-    val range = dataPoints.maxOf { it.y } - dataPoints.minOf { it.y }
-
+    val yValues = dataPoints.map { it.y }
+    val range = yValues.max() - yValues.min()
     if (range == 0f) {
         return TrendResult(TrendDirection.STABLE, 0f)
     }
 
-    val changeRatio = (lastY - firstY) / range
+    // Simple linear regression slope
+    val n = dataPoints.size
+    val sumX = dataPoints.indices.sumOf { it.toDouble() }.toFloat()
+    val sumY = yValues.sum()
+    val sumXY = dataPoints.mapIndexed { i, p -> i.toFloat() * p.y }.sum()
+    val sumX2 = dataPoints.indices.sumOf { (it * it).toDouble() }.toFloat()
+
+    val slope = if (n * sumX2 - sumX * sumX != 0f) {
+        (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX)
+    } else 0f
+
+    val normalizedSlope = slope * (n - 1) / range
 
     return when {
-        changeRatio > 0.2f -> TrendResult(TrendDirection.INCREASING, changeRatio.coerceIn(0f, 1f))
-        changeRatio < -0.2f -> TrendResult(TrendDirection.DECREASING, (-changeRatio).coerceIn(0f, 1f))
-        else -> TrendResult(TrendDirection.STABLE, (1f - kotlin.math.abs(changeRatio) * 5f).coerceIn(0f, 1f))
+        normalizedSlope > 0.2f -> TrendResult(TrendDirection.INCREASING, normalizedSlope.coerceIn(0f, 1f))
+        normalizedSlope < -0.2f -> TrendResult(TrendDirection.DECREASING, (-normalizedSlope).coerceIn(0f, 1f))
+        else -> TrendResult(TrendDirection.STABLE, (1f - kotlin.math.abs(normalizedSlope) * 5f).coerceIn(0f, 1f))
     }
 }
 
@@ -323,7 +362,7 @@ private fun computeTrend(dataPoints: List<DataPoint>): TrendResult {
  * @param summary Optional pre-computed [DataSummary]
  * @return Human-readable accessibility description
  */
-fun generateAccessibilityDescription(
+public fun generateAccessibilityDescription(
     graph: GraphContent,
     summary: DataSummary? = null
 ): String {
@@ -377,7 +416,7 @@ fun generateAccessibilityDescription(
     }
 }
 
-private fun graphTypeLabel(graphType: GraphType): String {
+internal fun graphTypeLabel(graphType: GraphType): String {
     return when (graphType) {
         GraphType.LINE_CHART -> "Line chart"
         GraphType.BAR_CHART -> "Bar chart"
@@ -388,7 +427,7 @@ private fun graphTypeLabel(graphType: GraphType): String {
     }
 }
 
-private fun formatNumber(value: Float): String {
+internal fun formatNumber(value: Float): String {
     return if (value == value.toLong().toFloat()) {
         value.toLong().toString()
     } else {

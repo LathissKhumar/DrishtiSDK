@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.molecule
 
 import io.drishti.core.*
@@ -19,7 +35,7 @@ import io.drishti.core.*
  * @property moleculeType Classification of the molecule
  * @property name Common or IUPAC name for display
  */
-data class MoleculeData(
+public data class MoleculeData(
     val cid: Int = 0,
     val molecularFormula: String = "",
     val molecularWeight: Double = 0.0,
@@ -34,7 +50,7 @@ data class MoleculeData(
     /**
      * Convert to [MoleculeContent] for compatibility with the core API.
      */
-    fun toMoleculeContent(): MoleculeContent = MoleculeContent(
+    public fun toMoleculeContent(): MoleculeContent = MoleculeContent(
         moleculeType = moleculeType,
         atoms = atoms,
         bonds = bonds,
@@ -50,7 +66,8 @@ data class MoleculeData(
         molecularWeight = molecularWeight,
         iupacName = iupacName,
         canonicalSmiles = canonicalSmiles,
-        inchiKey = inchiKey
+        inchiKey = inchiKey,
+        confidence = 1.0f
     )
 
     private fun computeBoundingBox(): BoundingBox? {

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.formula
 
 import io.drishti.core.ContentItem
@@ -22,7 +38,7 @@ import io.drishti.core.SymbolType
  * @property speechText Harvard-sentence-style accessible description
  * @property formulaContent Underlying [FormulaContent] for backward compatibility
  */
-data class ParsedFormula(
+public data class ParsedFormula(
     val latex: String,
     val ast: FormulaNode,
     val evaluationResult: Double? = null,
@@ -52,14 +68,14 @@ data class ParsedFormula(
     /** True if the formula has a speech description. */
     val isSpeechAvailable: Boolean get() = speechText.isNotEmpty()
 
-    companion object {
+    public companion object {
 
         /**
          * Create a [ParsedFormula] from a LaTeX string.
          *
          * Parses the LaTeX, evaluates if possible, and generates speech text.
          */
-        fun fromLatex(
+        public fun fromLatex(
             latex: String,
             formulaType: FormulaType = FormulaType.MATHEMATICAL,
             variables: Map<String, Double> = emptyMap()
@@ -71,7 +87,8 @@ data class ParsedFormula(
             val formulaContent = FormulaContent(
                 formulaType = formulaType,
                 expression = latex,
-                symbols = symbols
+                symbols = symbols,
+                confidence = 1.0f
             )
             return ParsedFormula(
                 latex = latex,
@@ -85,7 +102,7 @@ data class ParsedFormula(
         /**
          * Create a [ParsedFormula] from a [FormulaContent] (backward compatibility).
          */
-        fun fromFormulaContent(formulaContent: FormulaContent): ParsedFormula {
+        public fun fromFormulaContent(formulaContent: FormulaContent): ParsedFormula {
             val latex = formulaContent.expression
             val ast = try {
                 LatexParser.parse(latex)
@@ -113,12 +130,20 @@ data class ParsedFormula(
             return symbols
         }
 
+        /**
+         * Recursively extracts [FormulaSymbol]s from an AST node, advancing
+         * the horizontal offset as each symbol is placed.
+         *
+         * Returns the x-position immediately after the last symbol placed by
+         * this subtree so that callers can chain siblings horizontally
+         * without overlapping.
+         */
         private fun extractSymbolsRecursive(
             node: FormulaNode,
             acc: MutableList<FormulaSymbol>,
             x: Float,
             y: Float
-        ) {
+        ): Float {
             var offsetX = x
             when (node) {
                 is FormulaNode.Number -> {
@@ -135,73 +160,83 @@ data class ParsedFormula(
                     offsetX += 12f
                 }
                 is FormulaNode.BinaryOp -> {
-                    extractSymbolsRecursive(node.left, acc, offsetX, y)
-                    acc.add(FormulaSymbol(SymbolType.OPERATOR, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 8f, 16f), node.operator))
-                    offsetX += 8f
-                    extractSymbolsRecursive(node.right, acc, offsetX, y)
+                    val afterLeft = extractSymbolsRecursive(node.left, acc, offsetX, y)
+                    acc.add(FormulaSymbol(SymbolType.OPERATOR, io.drishti.core.Point(afterLeft, y), io.drishti.core.BoundingBox(afterLeft, y, 8f, 16f), node.operator))
+                    val afterOp = afterLeft + 8f
+                    offsetX = extractSymbolsRecursive(node.right, acc, afterOp, y)
                 }
                 is FormulaNode.Fraction -> {
                     acc.add(FormulaSymbol(SymbolType.FRACTION, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 20f, 24f), "/"))
                     extractSymbolsRecursive(node.numerator, acc, offsetX, y - 12f)
                     extractSymbolsRecursive(node.denominator, acc, offsetX, y + 12f)
+                    offsetX += 20f
                 }
                 is FormulaNode.FunctionCall -> {
                     acc.add(FormulaSymbol(SymbolType.FUNCTION, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, node.name.length * 8f, 16f), node.name))
                     offsetX += node.name.length * 8f
-                    extractSymbolsRecursive(node.argument, acc, offsetX, y)
+                    offsetX = extractSymbolsRecursive(node.argument, acc, offsetX, y)
                 }
                 is FormulaNode.Integral -> {
                     acc.add(FormulaSymbol(SymbolType.INTEGRAL, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 12f, 24f), "integral"))
                     if (node.lower != null) extractSymbolsRecursive(node.lower, acc, offsetX, y + 16f)
                     if (node.upper != null) extractSymbolsRecursive(node.upper, acc, offsetX, y - 16f)
-                    extractSymbolsRecursive(node.integrand, acc, offsetX + 16f, y)
+                    val afterIntegrand = extractSymbolsRecursive(node.integrand, acc, offsetX + 16f, y)
+                    offsetX = afterIntegrand
                     if (node.differential != null) {
-                        extractSymbolsRecursive(node.differential, acc, offsetX + 32f, y)
+                        offsetX = extractSymbolsRecursive(node.differential, acc, afterIntegrand, y)
                     }
                 }
                 is FormulaNode.Summation -> {
                     acc.add(FormulaSymbol(SymbolType.SUMMATION, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 12f, 24f), "sum"))
                     if (node.lower != null) extractSymbolsRecursive(node.lower, acc, offsetX, y + 16f)
                     if (node.upper != null) extractSymbolsRecursive(node.upper, acc, offsetX, y - 16f)
-                    extractSymbolsRecursive(node.term, acc, offsetX + 16f, y)
+                    offsetX = extractSymbolsRecursive(node.term, acc, offsetX + 16f, y)
                 }
                 is FormulaNode.UnaryMinus -> {
                     acc.add(FormulaSymbol(SymbolType.OPERATOR, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 8f, 16f), "-"))
-                    extractSymbolsRecursive(node.operand, acc, offsetX + 8f, y)
+                    offsetX = extractSymbolsRecursive(node.operand, acc, offsetX + 8f, y)
                 }
                 is FormulaNode.Power -> {
-                    extractSymbolsRecursive(node.base, acc, offsetX, y)
-                    acc.add(FormulaSymbol(SymbolType.SUPERSCRIPT, io.drishti.core.Point(offsetX, y - 8f), io.drishti.core.BoundingBox(offsetX, y - 8f, 6f, 10f), "^"))
-                    extractSymbolsRecursive(node.exponent, acc, offsetX, y - 8f)
+                    val afterBase = extractSymbolsRecursive(node.base, acc, offsetX, y)
+                    acc.add(FormulaSymbol(SymbolType.SUPERSCRIPT, io.drishti.core.Point(afterBase, y - 8f), io.drishti.core.BoundingBox(afterBase, y - 8f, 6f, 10f), "^"))
+                    extractSymbolsRecursive(node.exponent, acc, afterBase, y - 8f)
+                    offsetX = afterBase
                 }
                 is FormulaNode.Subscript -> {
-                    extractSymbolsRecursive(node.base, acc, offsetX, y)
-                    acc.add(FormulaSymbol(SymbolType.SUBSCRIPT, io.drishti.core.Point(offsetX, y + 8f), io.drishti.core.BoundingBox(offsetX, y + 8f, 6f, 10f), "_"))
-                    extractSymbolsRecursive(node.index, acc, offsetX, y + 8f)
+                    val afterBase = extractSymbolsRecursive(node.base, acc, offsetX, y)
+                    acc.add(FormulaSymbol(SymbolType.SUBSCRIPT, io.drishti.core.Point(afterBase, y + 8f), io.drishti.core.BoundingBox(afterBase, y + 8f, 6f, 10f), "_"))
+                    extractSymbolsRecursive(node.index, acc, afterBase, y + 8f)
+                    offsetX = afterBase
                 }
                 is FormulaNode.SquareRoot -> {
                     acc.add(FormulaSymbol(SymbolType.FUNCTION, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 12f, 16f), "sqrt"))
-                    extractSymbolsRecursive(node.content, acc, offsetX + 16f, y)
+                    offsetX = extractSymbolsRecursive(node.content, acc, offsetX + 16f, y)
                 }
                 is FormulaNode.Limit -> {
                     acc.add(FormulaSymbol(SymbolType.FUNCTION, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 20f, 16f), "lim"))
-                    extractSymbolsRecursive(node.body, acc, offsetX + 24f, y)
+                    offsetX = extractSymbolsRecursive(node.body, acc, offsetX + 24f, y)
                 }
                 is FormulaNode.Group -> {
-                    node.children.forEach { extractSymbolsRecursive(it, acc, offsetX, y) }
+                    var currentX = offsetX
+                    for (child in node.children) {
+                        currentX = extractSymbolsRecursive(child, acc, currentX, y)
+                    }
+                    offsetX = currentX
                 }
                 is FormulaNode.AbsoluteValue -> {
                     acc.add(FormulaSymbol(SymbolType.BRACKET, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 4f, 16f), "|"))
                     extractSymbolsRecursive(node.content, acc, offsetX + 4f, y)
                     acc.add(FormulaSymbol(SymbolType.BRACKET, io.drishti.core.Point(offsetX + 20f, y), io.drishti.core.BoundingBox(offsetX + 20f, y, 4f, 16f), "|"))
+                    offsetX += 24f
                 }
                 is FormulaNode.Accent -> {
-                    extractSymbolsRecursive(node.content, acc, offsetX, y)
+                    offsetX = extractSymbolsRecursive(node.content, acc, offsetX, y)
                 }
                 is FormulaNode.Binomial -> {
                     acc.add(FormulaSymbol(SymbolType.FUNCTION, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 20f, 24f), "binom"))
                     extractSymbolsRecursive(node.n, acc, offsetX, y - 8f)
                     extractSymbolsRecursive(node.k, acc, offsetX, y + 8f)
+                    offsetX += 20f
                 }
                 is FormulaNode.Cases -> {
                     acc.add(FormulaSymbol(SymbolType.BRACKET, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 4f, 16f), "{"))
@@ -210,6 +245,7 @@ data class ParsedFormula(
                         acc.add(FormulaSymbol(SymbolType.RELATION, io.drishti.core.Point(offsetX + 40f, y + i * 16f), io.drishti.core.BoundingBox(offsetX + 40f, y + i * 16f, 8f, 16f), ","))
                         extractSymbolsRecursive(value, acc, offsetX + 52f, y + i * 16f)
                     }
+                    offsetX += 52f
                 }
                 is FormulaNode.Matrix -> {
                     acc.add(FormulaSymbol(SymbolType.BRACKET, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 4f, 16f), "["))
@@ -218,15 +254,18 @@ data class ParsedFormula(
                             extractSymbolsRecursive(entry, acc, offsetX + 4f + colIdx * 20f, y + rowIdx * 16f)
                         }
                     }
-                    acc.add(FormulaSymbol(SymbolType.BRACKET, io.drishti.core.Point(offsetX + 4f + node.columns * 20f, y), io.drishti.core.BoundingBox(offsetX + 4f + node.columns * 20f, y, 4f, 16f), "]"))
+                    val closingX = offsetX + 4f + node.columns * 20f
+                    acc.add(FormulaSymbol(SymbolType.BRACKET, io.drishti.core.Point(closingX, y), io.drishti.core.BoundingBox(closingX, y, 4f, 16f), "]"))
+                    offsetX = closingX + 4f
                 }
                 is FormulaNode.Product -> {
                     acc.add(FormulaSymbol(SymbolType.SUMMATION, io.drishti.core.Point(offsetX, y), io.drishti.core.BoundingBox(offsetX, y, 12f, 24f), "prod"))
                     if (node.lower != null) extractSymbolsRecursive(node.lower, acc, offsetX, y + 16f)
                     if (node.upper != null) extractSymbolsRecursive(node.upper, acc, offsetX, y - 16f)
-                    extractSymbolsRecursive(node.term, acc, offsetX + 16f, y)
+                    offsetX = extractSymbolsRecursive(node.term, acc, offsetX + 16f, y)
                 }
             }
+            return offsetX
         }
     }
 }

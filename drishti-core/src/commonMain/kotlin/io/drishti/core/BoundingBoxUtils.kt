@@ -1,9 +1,25 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
 import kotlin.math.hypot
 
 /** Euclidean distance between two points. */
-fun distance(a: Point, b: Point): Float {
+public fun distance(a: Point, b: Point): Float {
     return hypot(a.x - b.x, a.y - b.y)
 }
 
@@ -14,7 +30,7 @@ fun distance(a: Point, b: Point): Float {
  * formula symbols, molecule atoms), falling back to a default
  * size for items without position data.
  */
-fun estimateBoundingBox(item: ContentItem): BoundingBox? {
+public fun estimateBoundingBox(item: ContentItem): BoundingBox? {
     return when (item) {
         is GraphContent -> graphBounds(item)
         is FormulaContent -> formulaBounds(item)
@@ -23,7 +39,7 @@ fun estimateBoundingBox(item: ContentItem): BoundingBox? {
     }
 }
 
-fun graphBounds(item: GraphContent): BoundingBox? {
+public fun graphBounds(item: GraphContent): BoundingBox? {
     if (item.dataPoints.isEmpty()) return null
     val minX = item.dataPoints.minOf { it.x }
     val maxX = item.dataPoints.maxOf { it.x }
@@ -32,7 +48,7 @@ fun graphBounds(item: GraphContent): BoundingBox? {
     return BoundingBox(minX, minY, maxX - minX, maxY - minY)
 }
 
-fun formulaBounds(item: FormulaContent): BoundingBox? {
+public fun formulaBounds(item: FormulaContent): BoundingBox? {
     if (item.symbols.isEmpty()) return null
     val minX = item.symbols.minOf { it.boundingBox.x }
     val maxX = item.symbols.maxOf { it.boundingBox.x + it.boundingBox.width }
@@ -41,7 +57,7 @@ fun formulaBounds(item: FormulaContent): BoundingBox? {
     return BoundingBox(minX, minY, maxX - minX, maxY - minY)
 }
 
-fun moleculeBounds(item: MoleculeContent): BoundingBox? {
+public fun moleculeBounds(item: MoleculeContent): BoundingBox? {
     if (item.atoms.isEmpty()) return null
     val minX = item.atoms.minOf { it.position.x }
     val maxX = item.atoms.maxOf { it.position.x }
@@ -54,7 +70,7 @@ fun moleculeBounds(item: MoleculeContent): BoundingBox? {
 /**
  * Compute the intersection area of two [BoundingBox] rectangles.
  */
-fun computeOverlapArea(a: BoundingBox, b: BoundingBox): Float {
+public fun computeOverlapArea(a: BoundingBox, b: BoundingBox): Float {
     val overlapX = maxOf(0f, minOf(a.x + a.width, b.x + b.width) - maxOf(a.x, b.x))
     val overlapY = maxOf(0f, minOf(a.y + a.height, b.y + b.height) - maxOf(a.y, b.y))
     return overlapX * overlapY
@@ -63,7 +79,7 @@ fun computeOverlapArea(a: BoundingBox, b: BoundingBox): Float {
 /**
  * Compute [SceneBounds] from the extent of all node positions.
  */
-fun computeBounds(nodes: List<SceneNode>): SceneBounds {
+public fun computeBounds(nodes: List<SceneNode>): SceneBounds {
     if (nodes.isEmpty()) return SceneBounds(0f, 0f)
     val minX = nodes.minOf { it.position.x }
     val maxX = nodes.maxOf { it.position.x }

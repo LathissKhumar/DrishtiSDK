@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.formula
 
 import io.drishti.core.AudioOutput
@@ -16,7 +32,7 @@ import io.drishti.core.VoiceOutput
  * Supports both [ParsedFormula] (AST-based rendering) and [FormulaContent]
  * (legacy symbol-based rendering for backward compatibility).
  */
-class FormulaRenderer {
+public class FormulaRenderer {
 
     /**
      * Render a [ParsedFormula] as haptic output using AST traversal.
@@ -24,7 +40,7 @@ class FormulaRenderer {
      * Each AST node produces a haptic pulse with intensity and duration
      * proportional to the node's structural significance.
      */
-    fun renderHaptic(formula: ParsedFormula): HapticOutput {
+    public fun renderHaptic(formula: ParsedFormula): HapticOutput {
         val pulses = mutableListOf<HapticPulse>()
         formula.ast.visit(0.5f, 0.3f) { node, x, y ->
             val intensity = nodeIntensity(node)
@@ -37,11 +53,11 @@ class FormulaRenderer {
     /**
      * Render a [FormulaContent] as haptic output (backward compatibility).
      */
-    fun renderHaptic(formula: FormulaContent): HapticOutput {
+    public fun renderHaptic(formula: FormulaContent): HapticOutput {
         if (formula.symbols.isEmpty() && formula.expression.isNotEmpty()) {
             val parsed = try {
                 ParsedFormula.fromFormulaContent(formula)
-            } catch (_: Exception) {
+            } catch (e: FormulaParseException) {
                 null
             }
             if (parsed != null) {
@@ -62,7 +78,7 @@ class FormulaRenderer {
     /**
      * Render a [ParsedFormula] as audio output using AST traversal.
      */
-    fun renderAudio(formula: ParsedFormula): AudioOutput {
+    public fun renderAudio(formula: ParsedFormula): AudioOutput {
         val sources = mutableListOf<AudioSource>()
         formula.ast.visit(0.5f, 0.5f) { node, x, y ->
             val freq = nodeFrequency(node)
@@ -75,11 +91,11 @@ class FormulaRenderer {
     /**
      * Render a [FormulaContent] as audio output (backward compatibility).
      */
-    fun renderAudio(formula: FormulaContent): AudioOutput {
+    public fun renderAudio(formula: FormulaContent): AudioOutput {
         if (formula.symbols.isEmpty() && formula.expression.isNotEmpty()) {
             val parsed = try {
                 ParsedFormula.fromFormulaContent(formula)
-            } catch (_: Exception) {
+            } catch (e: FormulaParseException) {
                 null
             }
             if (parsed != null) {
@@ -101,7 +117,7 @@ class FormulaRenderer {
     /**
      * Render a [ParsedFormula] as voice output using the pre-computed speech text.
      */
-    fun renderVoice(formula: ParsedFormula): VoiceOutput {
+    public fun renderVoice(formula: ParsedFormula): VoiceOutput {
         val speech = if (formula.speechText.isNotEmpty()) {
             SpeechSegment(text = formula.speechText, rate = 0.9f, pitch = 1.0f)
         } else {
@@ -117,7 +133,7 @@ class FormulaRenderer {
     /**
      * Render a [FormulaContent] as voice output (backward compatibility).
      */
-    fun renderVoice(formula: FormulaContent): VoiceOutput {
+    public fun renderVoice(formula: FormulaContent): VoiceOutput {
         val speech = when (formula.formulaType) {
             io.drishti.core.FormulaType.CALCULUS -> describeCalculus(formula)
             io.drishti.core.FormulaType.TRIGONOMETRIC -> describeTrigonometric(formula)
@@ -291,43 +307,53 @@ class FormulaRenderer {
     // ── Legacy voice descriptions ─────────────────────────────────────
 
     private fun describeCalculus(formula: FormulaContent): SpeechSegment {
-        return SpeechSegment(
-            text = "Calculus expression: ${formula.expression}. Contains ${formula.symbols.size} symbols.",
-            rate = 0.9f,
-            pitch = 1.0f
-        )
+        val symbolNames = formula.symbols.joinToString(" ") { it.value }
+        val speechText = if (symbolNames.isNotEmpty()) {
+            "Calculus expression: $symbolNames."
+        } else {
+            "Calculus expression: ${formula.expression}."
+        }
+        return SpeechSegment(text = speechText, rate = 0.9f, pitch = 1.0f)
     }
 
     private fun describeTrigonometric(formula: FormulaContent): SpeechSegment {
-        return SpeechSegment(
-            text = "Trigonometric expression: ${formula.expression}. Contains ${formula.symbols.size} symbols.",
-            rate = 0.9f,
-            pitch = 1.0f
-        )
+        val symbolNames = formula.symbols.joinToString(" ") { it.value }
+        val speechText = if (symbolNames.isNotEmpty()) {
+            "Trigonometric expression: $symbolNames."
+        } else {
+            "Trigonometric expression: ${formula.expression}."
+        }
+        return SpeechSegment(text = speechText, rate = 0.9f, pitch = 1.0f)
     }
 
     private fun describeAlgebraic(formula: FormulaContent): SpeechSegment {
-        return SpeechSegment(
-            text = "Algebraic expression: ${formula.expression}. Contains ${formula.symbols.size} symbols.",
-            rate = 1.0f,
-            pitch = 1.0f
-        )
+        val symbolNames = formula.symbols.joinToString(" ") { it.value }
+        val speechText = if (symbolNames.isNotEmpty()) {
+            "Algebraic expression: $symbolNames."
+        } else {
+            "Algebraic expression: ${formula.expression}."
+        }
+        return SpeechSegment(text = speechText, rate = 0.9f, pitch = 1.0f)
     }
 
     private fun describeMathematical(formula: FormulaContent): SpeechSegment {
-        return SpeechSegment(
-            text = "Mathematical expression: ${formula.expression}. Contains ${formula.symbols.size} symbols.",
-            rate = 1.0f,
-            pitch = 1.0f
-        )
+        val symbolNames = formula.symbols.joinToString(" ") { it.value }
+        val speechText = if (symbolNames.isNotEmpty()) {
+            "Mathematical expression: $symbolNames."
+        } else {
+            "Mathematical expression: ${formula.expression}."
+        }
+        return SpeechSegment(text = speechText, rate = 0.9f, pitch = 1.0f)
     }
 
     private fun describeNotation(formula: FormulaContent): SpeechSegment {
-        return SpeechSegment(
-            text = "Mathematical notation: ${formula.expression}. Contains ${formula.symbols.size} symbols.",
-            rate = 1.0f,
-            pitch = 1.0f
-        )
+        val symbolNames = formula.symbols.joinToString(" ") { it.value }
+        val speechText = if (symbolNames.isNotEmpty()) {
+            "Mathematical notation: $symbolNames."
+        } else {
+            "Mathematical notation: ${formula.expression}."
+        }
+        return SpeechSegment(text = speechText, rate = 0.9f, pitch = 1.0f)
     }
 
     private fun normalizePosition(value: Float): Float {

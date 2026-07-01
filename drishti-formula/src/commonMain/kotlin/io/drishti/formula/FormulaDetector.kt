@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.formula
 
 import io.drishti.core.ContentItem
@@ -17,7 +33,7 @@ import io.drishti.core.Frame
  * This detector does NOT depend on the vision module. All detection
  * is performed through text analysis and LaTeX parsing.
  */
-class FormulaDetector : DetectorPlugin {
+public class FormulaDetector : DetectorPlugin {
 
     override val contentType: ContentType = ContentType.FORMULA
 
@@ -35,7 +51,7 @@ class FormulaDetector : DetectorPlugin {
     override suspend fun detect(frame: Frame): ContentItem? {
         val text = try {
             frame.data?.decodeToString()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
             null
         } ?: return null
         if (text.isBlank()) return null
@@ -53,7 +69,7 @@ class FormulaDetector : DetectorPlugin {
      * @return Parsed formula with AST, evaluation, and speech text
      * @throws IllegalArgumentException if the LaTeX cannot be parsed
      */
-    fun detectFromLatex(
+    public fun detectFromLatex(
         latex: String,
         formulaType: FormulaType? = null
     ): ParsedFormula {
@@ -70,12 +86,12 @@ class FormulaDetector : DetectorPlugin {
      * @param text Text containing Unicode math symbols
      * @return Parsed formula, or null if no formula detected
      */
-    fun detectFromUnicode(text: String): ParsedFormula? {
+    public fun detectFromUnicode(text: String): ParsedFormula? {
         val latex = unicodeToLatex(text)
         if (latex.isBlank()) return null
         return try {
             detectFromLatex(latex)
-        } catch (_: Exception) {
+        } catch (e: FormulaParseException) {
             null
         }
     }
@@ -89,7 +105,7 @@ class FormulaDetector : DetectorPlugin {
      * @param ocrText Text extracted by OCR
      * @return Parsed formula, or null if no formula detected
      */
-    fun detectFromOcrText(ocrText: String): ParsedFormula? {
+    public fun detectFromOcrText(ocrText: String): ParsedFormula? {
         // Try Unicode conversion first
         val fromUnicode = detectFromUnicode(ocrText)
         if (fromUnicode != null) return fromUnicode
@@ -97,7 +113,7 @@ class FormulaDetector : DetectorPlugin {
         // Try direct LaTeX parsing (OCR might have captured LaTeX-like syntax)
         return try {
             detectFromLatex(ocrText)
-        } catch (_: Exception) {
+        } catch (e: FormulaParseException) {
             null
         }
     }
@@ -127,7 +143,7 @@ class FormulaDetector : DetectorPlugin {
         return result.trim()
     }
 
-    companion object {
+    public companion object {
         private val CALCULUS_PATTERN = Regex(
             "\\\\int|\\\\sum|\\\\prod|\\\\lim|\\\\partial|\\\\nabla|∫|∑|∏|∂|∇"
         )

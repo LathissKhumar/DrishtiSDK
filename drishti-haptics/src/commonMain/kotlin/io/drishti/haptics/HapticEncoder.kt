@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.haptics
 
 import io.drishti.core.HapticPulse
@@ -5,11 +21,11 @@ import io.drishti.core.HapticPulse
 /**
  * Encodes haptic pulses into vibration effect patterns.
  */
-class HapticEncoder {
+public class HapticEncoder {
     /**
      * Encode pulses into timing and amplitude arrays.
      */
-    fun encode(pulses: List<HapticPulse>): EncodedPattern {
+    public fun encode(pulses: List<HapticPulse>): EncodedPattern {
         val timings = mutableListOf<Long>()
         val amplitudes = mutableListOf<Int>()
 
@@ -32,7 +48,7 @@ class HapticEncoder {
     /**
      * Encode pulses for VibrationEffect.Composition (API 30+).
      */
-    fun encodeComposition(pulses: List<HapticPulse>): List<CompositionPrimitive> {
+    public fun encodeComposition(pulses: List<HapticPulse>): List<CompositionPrimitive> {
         return pulses.map { pulse ->
             CompositionPrimitive(
                 primitiveType = mapToPrimitiveType(pulse),
@@ -44,23 +60,37 @@ class HapticEncoder {
 
     /**
      * Encode pulses for haptic SDK format.
+     *
+     * Accumulates all events on a single channel with cumulative timing.
+     * Each event's [HapticEvent.time] is the offset from pattern start in milliseconds.
      */
-    fun encodeSDK(pulses: List<HapticPulse>): HapticSDKPattern {
+    public fun encodeSDK(pulses: List<HapticPulse>): HapticSDKPattern {
+        var currentTime = 0L
+        val events = mutableListOf<HapticEvent>()
+
+        pulses.forEach { pulse ->
+            if (pulse.delay > 0L) {
+                currentTime += pulse.delay
+            }
+            events.add(
+                HapticEvent(
+                    time = currentTime,
+                    intensity = pulse.intensity,
+                    sharpness = 0.5f
+                )
+            )
+            currentTime += pulse.duration
+        }
+
         return HapticSDKPattern(
             version = 1,
-            duration = pulses.sumOf { it.duration },
-            channels = pulses.map { pulse ->
+            duration = currentTime,
+            channels = listOf(
                 HapticChannel(
                     id = 0,
-                    events = listOf(
-                        HapticEvent(
-                            time = 0,
-                            intensity = pulse.intensity,
-                            sharpness = 0.5f
-                        )
-                    )
+                    events = events
                 )
-            }
+            )
         )
     }
 
@@ -74,7 +104,7 @@ class HapticEncoder {
     }
 }
 
-data class EncodedPattern(
+public data class EncodedPattern(
     val timings: LongArray,
     val amplitudes: IntArray,
     val repeat: Int
@@ -90,24 +120,24 @@ data class EncodedPattern(
     }
 }
 
-data class CompositionPrimitive(
+public data class CompositionPrimitive(
     val primitiveType: String,
     val scale: Float,
     val delay: Int
 )
 
-data class HapticSDKPattern(
+public data class HapticSDKPattern(
     val version: Int,
     val duration: Long,
     val channels: List<HapticChannel>
 )
 
-data class HapticChannel(
+public data class HapticChannel(
     val id: Int,
     val events: List<HapticEvent>
 )
 
-data class HapticEvent(
+public data class HapticEvent(
     val time: Long,
     val intensity: Float,
     val sharpness: Float

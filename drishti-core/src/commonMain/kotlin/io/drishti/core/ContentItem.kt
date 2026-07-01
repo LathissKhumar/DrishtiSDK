@@ -1,17 +1,33 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
 /**
  * A detected content item from the vision pipeline.
  */
-interface ContentItem {
-    val contentType: ContentType
-    val confidence: Float
+public interface ContentItem {
+    public val contentType: ContentType
+    public val confidence: Float
 }
 
 /**
  * Graph content types.
  */
-enum class GraphType {
+public enum class GraphType {
     LINE_CHART,
     BAR_CHART,
     PIE_CHART,
@@ -22,22 +38,27 @@ enum class GraphType {
 
 /**
  * Graph content item.
+ *
+ * @param confidence Detection confidence — callers must always pass the
+ *   observed confidence from the detector. The default exists only for
+ *   backward-compatible data-class construction; production code must
+ *   not rely on it.
  */
-data class GraphContent(
+public data class GraphContent(
     val graphType: GraphType,
     val title: String = "",
     val axes: Axes = Axes(),
     val dataPoints: List<DataPoint> = emptyList(),
-    val labels: List<String> = emptyList()
+    val labels: List<String> = emptyList(),
+    override val confidence: Float
 ) : ContentItem {
-    override val contentType = ContentType.GRAPH
-    override val confidence = 0.85f
+    override val contentType: ContentType = ContentType.GRAPH
 }
 
 /**
  * Formula types.
  */
-enum class FormulaType {
+public enum class FormulaType {
     ALGEBRAIC,
     TRIGONOMETRIC,
     CALCULUS,
@@ -48,7 +69,7 @@ enum class FormulaType {
 /**
  * Symbol types in formulas.
  */
-enum class SymbolType {
+public enum class SymbolType {
     NUMBER,
     VARIABLE,
     OPERATOR,
@@ -64,30 +85,33 @@ enum class SymbolType {
     RELATION
 }
 
-interface FormulaContentItem : ContentItem {
-    val formulaType: FormulaType
-    val expression: String
-    val symbols: List<FormulaSymbol>
-    val geometry: Geometry?
+public interface FormulaContentItem : ContentItem {
+    public val formulaType: FormulaType
+    public val expression: String
+    public val symbols: List<FormulaSymbol>
+    public val geometry: Geometry?
 }
 
 /**
  * Formula content item.
+ *
+ * @param confidence Detection confidence — callers must always pass the
+ *   observed confidence from the detector.
  */
-data class FormulaContent(
+public data class FormulaContent(
     override val formulaType: FormulaType,
     override val expression: String,
     override val symbols: List<FormulaSymbol> = emptyList(),
-    override val geometry: Geometry? = null
+    override val geometry: Geometry? = null,
+    override val confidence: Float
 ) : FormulaContentItem {
-    override val contentType = ContentType.FORMULA
-    override val confidence = 0.88f
+    override val contentType: ContentType = ContentType.FORMULA
 }
 
 /**
  * A symbol in a formula.
  */
-data class FormulaSymbol(
+public data class FormulaSymbol(
     val type: SymbolType,
     val position: Point,
     val boundingBox: BoundingBox,
@@ -97,7 +121,7 @@ data class FormulaSymbol(
 /**
  * Molecule types.
  */
-enum class MoleculeType {
+public enum class MoleculeType {
     ORGANIC,
     INORGANIC,
     COMPLEX,
@@ -107,7 +131,7 @@ enum class MoleculeType {
 /**
  * Bond types in molecules.
  */
-enum class BondType {
+public enum class BondType {
     SINGLE,
     DOUBLE,
     TRIPLE,
@@ -119,7 +143,7 @@ enum class BondType {
 /**
  * An atom in a molecule.
  */
-data class Atom(
+public data class Atom(
     val id: Int,
     val element: String,
     val position: Point,
@@ -131,7 +155,7 @@ data class Atom(
 /**
  * A bond between atoms.
  */
-data class Bond(
+public data class Bond(
     val from: Int,
     val to: Int,
     val type: BondType,
@@ -140,8 +164,11 @@ data class Bond(
 
 /**
  * Molecule content item.
+ *
+ * @param confidence Detection confidence — callers must always pass the
+ *   observed confidence from the detector.
  */
-data class MoleculeContent(
+public data class MoleculeContent(
     val moleculeType: MoleculeType,
     val atoms: List<Atom> = emptyList(),
     val bonds: List<Bond> = emptyList(),
@@ -152,16 +179,16 @@ data class MoleculeContent(
     val molecularWeight: Double = 0.0,
     val iupacName: String = "",
     val canonicalSmiles: String = "",
-    val inchiKey: String = ""
+    val inchiKey: String = "",
+    override val confidence: Float
 ) : ContentItem {
-    override val contentType = ContentType.MOLECULE
-    override val confidence = 0.92f
+    override val contentType: ContentType = ContentType.MOLECULE
 }
 
 /**
  * Shape types for geometric content.
  */
-enum class ShapeType {
+public enum class ShapeType {
     CIRCLE,
     RECTANGLE,
     TRIANGLE,
@@ -173,32 +200,48 @@ enum class ShapeType {
 
 /**
  * Shape content item.
+ *
+ * @param shapeType Classified shape geometry.
+ * @param area Enclosed area in square pixels.
+ * @param perimeter Perimeter length in pixels.
+ * @param x Horizontal position of the bounding-box origin in pixels (0 = left edge).
+ * @param y Vertical position of the bounding-box origin in pixels (0 = top edge).
+ * @param width Width of the bounding box in pixels.
+ * @param height Height of the bounding box in pixels.
+ * @param confidence Detection confidence between 0.0 and 1.0.
  */
-data class ShapeContent(
+public data class ShapeContent(
     val shapeType: ShapeType,
     val area: Float,
-    val perimeter: Float
+    val perimeter: Float,
+    val x: Float = 0f,
+    val y: Float = 0f,
+    val width: Float = 0f,
+    val height: Float = 0f,
+    override val confidence: Float
 ) : ContentItem {
-    override val contentType = ContentType.SHAPE
-    override val confidence = 0.85f
+    override val contentType: ContentType = ContentType.SHAPE
 }
 
 /**
  * Table content item.
+ *
+ * @param confidence Detection confidence — callers must always pass the
+ *   observed confidence from the detector.
  */
-data class TableContent(
+public data class TableContent(
     val rows: Int,
     val columns: Int,
-    val cells: List<List<String>>
+    val cells: List<List<String>>,
+    override val confidence: Float
 ) : ContentItem {
-    override val contentType = ContentType.TABLE
-    override val confidence = 0.9f
+    override val contentType: ContentType = ContentType.TABLE
 }
 
 /**
  * Exploration direction for interactive content.
  */
-enum class ExplorationDirection {
+public enum class ExplorationDirection {
     NEXT,
     PREVIOUS,
     POSITION

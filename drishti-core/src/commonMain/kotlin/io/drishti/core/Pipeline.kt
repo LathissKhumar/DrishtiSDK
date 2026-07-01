@@ -1,5 +1,22 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -11,7 +28,7 @@ import kotlinx.coroutines.coroutineScope
  * [SceneGraph] with real spatial positions and meaningful edges between
  * related content items.
  */
-class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
+public class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
 
     /**
      * Run all detectors on the frame concurrently.
@@ -23,7 +40,7 @@ class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
      * @param detectors List of detector plugins to run.
      * @return Non-null detected content items.
      */
-    suspend fun detect(frame: Frame, detectors: List<DetectorPlugin>): List<ContentItem> {
+    public suspend fun detect(frame: Frame, detectors: List<DetectorPlugin>): List<ContentItem> {
         if (frame.data == null || frame.data.isEmpty()) {
             return emptyList()
         }
@@ -32,9 +49,15 @@ class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
                 async {
                     try {
                         detector.detect(frame)
+                    } catch (_: CancellationException) {
+                        throw CancellationException("Pipeline cancelled during detection")
                     } catch (e: Exception) {
-                        // Don't let one detector crash the whole pipeline
-                        null
+                        when (e) {
+                            is IllegalStateException,
+                            is IllegalArgumentException,
+                            is UnsupportedOperationException -> throw e
+                            else -> null
+                        }
                     }
                 }
             }.awaitAll().filterNotNull()
@@ -62,7 +85,7 @@ class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
      * @param items Detected content items from [detect].
      * @return A fully-connected [SceneGraph] with positions, edges, and bounds.
      */
-    fun buildSceneGraph(items: List<ContentItem>): SceneGraph {
+    public fun buildSceneGraph(items: List<ContentItem>): SceneGraph {
         if (items.isEmpty()) {
             return SceneGraph(
                 nodes = emptyList(),

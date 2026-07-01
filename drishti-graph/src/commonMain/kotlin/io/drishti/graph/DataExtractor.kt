@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.graph
 
 import io.drishti.core.*
@@ -28,7 +44,7 @@ import kotlinx.serialization.json.*
  * )
  * ```
  */
-class DataExtractor {
+public class DataExtractor {
 
     private val parser = GraphDataParser()
 
@@ -42,7 +58,7 @@ class DataExtractor {
      * @return [ExtractionResult] with parsed graph and metadata
      * @throws GraphDataException if JSON is invalid or missing required fields
      */
-    fun fromJson(json: String): ExtractionResult {
+    public fun fromJson(json: String): ExtractionResult {
         val parseResult = parser.parseJson(json)
         return ExtractionResult(
             graph = parseResult.graph,
@@ -64,7 +80,7 @@ class DataExtractor {
      * @return [ExtractionResult] with parsed graph and metadata
      * @throws GraphDataException if CSV is malformed
      */
-    fun fromCsv(
+    public fun fromCsv(
         csv: String,
         chartType: String? = null,
         title: String = ""
@@ -89,7 +105,7 @@ class DataExtractor {
      * @param pointLabels Optional labels for each data point
      * @return [ExtractionResult] with parsed graph
      */
-    fun fromDataPoints(
+    public fun fromDataPoints(
         type: String = "line_chart",
         title: String = "",
         xLabel: String = "",
@@ -122,7 +138,7 @@ class DataExtractor {
      * @return [ExtractionResult] with parsed graph
      * @throws GraphDataException if properties are invalid
      */
-    fun fromProperties(properties: Map<String, String>): ExtractionResult {
+    public fun fromProperties(properties: Map<String, String>): ExtractionResult {
         val jsonObject = buildJsonObject {
             properties.forEach { (key, value) ->
                 when (key) {
@@ -176,7 +192,7 @@ class DataExtractor {
      * @return [ExtractionResult] with parsed graph
      * @throws GraphDataException if format cannot be determined or parsed
      */
-    fun autoDetect(input: String, title: String = ""): ExtractionResult {
+    public fun autoDetect(input: String, title: String = ""): ExtractionResult {
         val trimmed = input.trim()
 
         return when {
@@ -193,7 +209,7 @@ class DataExtractor {
 /**
  * The source format of extracted graph data.
  */
-enum class DataSource {
+public enum class DataSource {
     /** Input was a JSON string */
     JSON,
     /** Input was a CSV string */
@@ -212,7 +228,7 @@ enum class DataSource {
  * @property warnings Any non-fatal issues encountered during parsing
  * @property inferredType Whether the chart type was auto-inferred
  */
-data class ExtractionResult(
+public data class ExtractionResult(
     val graph: GraphContent,
     val source: DataSource,
     val warnings: List<String> = emptyList(),

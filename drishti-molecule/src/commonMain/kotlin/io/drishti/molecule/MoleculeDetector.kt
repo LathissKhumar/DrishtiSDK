@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.molecule
 
 import io.drishti.core.*
@@ -17,7 +33,7 @@ import io.ktor.client.plugins.HttpTimeout
  * @param pubChemClient Client for PubChem API communication
  * @param parser Parser for molecule input strings
  */
-class MoleculeDetector(
+public class MoleculeDetector(
     private val pubChemClient: PubChemClient = PubChemClient(
         httpClient = HttpClient {
             install(HttpTimeout) {
@@ -29,8 +45,8 @@ class MoleculeDetector(
     ),
     private val parser: MoleculeParser = MoleculeParser()
 ) : DetectorPlugin {
-    override val contentType = ContentType.MOLECULE
-    override val confidence = 0.95f
+    override val contentType: ContentType = ContentType.MOLECULE
+    override val confidence: Float = 0.95f
 
     /**
      * Detect molecule from a text input string.
@@ -44,7 +60,7 @@ class MoleculeDetector(
      * @param input Text description of the molecule
      * @return [MoleculeContent] with real PubChem data, or `null` if not found
      */
-    suspend fun detectFromText(input: String): MoleculeContent? {
+    public suspend fun detectFromText(input: String): MoleculeContent? {
         val parsed = parser.parse(input)
         return when (parsed.type) {
             MoleculeInputType.SMILES -> pubChemClient.fetchBySmiles(parsed.normalizedValue)
@@ -64,7 +80,7 @@ class MoleculeDetector(
      * @param input Text description of the molecule
      * @return [MoleculeData] with full PubChem data, or `null` if not found
      */
-    suspend fun detectMoleculeData(input: String): MoleculeData? {
+    public suspend fun detectMoleculeData(input: String): MoleculeData? {
         val parsed = parser.parse(input)
         return when (parsed.type) {
             MoleculeInputType.SMILES -> pubChemClient.fetchBySmiles(parsed.normalizedValue)

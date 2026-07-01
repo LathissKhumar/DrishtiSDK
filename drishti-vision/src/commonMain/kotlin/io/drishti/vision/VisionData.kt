@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.vision
 
 import io.drishti.core.BoundingBox
@@ -10,7 +26,7 @@ import io.drishti.core.Point
  * regions of interest, and classified shapes. Produced by
  * [FeatureExtractor.extractAll].
  */
-data class VisionFeatures(
+public data class VisionFeatures(
     val contours: List<Contour> = emptyList(),
     val lines: List<Line> = emptyList(),
     val textRegions: List<TextRegion> = emptyList(),
@@ -18,7 +34,7 @@ data class VisionFeatures(
     val shapes: List<DetectedShape> = emptyList()
 ) {
     /** Whether any features were detected. */
-    fun isNotEmpty(): Boolean =
+    public fun isNotEmpty(): Boolean =
         contours.isNotEmpty() || lines.isNotEmpty() || textRegions.isNotEmpty() ||
             regionsOfInterest.isNotEmpty() || shapes.isNotEmpty()
 }
@@ -36,7 +52,7 @@ data class VisionFeatures(
  * @param perimeter Total perimeter length in pixels.
  * @param confidence Detection confidence between 0.0 and 1.0.
  */
-data class DetectedShape(
+public data class DetectedShape(
     val type: ShapeKind,
     val vertices: List<Point>,
     val boundingBox: BoundingBox,
@@ -51,7 +67,7 @@ data class DetectedShape(
  * Classification uses vertex count from polygon simplification
  * and circularity ratio (4π × area / perimeter²).
  */
-enum class ShapeKind {
+public enum class ShapeKind {
     TRIANGLE,
     RECTANGLE,
     SQUARE,

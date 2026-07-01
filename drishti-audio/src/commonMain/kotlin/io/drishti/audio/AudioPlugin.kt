@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.audio
 
 import io.drishti.core.*
@@ -11,11 +27,11 @@ import io.drishti.core.*
  * The Android HAL layer consumes [SpatialAudioScene] to configure the
  * Spatializer API (API 32+) and Oboe for low-latency playback.
  */
-class AudioPlugin : AudioRenderer {
+public class AudioPlugin : AudioRenderer {
     private val renderer = SpatialRenderer()
     private val toneGenerator = ToneGenerator()
 
-    override val name = "audio"
+    override val name: String = "audio"
 
     // ── AudioRenderer interface ─────────────────────────────────────
 
@@ -49,7 +65,7 @@ class AudioPlugin : AudioRenderer {
      * @param sceneGraph The scene graph from the vision pipeline.
      * @param focusNodeId Optional node id to highlight.
      */
-    fun renderSpatialScene(sceneGraph: SceneGraph, focusNodeId: String? = null): SpatialAudioScene {
+    public fun renderSpatialScene(sceneGraph: SceneGraph, focusNodeId: String? = null): SpatialAudioScene {
         return renderer.renderScene(sceneGraph, focusNodeId)
     }
 
@@ -62,7 +78,7 @@ class AudioPlugin : AudioRenderer {
      * @param items Content items from the vision pipeline.
      * @param focusIndex Index of the focused item.
      */
-    fun renderSpatialFromItems(items: List<ContentItem>, focusIndex: Int = 0): SpatialAudioScene {
+    public fun renderSpatialFromItems(items: List<ContentItem>, focusIndex: Int = 0): SpatialAudioScene {
         val sceneGraph = renderer.buildSceneGraphFromItems(items, focusIndex)
         val focusNodeId = sceneGraph.nodes.getOrNull(focusIndex)?.id
         return renderer.renderScene(sceneGraph, focusNodeId)
@@ -76,7 +92,7 @@ class AudioPlugin : AudioRenderer {
      * @param items Content items to describe.
      * @return List of speech texts in rendering order.
      */
-    fun describeContent(items: List<ContentItem>): List<String> {
+    public fun describeContent(items: List<ContentItem>): List<String> {
         return items.map { item -> describeItem(item) }
     }
 
@@ -85,14 +101,14 @@ class AudioPlugin : AudioRenderer {
     /**
      * Generate sine wave tone.
      */
-    fun generateTone(frequency: Float, duration: Long): FloatArray {
+    public fun generateTone(frequency: Float, duration: Long): FloatArray {
         return toneGenerator.generateSineWave(frequency, duration)
     }
 
     /**
      * Apply envelope to audio samples.
      */
-    fun applyEnvelope(samples: FloatArray): FloatArray {
+    public fun applyEnvelope(samples: FloatArray): FloatArray {
         return toneGenerator.applyEnvelope(samples)
     }
 

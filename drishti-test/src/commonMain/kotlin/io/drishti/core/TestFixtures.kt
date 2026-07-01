@@ -1,18 +1,34 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
 /**
  * Shared test fixtures for Drishti SDK tests.
  */
-object TestFixtures {
+public object TestFixtures {
 
-    fun frame(
+    public fun frame(
         width: Int = 640,
         height: Int = 480,
         format: FrameFormat = FrameFormat.RGB_888,
         data: ByteArray? = ByteArray(1)
     ): Frame = Frame(width = width, height = height, format = format, data = data)
 
-    fun graphContent(
+    public fun graphContent(
         graphType: GraphType = GraphType.LINE_CHART,
         title: String = "Test Graph",
         axes: Axes = Axes(
@@ -30,10 +46,11 @@ object TestFixtures {
         title = title,
         axes = axes,
         dataPoints = dataPoints,
-        labels = labels
+        labels = labels,
+        confidence = 0.85f
     )
 
-    fun formulaContent(
+    public fun formulaContent(
         formulaType: FormulaType = FormulaType.ALGEBRAIC,
         expression: String = "x + y = z",
         symbols: List<FormulaSymbol> = listOf(
@@ -61,10 +78,11 @@ object TestFixtures {
         formulaType = formulaType,
         expression = expression,
         symbols = symbols,
-        geometry = geometry
+        geometry = geometry,
+        confidence = 0.85f
     )
 
-    fun moleculeContent(
+    public fun moleculeContent(
         moleculeType: MoleculeType = MoleculeType.ORGANIC,
         atoms: List<Atom> = listOf(
             Atom(id = 0, element = "C", position = Point(50f, 50f), charge = 0, label = "C"),
@@ -82,24 +100,25 @@ object TestFixtures {
         atoms = atoms,
         bonds = bonds,
         name = name,
-        geometry = geometry
+        geometry = geometry,
+        confidence = 0.85f
     )
 
-    fun hapticOutput(
+    public fun hapticOutput(
         pulses: List<HapticPulse> = listOf(
             HapticPulse(intensity = 0.5f, duration = 50L, x = 0.5f, y = 0.5f)
         ),
         pattern: String = "test_pattern"
     ): HapticOutput = HapticOutput(pulses = pulses, pattern = pattern)
 
-    fun audioOutput(
+    public fun audioOutput(
         sources: List<AudioSource> = listOf(
             AudioSource(frequency = 440f, amplitude = 0.5f, spatialX = 0.5f, spatialY = 0.5f, spatialZ = 0.5f)
         ),
         spatial: Boolean = true
     ): AudioOutput = AudioOutput(sources = sources, spatial = spatial)
 
-    fun voiceOutput(
+    public fun voiceOutput(
         text: String = "Test speech",
         rate: Float = 1.0f,
         pitch: Float = 1.0f,
@@ -112,28 +131,28 @@ object TestFixtures {
 
 // ---- Shared test stubs ----
 
-class StubDetector(
+public class StubDetector(
     override val contentType: ContentType,
     private val createItem: ContentItem? = null
 ) : DetectorPlugin {
-    override val confidence = 0.8f
+    override val confidence: Float = 0.8f
     override suspend fun detect(frame: Frame): ContentItem? = createItem
 }
 
-class StubHapticsRenderer : HapticsRenderer {
-    override val name = "stub-haptics"
-    override fun renderHaptic(items: List<ContentItem>, focusIndex: Int) = HapticOutput(pulses = emptyList(), pattern = "stub")
-    override fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection, elementIndex: Int) = HapticOutput(pulses = emptyList(), pattern = "stub-explore")
+public class StubHapticsRenderer : HapticsRenderer {
+    override val name: String = "stub-haptics"
+    override fun renderHaptic(items: List<ContentItem>, focusIndex: Int): HapticOutput = HapticOutput(pulses = emptyList(), pattern = "stub")
+    override fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection, elementIndex: Int): HapticOutput = HapticOutput(pulses = emptyList(), pattern = "stub-explore")
 }
 
-class StubAudioRenderer : AudioRenderer {
-    override val name = "stub-audio"
-    override fun renderAudio(items: List<ContentItem>, focusIndex: Int) = AudioOutput(sources = emptyList(), spatial = true)
-    override fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection, elementIndex: Int) = AudioOutput(sources = emptyList(), spatial = true)
+public class StubAudioRenderer : AudioRenderer {
+    override val name: String = "stub-audio"
+    override fun renderAudio(items: List<ContentItem>, focusIndex: Int): AudioOutput = AudioOutput(sources = emptyList(), spatial = true)
+    override fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection, elementIndex: Int): AudioOutput = AudioOutput(sources = emptyList(), spatial = true)
 }
 
-class StubVoiceRenderer : VoiceOutputRenderer {
-    override val name = "stub-voice"
-    override fun renderVoice(items: List<ContentItem>, focusIndex: Int) = VoiceOutput(speech = SpeechSegment(text = "stub", rate = 1.0f, pitch = 1.0f), language = "en-US")
-    override fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection, elementIndex: Int) = VoiceOutput(speech = SpeechSegment(text = "stub", rate = 1.0f, pitch = 1.0f), language = "en-US")
+public class StubVoiceRenderer : VoiceOutputRenderer {
+    override val name: String = "stub-voice"
+    override fun renderVoice(items: List<ContentItem>, focusIndex: Int): VoiceOutput = VoiceOutput(speech = SpeechSegment(text = "stub", rate = 1.0f, pitch = 1.0f), language = "en-US")
+    override fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection, elementIndex: Int): VoiceOutput = VoiceOutput(speech = SpeechSegment(text = "stub", rate = 1.0f, pitch = 1.0f), language = "en-US")
 }

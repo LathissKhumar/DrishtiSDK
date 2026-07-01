@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.graph
 
 import io.drishti.core.*
@@ -24,7 +40,7 @@ import io.drishti.core.*
  * val vegaSpec = renderer.renderVegaLiteSpec(graph)
  * ```
  */
-class GraphRenderer {
+public class GraphRenderer {
 
     private val vegaLiteSpec = VegaLiteSpec()
 
@@ -37,7 +53,7 @@ class GraphRenderer {
      * @param graph The graph content to render
      * @return [HapticOutput] with pulses mapped from data points
      */
-    fun renderHaptic(graph: GraphContent): HapticOutput {
+    public fun renderHaptic(graph: GraphContent): HapticOutput {
         val pulses = when (graph.graphType) {
             GraphType.LINE_CHART, GraphType.AREA_CHART -> renderLineChartHaptic(graph)
             GraphType.BAR_CHART, GraphType.HISTOGRAM -> renderBarChartHaptic(graph)
@@ -56,7 +72,7 @@ class GraphRenderer {
      * @param graph The graph content to render
      * @return [AudioOutput] with sources mapped from data points
      */
-    fun renderAudio(graph: GraphContent): AudioOutput {
+    public fun renderAudio(graph: GraphContent): AudioOutput {
         val sources = when (graph.graphType) {
             GraphType.LINE_CHART, GraphType.AREA_CHART -> renderLineChartAudio(graph)
             GraphType.BAR_CHART, GraphType.HISTOGRAM -> renderBarChartAudio(graph)
@@ -75,7 +91,7 @@ class GraphRenderer {
      * @param graph The graph content to render
      * @return [VoiceOutput] with descriptive speech segment
      */
-    fun renderVoice(graph: GraphContent): VoiceOutput {
+    public fun renderVoice(graph: GraphContent): VoiceOutput {
         val speech = when (graph.graphType) {
             GraphType.LINE_CHART, GraphType.AREA_CHART -> renderLineChartVoice(graph)
             GraphType.BAR_CHART, GraphType.HISTOGRAM -> renderBarChartVoice(graph)
@@ -94,7 +110,7 @@ class GraphRenderer {
      * @param graph The graph content
      * @return Vega-Lite specification as a JSON string
      */
-    fun renderVegaLiteSpec(graph: GraphContent): String {
+    public fun renderVegaLiteSpec(graph: GraphContent): String {
         return vegaLiteSpec.generateString(graph)
     }
 
@@ -104,7 +120,7 @@ class GraphRenderer {
      * @param graph The graph content
      * @return Vega-Lite specification object
      */
-    fun renderVegaLiteSpecObject(graph: GraphContent): kotlinx.serialization.json.JsonObject {
+    public fun renderVegaLiteSpecObject(graph: GraphContent): kotlinx.serialization.json.JsonObject {
         return vegaLiteSpec.generate(graph)
     }
 
@@ -116,7 +132,7 @@ class GraphRenderer {
      * @param graph The graph content
      * @return Human-readable accessibility description
      */
-    fun getAccessibilityDescription(graph: GraphContent): String {
+    public fun getAccessibilityDescription(graph: GraphContent): String {
         return generateAccessibilityDescription(graph)
     }
 
@@ -126,17 +142,17 @@ class GraphRenderer {
      * @param graph The graph content
      * @return [DataSummary] with computed statistics
      */
-    fun getDataSummary(graph: GraphContent): DataSummary {
+    public fun getDataSummary(graph: GraphContent): DataSummary {
         return computeDataSummary(graph.dataPoints)
     }
 
     private fun renderLineChartHaptic(graph: GraphContent): List<HapticPulse> {
         return graph.dataPoints.map { point ->
             HapticPulse(
-                intensity = normalizeIntensity(point.y, graph.axes.y.range),
+                intensity = normalizeValue(point.y, graph.axes.y.range),
                 duration = 50L,
-                x = normalizePosition(point.x, graph.axes.x.range),
-                y = normalizePosition(point.y, graph.axes.y.range)
+                x = normalizeValue(point.x, graph.axes.x.range),
+                y = normalizeValue(point.y, graph.axes.y.range)
             )
         }
     }
@@ -144,10 +160,10 @@ class GraphRenderer {
     private fun renderBarChartHaptic(graph: GraphContent): List<HapticPulse> {
         return graph.dataPoints.map { point ->
             HapticPulse(
-                intensity = normalizeIntensity(point.y, graph.axes.y.range),
+                intensity = normalizeValue(point.y, graph.axes.y.range),
                 duration = 100L,
-                x = normalizePosition(point.x, graph.axes.x.range),
-                y = normalizePosition(point.y, graph.axes.y.range)
+                x = normalizeValue(point.x, graph.axes.x.range),
+                y = normalizeValue(point.y, graph.axes.y.range)
             )
         }
     }
@@ -156,11 +172,15 @@ class GraphRenderer {
         val slices = if (graph.labels.isNotEmpty()) graph.labels.size else graph.dataPoints.size
         if (slices == 0) return emptyList()
 
+        val total = graph.dataPoints.sumOf { it.y.toDouble() }.toFloat().coerceAtLeast(1f)
+
         return (0 until slices).map { index ->
             val angle = (index.toFloat() / slices) * 360f
+            val sliceValue = if (index < graph.dataPoints.size) graph.dataPoints[index].y else 0f
+            val proportion = (sliceValue / total).coerceIn(0.1f, 1.0f)
             HapticPulse(
-                intensity = 0.5f,
-                duration = 50L,
+                intensity = proportion,
+                duration = (50L + proportion * 150L).toLong(),
                 x = (kotlin.math.cos(Math.toRadians(angle.toDouble())).toFloat() + 1f) / 2f,
                 y = (kotlin.math.sin(Math.toRadians(angle.toDouble())).toFloat() + 1f) / 2f
             )
@@ -172,8 +192,8 @@ class GraphRenderer {
             HapticPulse(
                 intensity = 0.7f,
                 duration = 30L,
-                x = normalizePosition(point.x, graph.axes.x.range),
-                y = normalizePosition(point.y, graph.axes.y.range)
+                x = normalizeValue(point.x, graph.axes.x.range),
+                y = normalizeValue(point.y, graph.axes.y.range)
             )
         }
     }
@@ -182,9 +202,9 @@ class GraphRenderer {
         return graph.dataPoints.map { point ->
             AudioSource(
                 frequency = mapToFrequency(point.y, graph.axes.y.range),
-                amplitude = normalizeIntensity(point.y, graph.axes.y.range),
-                spatialX = normalizePosition(point.x, graph.axes.x.range),
-                spatialY = normalizePosition(point.y, graph.axes.y.range),
+                amplitude = normalizeValue(point.y, graph.axes.y.range),
+                spatialX = normalizeValue(point.x, graph.axes.x.range),
+                spatialY = normalizeValue(point.y, graph.axes.y.range),
                 spatialZ = 0.5f
             )
         }
@@ -194,9 +214,9 @@ class GraphRenderer {
         return graph.dataPoints.map { point ->
             AudioSource(
                 frequency = mapToFrequency(point.y, graph.axes.y.range),
-                amplitude = normalizeIntensity(point.y, graph.axes.y.range),
-                spatialX = normalizePosition(point.x, graph.axes.x.range),
-                spatialY = normalizePosition(point.y, graph.axes.y.range),
+                amplitude = normalizeValue(point.y, graph.axes.y.range),
+                spatialX = normalizeValue(point.x, graph.axes.x.range),
+                spatialY = normalizeValue(point.y, graph.axes.y.range),
                 spatialZ = 0.5f
             )
         }
@@ -206,13 +226,17 @@ class GraphRenderer {
         val slices = if (graph.labels.isNotEmpty()) graph.labels.size else graph.dataPoints.size
         if (slices == 0) return emptyList()
 
+        val total = graph.dataPoints.sumOf { it.y.toDouble() }.toFloat().coerceAtLeast(1f)
+
         return (0 until slices).map { index ->
             val angle = (index.toFloat() / slices) * 360f
             val cosVal = kotlin.math.cos(Math.toRadians(angle.toDouble())).toFloat()
             val sinVal = kotlin.math.sin(Math.toRadians(angle.toDouble())).toFloat()
+            val sliceValue = if (index < graph.dataPoints.size) graph.dataPoints[index].y else 0f
+            val proportion = (sliceValue / total).coerceIn(0.1f, 1.0f)
             AudioSource(
-                frequency = 200f + (index * 100f),
-                amplitude = 0.5f,
+                frequency = 130f + (proportion * 393f), // 130Hz–523Hz proportional to slice value
+                amplitude = proportion,
                 spatialX = ((cosVal + 1f) / 2f).coerceIn(0.05f, 0.95f),
                 spatialY = ((sinVal + 1f) / 2f).coerceIn(0.05f, 0.95f),
                 spatialZ = 0.5f
@@ -225,8 +249,8 @@ class GraphRenderer {
             AudioSource(
                 frequency = mapToFrequency(point.y, graph.axes.y.range),
                 amplitude = 0.5f,
-                spatialX = normalizePosition(point.x, graph.axes.x.range),
-                spatialY = normalizePosition(point.y, graph.axes.y.range),
+                spatialX = normalizeValue(point.x, graph.axes.x.range),
+                spatialY = normalizeValue(point.y, graph.axes.y.range),
                 spatialZ = 0.5f
             )
         }
@@ -303,39 +327,14 @@ class GraphRenderer {
         }
     }
 
-    private fun graphTypeLabel(graphType: GraphType): String {
-        return when (graphType) {
-            GraphType.LINE_CHART -> "Line chart"
-            GraphType.BAR_CHART -> "Bar chart"
-            GraphType.PIE_CHART -> "Pie chart"
-            GraphType.SCATTER_PLOT -> "Scatter plot"
-            GraphType.AREA_CHART -> "Area chart"
-            GraphType.HISTOGRAM -> "Histogram"
-        }
-    }
-
-    private fun formatNumber(value: Float): String {
-        return if (value == value.toLong().toFloat()) {
-            value.toLong().toString()
-        } else {
-            "%.2f".format(value)
-        }
-    }
-
-    private fun normalizeIntensity(value: Float, range: ClosedFloatingPointRange<Float>): Float {
-        val span = range.endInclusive - range.start
-        if (span == 0f) return 0.5f
-        return ((value - range.start) / span).coerceIn(0f, 1f)
-    }
-
-    private fun normalizePosition(value: Float, range: ClosedFloatingPointRange<Float>): Float {
+    private fun normalizeValue(value: Float, range: ClosedFloatingPointRange<Float>): Float {
         val span = range.endInclusive - range.start
         if (span == 0f) return 0.5f
         return ((value - range.start) / span).coerceIn(0f, 1f)
     }
 
     private fun mapToFrequency(value: Float, range: ClosedFloatingPointRange<Float>): Float {
-        val normalized = normalizeIntensity(value, range)
+        val normalized = normalizeValue(value, range)
         return 130f + (normalized * 393f) // 130Hz to 523Hz (musical range)
     }
 }

@@ -1,12 +1,28 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Point(val x: Float, val y: Float)
+public data class Point(val x: Float, val y: Float)
 
 @Serializable
-data class BoundingBox(
+public data class BoundingBox(
     val x: Float,
     val y: Float,
     val width: Float,
@@ -19,33 +35,33 @@ data class BoundingBox(
 }
 
 @Serializable
-data class Axes(
+public data class Axes(
     val x: Axis = Axis(),
     val y: Axis = Axis()
 )
 
 @Serializable
-data class Axis(
+public data class Axis(
     val label: String = "",
     val range: ClosedFloatingPointRange<Float> = 0f..100f
 )
 
 @Serializable
-data class DataPoint(
+public data class DataPoint(
     val x: Float,
     val y: Float,
     val label: String? = null
 )
 
 @Serializable
-data class TrendLine(
+public data class TrendLine(
     val start: Point,
     val end: Point,
     val equation: String? = null
 )
 
 @Serializable
-data class Geometry(
+public data class Geometry(
     val points: List<Point> = emptyList(),
     val boundingBox: BoundingBox? = null
 )

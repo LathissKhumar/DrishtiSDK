@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
 import kotlin.test.*
@@ -93,9 +109,9 @@ class PipelineTest {
         val items = listOf(TestFixtures.moleculeContent())
         val graph = pipeline.buildSceneGraph(items)
         assertEquals(1, graph.nodes.size)
-        assertTrue(graph.nodes[0] is SceneNode.TextNode)
-        val node = graph.nodes[0] as SceneNode.TextNode
-        assertEquals("Methanol", node.text)
+        assertTrue(graph.nodes[0] is SceneNode.ShapeNode)
+        val node = graph.nodes[0] as SceneNode.ShapeNode
+        assertEquals(ShapeType.POLYGON, node.shapeType)
         // Position from atom positions: avg of (50,50), (30,30), (70,30) → (50, 36.67)
         assertTrue(node.position.x > 0f, "Molecule node x should be > 0, got ${node.position.x}")
         assertTrue(node.position.y > 0f, "Molecule node y should be > 0, got ${node.position.y}")
@@ -104,7 +120,7 @@ class PipelineTest {
     @Test
     fun buildSceneGraphSingleShapeItem() {
         val pipeline = Pipeline()
-        val items = listOf(ShapeContent(ShapeType.CIRCLE, 100f, 35f))
+        val items = listOf(ShapeContent(ShapeType.CIRCLE, 100f, 35f, confidence = 0.9f))
         val graph = pipeline.buildSceneGraph(items)
         assertEquals(1, graph.nodes.size)
         assertTrue(graph.nodes[0] is SceneNode.ShapeNode)
@@ -139,7 +155,8 @@ class PipelineTest {
         val content = GraphContent(
             graphType = GraphType.LINE_CHART,
             title = "Empty",
-            dataPoints = emptyList()
+            dataPoints = emptyList(),
+            confidence = 0.85f
         )
         val graph = pipeline.buildSceneGraph(listOf(content))
         val node = graph.nodes[0] as SceneNode.DataPointNode
@@ -167,7 +184,8 @@ class PipelineTest {
             symbols = emptyList(),
             geometry = Geometry(
                 boundingBox = BoundingBox(50f, 100f, 200f, 40f)
-            )
+            ),
+            confidence = 0.9f
         )
         val graph = pipeline.buildSceneGraph(listOf(content))
         val node = graph.nodes[0] as SceneNode.TextNode
@@ -180,7 +198,7 @@ class PipelineTest {
         val pipeline = Pipeline()
         val content = TestFixtures.moleculeContent()
         val graph = pipeline.buildSceneGraph(listOf(content))
-        val node = graph.nodes[0] as SceneNode.TextNode
+        val node = graph.nodes[0] as SceneNode.ShapeNode
         // Atoms at (50,50), (30,30), (70,30) → avg (50, 36.67)
         assertEquals(50f, node.position.x, 0.5f)
         assertEquals(36.67f, node.position.y, 0.5f)
@@ -192,10 +210,11 @@ class PipelineTest {
         val content = MoleculeContent(
             moleculeType = MoleculeType.SIMPLE,
             atoms = emptyList(),
-            name = "Empty"
+            name = "Empty",
+            confidence = 0.9f
         )
         val graph = pipeline.buildSceneGraph(listOf(content))
-        val node = graph.nodes[0] as SceneNode.TextNode
+        val node = graph.nodes[0] as SceneNode.ShapeNode
         assertEquals(100f, node.position.x, 0.5f)
         assertEquals(100f, node.position.y, 0.5f)
     }
@@ -205,8 +224,9 @@ class PipelineTest {
         val pipeline = Pipeline()
         val items = listOf(TestFixtures.moleculeContent(name = ""))
         val graph = pipeline.buildSceneGraph(items)
-        val node = graph.nodes[0] as SceneNode.TextNode
-        assertEquals("Molecule", node.text)
+        val node = graph.nodes[0] as SceneNode.ShapeNode
+        assertEquals(ShapeType.POLYGON, node.shapeType)
+        assertTrue(node.position.x > 0f, "Molecule node x should be > 0")
     }
 
     // --- buildSceneGraph: edge generation ---
@@ -276,7 +296,7 @@ class PipelineTest {
         val pipeline = Pipeline()
         val items = listOf(
             TestFixtures.moleculeContent(),
-            ShapeContent(ShapeType.CIRCLE, 100f, 35f)
+            ShapeContent(ShapeType.CIRCLE, 100f, 35f, confidence = 0.9f)
         )
         val graph = pipeline.buildSceneGraph(items)
         val semanticEdges = graph.edges.filter { it.edgeType == EdgeType.SEMANTIC }
@@ -365,7 +385,7 @@ class PipelineTest {
     @Test
     fun genericContentCreatesTextNode() {
         val pipeline = Pipeline()
-        val items = listOf(TableContent(3, 4, listOf(listOf("a"))))
+        val items = listOf(TableContent(3, 4, listOf(listOf("a")), confidence = 0.9f))
         val graph = pipeline.buildSceneGraph(items)
         assertEquals(1, graph.nodes.size)
         assertTrue(graph.nodes[0] is SceneNode.TextNode)

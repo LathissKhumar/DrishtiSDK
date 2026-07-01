@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.molecule
 
 import io.drishti.core.*
@@ -25,14 +41,14 @@ import io.drishti.core.*
  * @param detector The molecule detector (injected for testability)
  * @param renderer The molecule renderer
  */
-class MoleculePlugin(
+public class MoleculePlugin(
     private val detector: MoleculeDetector = MoleculeDetector(),
     private val renderer: MoleculeRenderer = MoleculeRenderer()
 ) : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputRenderer {
 
-    override val name = "molecule"
-    override val contentType = ContentType.MOLECULE
-    override val confidence = detector.confidence
+    override val name: String = "molecule"
+    override val contentType: ContentType = ContentType.MOLECULE
+    override val confidence: Float = detector.confidence
 
     /**
      * Detect molecule from a text input string.
@@ -44,7 +60,7 @@ class MoleculePlugin(
      * @param input Text description of the molecule
      * @return [MoleculeContent] with real PubChem data, or `null`
      */
-    suspend fun detectMolecule(input: String): MoleculeContent? = detector.detectFromText(input)
+    public suspend fun detectMolecule(input: String): MoleculeContent? = detector.detectFromText(input)
 
     /**
      * Detect molecule from text, returning rich [MoleculeData].
@@ -55,7 +71,7 @@ class MoleculePlugin(
      * @param input Text description of the molecule
      * @return [MoleculeData] with full PubChem data, or `null`
      */
-    suspend fun detectMoleculeData(input: String): MoleculeData? = detector.detectMoleculeData(input)
+    public suspend fun detectMoleculeData(input: String): MoleculeData? = detector.detectMoleculeData(input)
 
     // -- DetectorPlugin (legacy frame-based) --
 
@@ -74,7 +90,7 @@ class MoleculePlugin(
      * @param focusIndex Index of the focused item
      * @param moleculeData Optional PubChem data for enhanced haptic rendering
      */
-    fun renderHaptic(items: List<ContentItem>, focusIndex: Int, moleculeData: MoleculeData?): HapticOutput {
+    public fun renderHaptic(items: List<ContentItem>, focusIndex: Int, moleculeData: MoleculeData?): HapticOutput {
         val hasMolecule = items.any { it is MoleculeContent }
         if (!hasMolecule) {
             return HapticOutput(pulses = emptyList(), pattern = "empty")
@@ -105,7 +121,7 @@ class MoleculePlugin(
      * @param focusIndex Index of the focused item
      * @param moleculeData Optional PubChem data for enhanced audio rendering
      */
-    fun renderAudio(items: List<ContentItem>, focusIndex: Int, moleculeData: MoleculeData?): AudioOutput {
+    public fun renderAudio(items: List<ContentItem>, focusIndex: Int, moleculeData: MoleculeData?): AudioOutput {
         val sources = items.mapIndexedNotNull { index, item ->
             if (item !is MoleculeContent) return@mapIndexedNotNull null
             if (focusIndex in items.indices && index != focusIndex) return@mapIndexedNotNull null
@@ -129,7 +145,7 @@ class MoleculePlugin(
      * @param focusIndex Index of the focused item
      * @param moleculeData Optional PubChem data for enhanced voice description
      */
-    fun renderVoice(items: List<ContentItem>, focusIndex: Int, moleculeData: MoleculeData?): VoiceOutput {
+    public fun renderVoice(items: List<ContentItem>, focusIndex: Int, moleculeData: MoleculeData?): VoiceOutput {
         val moleculeItems = items.filterIsInstance<MoleculeContent>()
         if (moleculeItems.isEmpty()) {
             return VoiceOutput(
@@ -172,8 +188,8 @@ class MoleculePlugin(
             is MoleculeContent -> {
                 val idx = if (elementIndex >= 0) elementIndex else {
                     when (direction) {
-                        ExplorationDirection.NEXT -> item.atoms.size - 1
-                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.NEXT -> 0
+                        ExplorationDirection.PREVIOUS -> item.atoms.size - 1
                         ExplorationDirection.POSITION -> 0
                     }
                 }
@@ -199,8 +215,8 @@ class MoleculePlugin(
             is MoleculeContent -> {
                 val idx = if (elementIndex >= 0) elementIndex else {
                     when (direction) {
-                        ExplorationDirection.NEXT -> item.atoms.size - 1
-                        ExplorationDirection.PREVIOUS -> 0
+                        ExplorationDirection.NEXT -> 0
+                        ExplorationDirection.PREVIOUS -> item.atoms.size - 1
                         ExplorationDirection.POSITION -> 0
                     }
                 }
@@ -225,8 +241,8 @@ class MoleculePlugin(
         is MoleculeContent -> {
             val idx = if (elementIndex >= 0) elementIndex else {
                 when (direction) {
-                    ExplorationDirection.NEXT -> item.atoms.size - 1
-                    ExplorationDirection.PREVIOUS -> 0
+                    ExplorationDirection.NEXT -> 0
+                    ExplorationDirection.PREVIOUS -> item.atoms.size - 1
                     ExplorationDirection.POSITION -> 0
                 }
             }

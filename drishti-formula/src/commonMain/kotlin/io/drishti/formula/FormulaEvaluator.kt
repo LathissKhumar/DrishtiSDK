@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.formula
 
 /**
@@ -7,19 +23,19 @@ package io.drishti.formula
  * Returns `null` when the expression contains unbound variables or is otherwise
  * non-evaluable.
  */
-object FormulaEvaluator {
+public object FormulaEvaluator {
 
-    fun evaluate(ast: FormulaNode, variables: Map<String, Double> = emptyMap()): Double? {
+    public fun evaluate(ast: FormulaNode, variables: Map<String, Double> = emptyMap()): Double? {
         val expr = toMxparserExpression(ast) ?: return null
         return try {
             val result = MxparserBridge.evaluate(expr, variables)
-            if (result.isNaN()) null else result
+            if (result.isNaN() || result.isInfinite()) null else result
         } catch (_: Exception) {
             null
         }
     }
 
-    fun toMxparserExpression(ast: FormulaNode): String? {
+    public fun toMxparserExpression(ast: FormulaNode): String? {
         return when (ast) {
             is FormulaNode.Number -> ast.value
             is FormulaNode.Variable -> ast.name
@@ -133,7 +149,7 @@ object FormulaEvaluator {
         }
     }
 
-    fun collectVariables(ast: FormulaNode): Set<String> {
+    public fun collectVariables(ast: FormulaNode): Set<String> {
         return when (ast) {
             is FormulaNode.Number -> emptySet()
             is FormulaNode.Variable -> setOf(ast.name)

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.formula
 
 import io.drishti.core.SymbolType
@@ -9,44 +25,44 @@ import io.drishti.core.SymbolType
  * The tree structure enables traversal for haptic mapping, audio density calculation,
  * and accessible speech generation.
  */
-sealed class FormulaNode {
+public sealed class FormulaNode {
 
     /** Numeric literal: `42`, `3.14`. */
-    data class Number(val value: String) : FormulaNode()
+    public data class Number(val value: String) : FormulaNode()
 
     /** Single-letter variable: `x`, `y`, `t`. */
-    data class Variable(val name: String) : FormulaNode()
+    public data class Variable(val name: String) : FormulaNode()
 
     /** Named symbol: Greek letters, operators, constants. */
-    data class NamedSymbol(val name: String, val symbolType: SymbolType) : FormulaNode()
+    public data class NamedSymbol(val name: String, val symbolType: SymbolType) : FormulaNode()
 
     /** Binary operation: `+`, `-`, `*`, `/`, `=`, `<`, `>`. */
-    data class BinaryOp(
+    public data class BinaryOp(
         val operator: String,
         val left: FormulaNode,
         val right: FormulaNode
     ) : FormulaNode()
 
     /** Unary minus: `-x`. */
-    data class UnaryMinus(val operand: FormulaNode) : FormulaNode()
+    public data class UnaryMinus(val operand: FormulaNode) : FormulaNode()
 
     /** Function call: `\sin(x)`, `\cos(\theta)`. */
-    data class FunctionCall(val name: String, val argument: FormulaNode) : FormulaNode()
+    public data class FunctionCall(val name: String, val argument: FormulaNode) : FormulaNode()
 
     /** Fraction: `\frac{numerator}{denominator}`. */
-    data class Fraction(val numerator: FormulaNode, val denominator: FormulaNode) : FormulaNode()
+    public data class Fraction(val numerator: FormulaNode, val denominator: FormulaNode) : FormulaNode()
 
     /** Square root: `\sqrt{x}`, `\sqrt[n]{x}`. */
-    data class SquareRoot(val content: FormulaNode, val index: FormulaNode? = null) : FormulaNode()
+    public data class SquareRoot(val content: FormulaNode, val index: FormulaNode? = null) : FormulaNode()
 
     /** Power / superscript: `x^{exponent}`. */
-    data class Power(val base: FormulaNode, val exponent: FormulaNode) : FormulaNode()
+    public data class Power(val base: FormulaNode, val exponent: FormulaNode) : FormulaNode()
 
     /** Subscript: `x_{index}`. */
-    data class Subscript(val base: FormulaNode, val index: FormulaNode) : FormulaNode()
+    public data class Subscript(val base: FormulaNode, val index: FormulaNode) : FormulaNode()
 
     /** Definite integral: `\int_{lower}^{upper} integrand d[var]`. */
-    data class Integral(
+    public data class Integral(
         val lower: FormulaNode?,
         val upper: FormulaNode?,
         val integrand: FormulaNode,
@@ -54,56 +70,56 @@ sealed class FormulaNode {
     ) : FormulaNode()
 
     /** Summation: `\sum_{lower}^{upper} term`. */
-    data class Summation(
+    public data class Summation(
         val lower: FormulaNode?,
         val upper: FormulaNode?,
         val term: FormulaNode
     ) : FormulaNode()
 
     /** Limit: `\lim_{variable \to target} body`. */
-    data class Limit(
+    public data class Limit(
         val variable: FormulaNode,
         val target: FormulaNode,
         val body: FormulaNode
     ) : FormulaNode()
 
     /** Parenthesised / braced group of expressions. */
-    data class Group(val children: List<FormulaNode>) : FormulaNode()
+    public data class Group(val children: List<FormulaNode>) : FormulaNode()
 
     /** Absolute value: `|x|`. */
-    data class AbsoluteValue(val content: FormulaNode) : FormulaNode()
+    public data class AbsoluteValue(val content: FormulaNode) : FormulaNode()
 
     /** Matrix: `\begin{matrix} ... \end{matrix}`. */
-    data class Matrix(
+    public data class Matrix(
         val rows: Int,
         val columns: Int,
         val entries: List<List<FormulaNode>>
     ) : FormulaNode()
 
     /** Binomial coefficient: `\binom{n}{k}`. */
-    data class Binomial(
+    public data class Binomial(
         val n: FormulaNode,
         val k: FormulaNode
     ) : FormulaNode()
 
     /** Product: `\prod_{lower}^{upper} term`. */
-    data class Product(
+    public data class Product(
         val lower: FormulaNode? = null,
         val upper: FormulaNode? = null,
         val term: FormulaNode
     ) : FormulaNode()
 
     /** Accent decoration: `\hat{x}`, `\tilde{x}`, `\bar{x}`, etc. */
-    data class Accent(
+    public data class Accent(
         val type: AccentType,
         val content: FormulaNode
     ) : FormulaNode()
 
     /** Types of accent decorations. */
-    enum class AccentType { HAT, TILDE, BAR, DOT, DOTDOT, VEC, OVERLINE, UNDERLINE }
+    public enum class AccentType { HAT, TILDE, BAR, DOT, DOTDOT, VEC, OVERLINE, UNDERLINE }
 
     /** Cases / piecewise: `\begin{cases} ... \end{cases}`. */
-    data class Cases(
+    public data class Cases(
         val branches: List<Pair<FormulaNode, FormulaNode>>
     ) : FormulaNode()
 }
@@ -111,7 +127,7 @@ sealed class FormulaNode {
 /**
  * Depth of the AST (longest root-to-leaf path).
  */
-fun FormulaNode.depth(): Int = when (this) {
+public fun FormulaNode.depth(): Int = when (this) {
     is FormulaNode.Number -> 1
     is FormulaNode.Variable -> 1
     is FormulaNode.NamedSymbol -> 1
@@ -146,7 +162,7 @@ fun FormulaNode.depth(): Int = when (this) {
 /**
  * Count all leaf (terminal) nodes.
  */
-fun FormulaNode.leafCount(): Int = when (this) {
+public fun FormulaNode.leafCount(): Int = when (this) {
     is FormulaNode.Number -> 1
     is FormulaNode.Variable -> 1
     is FormulaNode.NamedSymbol -> 1
@@ -174,7 +190,7 @@ fun FormulaNode.leafCount(): Int = when (this) {
 /**
  * Visit all nodes in the AST recursively, passing coordinates.
  */
-fun FormulaNode.visit(x: Float, y: Float, action: (node: FormulaNode, x: Float, y: Float) -> Unit) {
+public fun FormulaNode.visit(x: Float, y: Float, action: (node: FormulaNode, x: Float, y: Float) -> Unit) {
     action(this, x, y)
     when (this) {
         is FormulaNode.BinaryOp -> {

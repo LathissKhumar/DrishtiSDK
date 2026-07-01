@@ -4,6 +4,13 @@ plugins {
 }
 
 kotlin {
+    explicitApi()
+
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     androidTarget {
         compilations.all {
             kotlinOptions {

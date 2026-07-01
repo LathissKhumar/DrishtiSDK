@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.audio
 
 import io.drishti.core.*
@@ -17,7 +33,7 @@ import io.drishti.core.*
  * - [SPEECH] – text labels, formulas, and descriptions
  * - [AMBIENT] – background references, axes, and structural elements
  */
-enum class SoundType {
+public enum class SoundType {
     MUSICAL_TONE,
     SPEECH,
     AMBIENT
@@ -33,7 +49,7 @@ enum class SoundType {
  * @param distance Distance from listener in meters (0.1 to 10.0).
  *        Closer = louder, used with distance attenuation model.
  */
-data class SpatialPosition(
+public data class SpatialPosition(
     val azimuth: Float,
     val elevation: Float,
     val distance: Float
@@ -58,7 +74,7 @@ data class SpatialPosition(
  * @param speechText Text to synthesize via TTS if [soundType] is [SoundType.SPEECH].
  * @param nodeId Source SceneGraph node id for tracking.
  */
-data class SpatialAudioSource(
+public data class SpatialAudioSource(
     val position: SpatialPosition,
     val volume: Float,
     val soundType: SoundType,
@@ -77,7 +93,7 @@ data class SpatialAudioSource(
  * @param sourceNodeId The SceneGraph node this description relates to.
  * @param position Where to place the speech source in 3D space.
  */
-data class SpeechDescription(
+public data class SpeechDescription(
     val text: String,
     val sourceNodeId: String,
     val position: SpatialPosition
@@ -94,23 +110,22 @@ data class SpeechDescription(
  * @param speechDescriptions Speech descriptions for content elements.
  * @param sceneBounds The spatial bounds of the audio scene.
  */
-data class SpatialAudioScene(
+public data class SpatialAudioScene(
     val sources: List<SpatialAudioSource>,
     val speechDescriptions: List<SpeechDescription>,
     val sceneBounds: SceneBounds
 )
 
-/** Minimum distance from listener (meters). */
-const val MIN_DISTANCE = 0.1f
+public const val MIN_DISTANCE: Float = 0.1f
 
 /** Maximum distance from listener (meters). */
-const val MAX_DISTANCE = 10.0f
+public const val MAX_DISTANCE: Float = 10.0f
 
 /** Default reference distance for inverse-distance volume model. */
-const val REFERENCE_DISTANCE = 1.0f
+public const val REFERENCE_DISTANCE: Float = 1.0f
 
 /** Maximum frequency for musical tone mapping (Hz). */
-const val MAX_FREQUENCY = 1000f
+public const val MAX_FREQUENCY: Float = 1000f
 
 /** Minimum frequency for musical tone mapping (Hz). */
-const val MIN_FREQUENCY = 200f
+public const val MIN_FREQUENCY: Float = 200f

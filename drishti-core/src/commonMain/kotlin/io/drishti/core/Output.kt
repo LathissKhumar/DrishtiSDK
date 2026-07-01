@@ -1,15 +1,31 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class HapticOutput(
+public data class HapticOutput(
     val pulses: List<HapticPulse>,
     val pattern: String = ""
 )
 
 @Serializable
-data class HapticPulse(
+public data class HapticPulse(
     val intensity: Float, // 0.0f - 1.0f
     val duration: Long,   // milliseconds
     val x: Float = 0.5f,
@@ -26,13 +42,13 @@ data class HapticPulse(
 }
 
 @Serializable
-data class AudioOutput(
+public data class AudioOutput(
     val sources: List<AudioSource>,
     val spatial: Boolean = true
 )
 
 @Serializable
-data class AudioSource(
+public data class AudioSource(
     val frequency: Float,
     val amplitude: Float,
     val spatialX: Float = 0.5f,
@@ -49,13 +65,13 @@ data class AudioSource(
 }
 
 @Serializable
-data class VoiceOutput(
+public data class VoiceOutput(
     val speech: SpeechSegment,
     val language: String = "en-US"
 )
 
 @Serializable
-data class SpeechSegment(
+public data class SpeechSegment(
     val text: String,
     val rate: Float = 1.0f,
     val pitch: Float = 1.0f
@@ -67,6 +83,6 @@ data class SpeechSegment(
 }
 
 @Serializable
-data class TextOutput(
+public data class TextOutput(
     val text: String
 )

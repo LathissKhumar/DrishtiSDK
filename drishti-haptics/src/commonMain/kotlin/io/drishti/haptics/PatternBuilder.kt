@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.haptics
 
 import io.drishti.core.ContentType
@@ -17,7 +33,7 @@ import io.drishti.core.ContentType
  * - SPIN → rotating vibration
  * - THUD → heavy, low-frequency impact
  */
-enum class HapticPrimitiveType {
+public enum class HapticPrimitiveType {
     CLICK,
     TICK,
     LOW_TICK,
@@ -42,7 +58,7 @@ enum class HapticPrimitiveType {
  * @param duration Duration in milliseconds
  * @param delay Delay before this primitive in milliseconds
  */
-data class HapticPrimitive(
+public data class HapticPrimitive(
     val type: HapticPrimitiveType,
     val intensity: Float,
     val frequency: Float,
@@ -57,7 +73,7 @@ data class HapticPrimitive(
  * @param duration Total pattern duration in milliseconds
  * @param primitives Ordered list of haptic primitives
  */
-data class HapticPattern(
+public data class HapticPattern(
     val id: String,
     val duration: Long,
     val primitives: List<HapticPrimitive>
@@ -86,7 +102,7 @@ data class HapticPattern(
  * val patternId = builder.buildPattern(itemCount = 3, focusIndex = 1)
  * ```
  */
-class PatternBuilder private constructor(
+public class PatternBuilder private constructor(
     private val contentType: ContentType?
 ) {
     /**
@@ -107,16 +123,16 @@ class PatternBuilder private constructor(
     /**
      * Create a PatternBuilder with no content type (legacy mode).
      */
-    constructor() : this(contentType = null)
+    public constructor() : this(contentType = null)
 
-    companion object {
+    public companion object {
         /**
          * Create a PatternBuilder for a specific content type.
          *
          * @param contentType The content type this pattern will represent
          * @return A new PatternBuilder configured for the content type
          */
-        fun forContentType(contentType: ContentType): PatternBuilder {
+        public fun forContentType(contentType: ContentType): PatternBuilder {
             return PatternBuilder(contentType = contentType)
         }
     }
@@ -128,7 +144,7 @@ class PatternBuilder private constructor(
      *
      * @return This builder for chaining
      */
-    fun addItem(): PatternBuilder {
+    public fun addItem(): PatternBuilder {
         itemCount++
         return this
     }
@@ -139,7 +155,7 @@ class PatternBuilder private constructor(
      * @param index The index of the focused item
      * @return This builder for chaining
      */
-    fun setFocus(index: Int): PatternBuilder {
+    public fun setFocus(index: Int): PatternBuilder {
         focusIndex = index
         return this
     }
@@ -154,7 +170,7 @@ class PatternBuilder private constructor(
      * @param delay Delay before this primitive in milliseconds, defaults to 0
      * @return This builder for chaining
      */
-    fun addPrimitive(
+    public fun addPrimitive(
         type: HapticPrimitiveType,
         intensity: Float = 0.5f,
         frequency: Float = 100f,
@@ -179,7 +195,7 @@ class PatternBuilder private constructor(
      * @return A complete [HapticPattern] with all accumulated primitives
      * @throws IllegalStateException if no primitives have been added
      */
-    fun build(): HapticPattern {
+    public fun build(): HapticPattern {
         val totalDuration = primitives.sumOf { it.duration + it.delay }
         val hapticPrimitives = primitives.map { p ->
             HapticPrimitive(
@@ -191,11 +207,15 @@ class PatternBuilder private constructor(
             )
         }
         val contentTypeName = contentType?.name?.lowercase() ?: "default"
-        return HapticPattern(
+        val pattern = HapticPattern(
             id = "pattern_${contentTypeName}_${itemCount}_focus_${focusIndex}",
             duration = totalDuration,
             primitives = hapticPrimitives
         )
+        primitives.clear()
+        itemCount = 0
+        focusIndex = 0
+        return pattern
     }
 
     // ── Legacy API (backward compatible) ─────────────────────────────
@@ -210,7 +230,7 @@ class PatternBuilder private constructor(
      * @param focusIndex Index of the focused item
      * @return Pattern identifier string
      */
-    fun buildPattern(itemCount: Int, focusIndex: Int): String {
+    public fun buildPattern(itemCount: Int, focusIndex: Int): String {
         return buildString {
             append("content_${itemCount}_focus_${focusIndex}")
         }
@@ -222,7 +242,7 @@ class PatternBuilder private constructor(
      * @param direction Exploration direction (e.g., "next", "previous")
      * @return Pattern identifier string
      */
-    fun buildExplorationPattern(direction: String): String {
+    public fun buildExplorationPattern(direction: String): String {
         return "exploration_$direction"
     }
 
@@ -232,7 +252,7 @@ class PatternBuilder private constructor(
      * @param type Notification type (e.g., "alert", "warning")
      * @return Pattern identifier string
      */
-    fun buildNotificationPattern(type: String): String {
+    public fun buildNotificationPattern(type: String): String {
         return "notification_$type"
     }
 }

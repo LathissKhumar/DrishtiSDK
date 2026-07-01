@@ -1,7 +1,24 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.voice
 
 import io.drishti.core.FormulaContent
 import io.drishti.core.FormulaType
+import io.drishti.formula.FormulaParseException
 import io.drishti.formula.LatexParser
 import io.drishti.formula.SpeechRuleEngine
 
@@ -27,7 +44,7 @@ import io.drishti.formula.SpeechRuleEngine
  * // "This is an algebraic formula: x plus y equals z"
  * ```
  */
-object FormulaSpeech {
+public object FormulaSpeech {
 
     /**
      * Convert a LaTeX string to MathCAT-style speech text.
@@ -35,11 +52,11 @@ object FormulaSpeech {
      * @param latex LaTeX math expression
      * @return Natural language speech description
      */
-    fun fromLatex(latex: String): String {
+    public fun fromLatex(latex: String): String {
         return try {
             val ast = LatexParser.parse(latex)
             SpeechRuleEngine.toSpeech(ast)
-        } catch (_: Exception) {
+        } catch (_: FormulaParseException) {
             latex
         }
     }
@@ -53,7 +70,7 @@ object FormulaSpeech {
      * @param content Formula content from the vision pipeline
      * @return Complete speech text for TTS playback
      */
-    fun fromContent(content: FormulaContent): String {
+    public fun fromContent(content: FormulaContent): String {
         val typeLabel = describeFormulaType(content.formulaType)
         val expressionSpeech = fromLatex(content.expression)
         return "This is $typeLabel formula: $expressionSpeech"
@@ -67,7 +84,7 @@ object FormulaSpeech {
      * @param content Formula content from the vision pipeline
      * @return Speech text for just the mathematical expression
      */
-    fun expressionOnly(content: FormulaContent): String {
+    public fun expressionOnly(content: FormulaContent): String {
         return fromLatex(content.expression)
     }
 
@@ -80,7 +97,7 @@ object FormulaSpeech {
      * @param symbols Formula symbols sorted by position
      * @return Sequential speech text
      */
-    fun fromSymbols(symbols: List<io.drishti.core.FormulaSymbol>): String {
+    public fun fromSymbols(symbols: List<io.drishti.core.FormulaSymbol>): String {
         if (symbols.isEmpty()) return "empty expression"
         return symbols.joinToString(" ") { symbol ->
             symbolToSpeech(symbol.type.name, symbol.value)

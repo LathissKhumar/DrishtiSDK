@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.audio
 
 import io.drishti.core.*
@@ -17,7 +33,7 @@ import kotlin.math.sqrt
  * Produces [SpatialAudioScene] consumed by the Android Spatializer API (API 32+)
  * via Oboe for low-latency rendering.
  */
-class SpatialRenderer {
+public class SpatialRenderer {
 
     /**
      * Render a [SceneGraph] into a [SpatialAudioScene] with positioned sources
@@ -26,7 +42,7 @@ class SpatialRenderer {
      * @param sceneGraph The scene graph to render.
      * @param focusNodeId Optional node id to highlight with increased volume.
      */
-    fun renderScene(sceneGraph: SceneGraph, focusNodeId: String? = null): SpatialAudioScene {
+    public fun renderScene(sceneGraph: SceneGraph, focusNodeId: String? = null): SpatialAudioScene {
         val volumeByNode = computeVolumeByNode(sceneGraph)
 
         val sources = sceneGraph.nodes.map { node ->
@@ -67,7 +83,7 @@ class SpatialRenderer {
     /**
      * Convert a [SpatialAudioScene] to core [AudioOutput] for backward compatibility.
      */
-    fun toAudioOutput(scene: SpatialAudioScene): AudioOutput {
+    public fun toAudioOutput(scene: SpatialAudioScene): AudioOutput {
         val audioSources = scene.sources.map { source ->
             val cartesian = sphericalToCartesian(source.position)
             val maxRange = MAX_DISTANCE.coerceAtLeast(1f)
@@ -88,7 +104,7 @@ class SpatialRenderer {
     /**
      * Render a [SceneGraph] directly to core [AudioOutput].
      */
-    fun render(sceneGraph: SceneGraph, focusNodeId: String? = null): AudioOutput {
+    public fun render(sceneGraph: SceneGraph, focusNodeId: String? = null): AudioOutput {
         val scene = renderScene(sceneGraph, focusNodeId)
         return toAudioOutput(scene)
     }
@@ -96,7 +112,7 @@ class SpatialRenderer {
     /**
      * Render content items as spatial audio (legacy interface).
      */
-    fun render(items: List<ContentItem>, focusIndex: Int = 0): AudioOutput {
+    public fun render(items: List<ContentItem>, focusIndex: Int = 0): AudioOutput {
         val sceneGraph = buildSceneGraphFromItems(items, focusIndex)
         val focusNodeId = sceneGraph.nodes.getOrNull(focusIndex)?.id
         return render(sceneGraph, focusNodeId)
@@ -105,15 +121,15 @@ class SpatialRenderer {
     /**
      * Render exploration sequence.
      */
-    fun renderExploration(
+    public fun renderExploration(
         item: ContentItem,
         direction: ExplorationDirection,
         elementIndex: Int = -1
     ): AudioOutput {
         val sources = when (item) {
-            is GraphContent -> renderGraphExploration(item, direction)
-            is FormulaContent -> renderFormulaExploration(item, direction)
-            is MoleculeContent -> renderMoleculeExploration(item, direction)
+            is GraphContent -> renderGraphExploration(item, direction, elementIndex)
+            is FormulaContent -> renderFormulaExploration(item, direction, elementIndex)
+            is MoleculeContent -> renderMoleculeExploration(item, direction, elementIndex)
             else -> emptyList()
         }
         return AudioOutput(sources = sources, spatial = true)
@@ -128,7 +144,7 @@ class SpatialRenderer {
      * Y position maps to elevation: center = 0°, top = -90° (above), bottom = +90° (below).
      * Depth maps to distance: depth 0 = MIN_DISTANCE, depth 5+ = MAX_DISTANCE.
      */
-    fun nodeToPosition(node: SceneNode, bounds: SceneBounds): SpatialPosition {
+    public fun nodeToPosition(node: SceneNode, bounds: SceneBounds): SpatialPosition {
         val azimuth = if (bounds.width > 0f) {
             ((node.position.x / bounds.width) * 360f - 180f).coerceIn(-180f, 180f)
         } else {
@@ -158,7 +174,7 @@ class SpatialRenderer {
      * A node's volume is the average weight of all edges connected to it.
      * Nodes with no edges default to full volume (1.0).
      */
-    fun computeVolumeByNode(sceneGraph: SceneGraph): Map<String, Float> {
+    public fun computeVolumeByNode(sceneGraph: SceneGraph): Map<String, Float> {
         return sceneGraph.nodes.associate { node ->
             val incidentEdges = sceneGraph.edgesFor(node.id)
             val volume = if (incidentEdges.isNotEmpty()) {
@@ -180,7 +196,7 @@ class SpatialRenderer {
      * - ShapeNode → AMBIENT (structural reference)
      * - AxisNode → AMBIENT (axis reference tone)
      */
-    fun nodeTypeToSoundType(node: SceneNode): SoundType = when (node) {
+    public fun nodeTypeToSoundType(node: SceneNode): SoundType = when (node) {
         is SceneNode.DataPointNode -> SoundType.MUSICAL_TONE
         is SceneNode.TextNode -> SoundType.SPEECH
         is SceneNode.ShapeNode -> SoundType.AMBIENT
@@ -196,7 +212,7 @@ class SpatialRenderer {
      * TextNode: fixed speech-synthesis range (440 Hz reference).
      * ShapeNode/AxisNode: low ambient drone (150 Hz).
      */
-    fun nodeToFrequency(node: SceneNode): Float = when (node) {
+    public fun nodeToFrequency(node: SceneNode): Float = when (node) {
         is SceneNode.DataPointNode -> {
             // Frequency encodes Y value: higher Y = higher pitch
             MIN_FREQUENCY + (node.y.coerceIn(0f, 100f) / 100f) * (MAX_FREQUENCY - MIN_FREQUENCY)
@@ -215,7 +231,7 @@ class SpatialRenderer {
      * DataPointNode → "data point at X, Y".
      * Other types → empty (no speech generated).
      */
-    fun nodeToSpeechText(node: SceneNode): String = when (node) {
+    public fun nodeToSpeechText(node: SceneNode): String = when (node) {
         is SceneNode.TextNode -> node.text
         is SceneNode.DataPointNode -> "Data point at ${node.x}, ${node.y}"
         else -> ""
@@ -226,14 +242,14 @@ class SpatialRenderer {
     /**
      * Triple of cartesian coordinates for spatial audio rendering.
      */
-    data class Cartesian3D(val x: Float, val y: Float, val z: Float)
+    public data class Cartesian3D(val x: Float, val y: Float, val z: Float)
 
     /**
      * Convert [SpatialPosition] (spherical) to cartesian (x, y, z).
      *
      * Used to produce core [AudioSource] coordinates for backward compatibility.
      */
-    fun sphericalToCartesian(position: SpatialPosition): Cartesian3D {
+    public fun sphericalToCartesian(position: SpatialPosition): Cartesian3D {
         val azimuthRad = Math.toRadians(position.azimuth.toDouble())
         val elevationRad = Math.toRadians(position.elevation.toDouble())
         val x = (position.distance * kotlin.math.cos(elevationRad) * kotlin.math.sin(azimuthRad)).toFloat()
@@ -250,7 +266,7 @@ class SpatialRenderer {
      * Each ContentItem becomes one or more SceneNodes. Edges are created
      * between sequential items (TEMPORAL type) with weight 1.0.
      */
-    fun buildSceneGraphFromItems(items: List<ContentItem>, focusIndex: Int = 0): SceneGraph {
+    public fun buildSceneGraphFromItems(items: List<ContentItem>, focusIndex: Int = 0): SceneGraph {
         val nodes = mutableListOf<SceneNode>()
         var xPosition = 50f
 
@@ -362,99 +378,102 @@ class SpatialRenderer {
 
     // ── Exploration rendering (ContentItem-based) ───────────────────
 
-    private fun renderGraphExploration(graph: GraphContent, direction: ExplorationDirection): List<AudioSource> {
+    private fun renderGraphExploration(graph: GraphContent, direction: ExplorationDirection, elementIndex: Int): List<AudioSource> {
+        val points = graph.dataPoints
+        val currentIndex = elementIndex.coerceIn(-1, points.size - 1)
         return when (direction) {
-            ExplorationDirection.NEXT -> renderNextDataPoint(graph)
-            ExplorationDirection.PREVIOUS -> renderPreviousDataPoint(graph)
+            ExplorationDirection.NEXT -> {
+                val point = points.getOrNull(currentIndex + 1) ?: return emptyList()
+                listOf(
+                    AudioSource(
+                        frequency = mapToFrequency(point.y, graph.axes.y.range),
+                        amplitude = 0.8f,
+                        spatialX = normalizePosition(point.x, graph.axes.x.range),
+                        spatialY = normalizePosition(point.y, graph.axes.y.range),
+                        spatialZ = 0.5f
+                    )
+                )
+            }
+            ExplorationDirection.PREVIOUS -> {
+                if (currentIndex <= 0) return emptyList()
+                val point = points.getOrNull(currentIndex - 1) ?: return emptyList()
+                listOf(
+                    AudioSource(
+                        frequency = mapToFrequency(point.y, graph.axes.y.range),
+                        amplitude = 0.6f,
+                        spatialX = normalizePosition(point.x, graph.axes.x.range),
+                        spatialY = normalizePosition(point.y, graph.axes.y.range),
+                        spatialZ = 0.5f
+                    )
+                )
+            }
             ExplorationDirection.POSITION -> renderCurrentPosition()
         }
     }
 
-    private fun renderFormulaExploration(formula: FormulaContent, direction: ExplorationDirection): List<AudioSource> {
+    private fun renderFormulaExploration(formula: FormulaContent, direction: ExplorationDirection, elementIndex: Int): List<AudioSource> {
+        val symbols = formula.symbols
+        val currentIndex = elementIndex.coerceIn(-1, symbols.size - 1)
         return when (direction) {
-            ExplorationDirection.NEXT -> renderNextSymbol(formula)
-            ExplorationDirection.PREVIOUS -> renderPreviousSymbol(formula)
+            ExplorationDirection.NEXT -> {
+                val symbol = symbols.getOrNull(currentIndex + 1) ?: return emptyList()
+                listOf(
+                    AudioSource(
+                        frequency = symbolFrequency(symbol.type),
+                        amplitude = 0.8f,
+                        spatialX = symbol.position.x,
+                        spatialY = symbol.position.y,
+                        spatialZ = 0.5f
+                    )
+                )
+            }
+            ExplorationDirection.PREVIOUS -> {
+                if (currentIndex <= 0) return emptyList()
+                val symbol = symbols.getOrNull(currentIndex - 1) ?: return emptyList()
+                listOf(
+                    AudioSource(
+                        frequency = symbolFrequency(symbol.type),
+                        amplitude = 0.6f,
+                        spatialX = symbol.position.x,
+                        spatialY = symbol.position.y,
+                        spatialZ = 0.5f
+                    )
+                )
+            }
             ExplorationDirection.POSITION -> renderCurrentPosition()
         }
     }
 
-    private fun renderMoleculeExploration(molecule: MoleculeContent, direction: ExplorationDirection): List<AudioSource> {
+    private fun renderMoleculeExploration(molecule: MoleculeContent, direction: ExplorationDirection, elementIndex: Int): List<AudioSource> {
+        val atoms = molecule.atoms
+        val currentIndex = elementIndex.coerceIn(-1, atoms.size - 1)
         return when (direction) {
-            ExplorationDirection.NEXT -> renderNextAtom(molecule)
-            ExplorationDirection.PREVIOUS -> renderPreviousAtom(molecule)
+            ExplorationDirection.NEXT -> {
+                val atom = atoms.getOrNull(currentIndex + 1) ?: return emptyList()
+                listOf(
+                    AudioSource(
+                        frequency = atomFrequency(atom.element),
+                        amplitude = 0.8f,
+                        spatialX = atom.position.x,
+                        spatialY = atom.position.y,
+                        spatialZ = 0.5f
+                    )
+                )
+            }
+            ExplorationDirection.PREVIOUS -> {
+                if (currentIndex <= 0) return emptyList()
+                val atom = atoms.getOrNull(currentIndex - 1) ?: return emptyList()
+                listOf(
+                    AudioSource(
+                        frequency = atomFrequency(atom.element),
+                        amplitude = 0.6f,
+                        spatialX = atom.position.x,
+                        spatialY = atom.position.y,
+                        spatialZ = 0.5f
+                    )
+                )
+            }
             ExplorationDirection.POSITION -> renderCurrentPosition()
-        }
-    }
-
-    private fun renderNextDataPoint(graph: GraphContent): List<AudioSource> {
-        return graph.dataPoints.takeLast(1).map { point ->
-            AudioSource(
-                frequency = mapToFrequency(point.y, graph.axes.y.range),
-                amplitude = 0.8f,
-                spatialX = normalizePosition(point.x, graph.axes.x.range),
-                spatialY = normalizePosition(point.y, graph.axes.y.range),
-                spatialZ = 0.5f
-            )
-        }
-    }
-
-    private fun renderPreviousDataPoint(graph: GraphContent): List<AudioSource> {
-        return graph.dataPoints.take(1).map { point ->
-            AudioSource(
-                frequency = mapToFrequency(point.y, graph.axes.y.range),
-                amplitude = 0.6f,
-                spatialX = normalizePosition(point.x, graph.axes.x.range),
-                spatialY = normalizePosition(point.y, graph.axes.y.range),
-                spatialZ = 0.5f
-            )
-        }
-    }
-
-    private fun renderNextSymbol(formula: FormulaContent): List<AudioSource> {
-        return formula.symbols.takeLast(1).map { symbol ->
-            AudioSource(
-                frequency = symbolFrequency(symbol.type),
-                amplitude = 0.8f,
-                spatialX = symbol.position.x,
-                spatialY = symbol.position.y,
-                spatialZ = 0.5f
-            )
-        }
-    }
-
-    private fun renderPreviousSymbol(formula: FormulaContent): List<AudioSource> {
-        return formula.symbols.take(1).map { symbol ->
-            AudioSource(
-                frequency = symbolFrequency(symbol.type),
-                amplitude = 0.6f,
-                spatialX = symbol.position.x,
-                spatialY = symbol.position.y,
-                spatialZ = 0.5f
-            )
-        }
-    }
-
-    private fun renderNextAtom(molecule: MoleculeContent): List<AudioSource> {
-        return molecule.atoms.takeLast(1).map { atom ->
-            AudioSource(
-                frequency = atomFrequency(atom.element),
-                amplitude = 0.8f,
-                spatialX = atom.position.x,
-                spatialY = atom.position.y,
-                spatialZ = 0.5f
-            )
-        }
-    }
-
-    private fun renderPreviousAtom(molecule: MoleculeContent): List<AudioSource> {
-        return molecule.atoms.take(1).map { atom ->
-            AudioSource(
-                frequency = atomFrequency(atom.element),
-                amplitude = 0.6f,
-                spatialX = atom.position.x,
-                spatialY = atom.position.y,
-                spatialZ = 0.5f
-            )
         }
     }
 

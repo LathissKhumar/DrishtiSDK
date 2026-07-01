@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.molecule
 
 import io.drishti.core.*
@@ -13,7 +29,7 @@ import io.drishti.core.*
  * - Voice output includes molecular formula, IUPAC name, and weight
  * - Audio frequency range adapts to atom count
  */
-class MoleculeRenderer {
+public class MoleculeRenderer {
 
     /**
      * Render molecule as haptic output.
@@ -24,7 +40,7 @@ class MoleculeRenderer {
      * @param molecule Base molecule content
      * @param data Optional rich PubChem data for enhanced rendering
      */
-    fun renderHaptic(molecule: MoleculeContent, data: MoleculeData? = null): HapticOutput {
+    public fun renderHaptic(molecule: MoleculeContent, data: MoleculeData? = null): HapticOutput {
         val weight = data?.molecularWeight ?: molecule.molecularWeight
         val weightScale = if (weight > 0.0) computeWeightScale(weight) else 1.0f
         val pulses = mutableListOf<HapticPulse>()
@@ -74,7 +90,7 @@ class MoleculeRenderer {
      * @param molecule Base molecule content
      * @param data Optional rich PubChem data for enhanced rendering
      */
-    fun renderAudio(molecule: MoleculeContent, data: MoleculeData? = null): AudioOutput {
+    public fun renderAudio(molecule: MoleculeContent, data: MoleculeData? = null): AudioOutput {
         val atomCount = molecule.atoms.size
         val frequencyShift = computeFrequencyShift(atomCount)
 
@@ -103,7 +119,7 @@ class MoleculeRenderer {
      * @param molecule Base molecule content
      * @param data Optional rich PubChem data for enhanced description
      */
-    fun renderVoice(molecule: MoleculeContent, data: MoleculeData? = null): VoiceOutput {
+    public fun renderVoice(molecule: MoleculeContent, data: MoleculeData? = null): VoiceOutput {
         val description = when {
             data != null -> buildEnhancedVoiceDescription(molecule, data)
             molecule.molecularFormula.isNotEmpty() -> buildString {
@@ -135,7 +151,7 @@ class MoleculeRenderer {
             .coerceIn(MIN_WEIGHT_SCALE, MAX_WEIGHT_SCALE).toFloat()
     }
 
-    companion object {
+    public companion object {
         private const val BASE_WEIGHT_SCALE = 0.5
         private const val WEIGHT_NORMALIZATION_FACTOR = 200.0
         private const val MIN_WEIGHT_SCALE = 0.7

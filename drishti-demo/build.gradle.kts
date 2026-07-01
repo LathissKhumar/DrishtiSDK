@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+    }
+
     androidTarget {
         compilations.all {
             kotlinOptions {

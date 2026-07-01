@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.graph
 
 import io.drishti.core.*
@@ -24,10 +40,10 @@ import io.drishti.core.*
  * val graph = detector.detectFromOcrText(ocrOutput)
  * ```
  */
-class GraphDetector : DetectorPlugin {
+public class GraphDetector : DetectorPlugin {
 
-    override val contentType = ContentType.GRAPH
-    override val confidence = 0.95f
+    override val contentType: ContentType = ContentType.GRAPH
+    override val confidence: Float = 0.95f
 
     private val extractor = DataExtractor()
 
@@ -45,7 +61,8 @@ class GraphDetector : DetectorPlugin {
     override suspend fun detect(frame: Frame): ContentItem? {
         val text = try {
             frame.data?.decodeToString()
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            if (e is kotlinx.coroutines.CancellationException) throw e
             null
         } ?: return null
         if (text.isBlank()) return null
@@ -62,7 +79,7 @@ class GraphDetector : DetectorPlugin {
      * @param json JSON string describing the graph
      * @return Parsed [GraphContent], or null if parsing fails
      */
-    fun detectFromJson(json: String): GraphContent? {
+    public fun detectFromJson(json: String): GraphContent? {
         return try {
             extractor.fromJson(json).graph
         } catch (e: GraphDataException) {
@@ -81,7 +98,7 @@ class GraphDetector : DetectorPlugin {
      * @param title Optional chart title
      * @return Parsed [GraphContent], or null if parsing fails
      */
-    fun detectFromCsv(
+    public fun detectFromCsv(
         csv: String,
         chartType: String? = null,
         title: String = ""
@@ -103,7 +120,7 @@ class GraphDetector : DetectorPlugin {
      * @param points List of (x, y) number pairs
      * @return Parsed [GraphContent]
      */
-    fun detectFromDataPoints(
+    public fun detectFromDataPoints(
         type: String = "line_chart",
         title: String = "",
         xLabel: String = "",
@@ -126,7 +143,7 @@ class GraphDetector : DetectorPlugin {
      * @param title Optional title override
      * @return Parsed [GraphContent], or null if parsing fails
      */
-    fun detectAuto(input: String, title: String = ""): GraphContent? {
+    public fun detectAuto(input: String, title: String = ""): GraphContent? {
         return try {
             extractor.autoDetect(input, title).graph
         } catch (e: GraphDataException) {
@@ -146,7 +163,7 @@ class GraphDetector : DetectorPlugin {
      * @param title Optional title
      * @return Parsed [GraphContent], or null if no graph data can be extracted
      */
-    fun detectFromOcrText(ocrText: String, title: String = ""): GraphContent? {
+    public fun detectFromOcrText(ocrText: String, title: String = ""): GraphContent? {
         val trimmed = ocrText.trim()
         if (trimmed.isEmpty()) return null
 
@@ -184,7 +201,7 @@ class GraphDetector : DetectorPlugin {
      * Useful for advanced usage where callers need access to
      * extraction metadata (warnings, source type).
      */
-    fun dataExtractor(): DataExtractor = extractor
+    public fun dataExtractor(): DataExtractor = extractor
 
     private fun extractNumericPairs(text: String): List<Pair<Number, Number>> {
         val pairs = mutableListOf<Pair<Number, Number>>()

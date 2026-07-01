@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.haptics
 
 import io.drishti.core.EdgeType
@@ -18,7 +34,7 @@ import io.drishti.core.SceneNode
  * Each waveform maps to a distinct vibration character suitable for
  * different types of STEM content relationships.
  */
-enum class HapticWaveform {
+public enum class HapticWaveform {
     /** Steady vibration for spatial proximity connections. */
     PROXIMITY_BUZZ,
     /** Two quick pulses for containment relationships. */
@@ -38,7 +54,7 @@ enum class HapticWaveform {
 /**
  * Classification of a SceneNode for haptic waveform selection.
  */
-enum class NodeHapticType {
+public enum class NodeHapticType {
     DATA_POINT,
     TEXT,
     SHAPE,
@@ -59,7 +75,7 @@ enum class NodeHapticType {
  * @param spatialY Vertical position 0.0-1.0 (top/bottom)
  * @param delay Delay before this event in milliseconds
  */
-data class HapticEventSpec(
+public data class HapticEventSpec(
     val intensity: Float,
     val duration: Long,
     val waveform: HapticWaveform,
@@ -84,14 +100,14 @@ data class HapticEventSpec(
  * @param patternName Human-readable pattern identifier
  * @param sourceNodeId Optional SceneGraph node ID this pattern was generated from
  */
-data class HapticPatternDefinition(
+public data class HapticPatternDefinition(
     val events: List<HapticEventSpec>,
     val totalDuration: Long,
     val patternName: String,
     val sourceNodeId: String? = null
 ) {
-    companion object {
-        fun empty(): HapticPatternDefinition = HapticPatternDefinition(
+    public companion object {
+        public fun empty(): HapticPatternDefinition = HapticPatternDefinition(
             events = emptyList(),
             totalDuration = 0L,
             patternName = "empty"
@@ -105,14 +121,13 @@ data class HapticPatternDefinition(
  * Maps from normalized 0.0-1.0 float values to Android integer amplitudes
  * used by VibrationEffect.createOneShot() and VibrationEffect.createWaveform().
  */
-object HapticAmplitudeRange {
-    /** Minimum perceptible amplitude for VibrationEffect (API 30+). */
-    const val MIN = 1
+public object HapticAmplitudeRange {
+    public const val MIN: Int = 1
     /** Maximum amplitude for VibrationEffect. */
-    const val MAX = 255
+    public const val MAX: Int = 255
 
     /** Convert normalized intensity (0.0-1.0) to VibrationEffect amplitude (1-255). */
-    fun toAmplitude(intensity: Float): Int =
+    public fun toAmplitude(intensity: Float): Int =
         (MIN + (intensity.coerceIn(0f, 1f) * (MAX - MIN))).toInt().coerceIn(MIN, MAX)
 }
 
@@ -121,21 +136,21 @@ object HapticAmplitudeRange {
  *
  * These are base durations; actual duration is modulated by edge weight.
  */
-object HapticDurationPresets {
+public object HapticDurationPresets {
     /** Base duration for spatial proximity buzzes (ms). */
-    const val SPATIAL_BASE = 40L
+    public const val SPATIAL_BASE: Long = 40L
     /** Base duration for containment double-taps (ms). */
-    const val CONTAIN_BASE = 30L
+    public const val CONTAIN_BASE: Long = 30L
     /** Base duration for semantic pulses (ms). */
-    const val SEMANTIC_BASE = 60L
+    public const val SEMANTIC_BASE: Long = 60L
     /** Base duration for label taps (ms). */
-    const val LABEL_BASE = 25L
+    public const val LABEL_BASE: Long = 25L
     /** Base duration for measure connections (ms). */
-    const val MEASURE_BASE = 50L
+    public const val MEASURE_BASE: Long = 50L
     /** Base duration for temporal sequence taps (ms). */
-    const val TEMPORAL_BASE = 35L
+    public const val TEMPORAL_BASE: Long = 35L
     /** Base duration for generic connections (ms). */
-    const val CONNECT_BASE = 45L
+    public const val CONNECT_BASE: Long = 45L
 }
 
 /**
@@ -150,9 +165,9 @@ object HapticDurationPresets {
  * - MEASURES → GRADIENT_SWEEP (ramp for measurement relationships)
  * - TEMPORAL → RAPID_TAP (fast sequence for time ordering)
  */
-object EdgeWaveformMapper {
+public object EdgeWaveformMapper {
     /** Map EdgeType to the appropriate HapticWaveform. */
-    fun mapWaveform(edgeType: EdgeType): HapticWaveform = when (edgeType) {
+    public fun mapWaveform(edgeType: EdgeType): HapticWaveform = when (edgeType) {
         EdgeType.SPATIAL -> HapticWaveform.PROXIMITY_BUZZ
         EdgeType.CONTAINS -> HapticWaveform.DOUBLE_TAP
         EdgeType.SEMANTIC -> HapticWaveform.PULSE
@@ -163,7 +178,7 @@ object EdgeWaveformMapper {
     }
 
     /** Map EdgeType to base duration in milliseconds. */
-    fun mapBaseDuration(edgeType: EdgeType): Long = when (edgeType) {
+    public fun mapBaseDuration(edgeType: EdgeType): Long = when (edgeType) {
         EdgeType.SPATIAL -> HapticDurationPresets.SPATIAL_BASE
         EdgeType.CONTAINS -> HapticDurationPresets.CONTAIN_BASE
         EdgeType.SEMANTIC -> HapticDurationPresets.SEMANTIC_BASE
@@ -185,9 +200,9 @@ object EdgeWaveformMapper {
  *
  * Node depth modulates frequency: deeper nodes produce shorter, faster pulses.
  */
-object NodeWaveformMapper {
+public object NodeWaveformMapper {
     /** Classify a SceneNode into its haptic type. */
-    fun classifyNode(node: SceneNode): NodeHapticType = when (node) {
+    public fun classifyNode(node: SceneNode): NodeHapticType = when (node) {
         is SceneNode.DataPointNode -> NodeHapticType.DATA_POINT
         is SceneNode.TextNode -> NodeHapticType.TEXT
         is SceneNode.ShapeNode -> NodeHapticType.SHAPE
@@ -195,7 +210,7 @@ object NodeWaveformMapper {
     }
 
     /** Map NodeHapticType to a base duration for the node's haptic pulse. */
-    fun mapBaseDuration(type: NodeHapticType): Long = when (type) {
+    public fun mapBaseDuration(type: NodeHapticType): Long = when (type) {
         NodeHapticType.DATA_POINT -> 70L
         NodeHapticType.TEXT -> 40L
         NodeHapticType.SHAPE -> 60L
@@ -204,7 +219,7 @@ object NodeWaveformMapper {
     }
 
     /** Map NodeHapticType to an intensity modifier (multiplied with base intensity). */
-    fun mapIntensityModifier(type: NodeHapticType): Float = when (type) {
+    public fun mapIntensityModifier(type: NodeHapticType): Float = when (type) {
         NodeHapticType.DATA_POINT -> 0.9f
         NodeHapticType.TEXT -> 0.6f
         NodeHapticType.SHAPE -> 0.75f
@@ -220,7 +235,7 @@ object NodeWaveformMapper {
      * - depth 2: 0.5x
      * - depth 3+: 0.3x
      */
-    fun depthFrequencyModifier(depth: Int): Float = when {
+    public fun depthFrequencyModifier(depth: Int): Float = when {
         depth <= 0 -> 1.0f
         depth == 1 -> 0.7f
         depth == 2 -> 0.5f
@@ -228,7 +243,7 @@ object NodeWaveformMapper {
     }
 
     /** Map NodeHapticType to a HapticWaveform for pattern definitions. */
-    fun mapWaveform(type: NodeHapticType): HapticWaveform = when (type) {
+    public fun mapWaveform(type: NodeHapticType): HapticWaveform = when (type) {
         NodeHapticType.DATA_POINT -> HapticWaveform.SHARP_CLICK
         NodeHapticType.TEXT -> HapticWaveform.SOFT_RUB
         NodeHapticType.SHAPE -> HapticWaveform.PULSE

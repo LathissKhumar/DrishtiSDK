@@ -1,6 +1,23 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.vision
 
 import io.drishti.core.Frame
+import io.drishti.core.FrameFormat
 import io.drishti.core.Point
 import io.drishti.core.BoundingBox
 import kotlin.math.abs
@@ -18,7 +35,7 @@ import kotlin.math.sqrt
  * Concrete Android implementations can replace this with OpenCV-backed
  * processing for higher accuracy and lower latency.
  */
-class FeatureExtractor {
+public class FeatureExtractor {
 
     // --- Edge-detection thresholds ---
 
@@ -44,11 +61,16 @@ class FeatureExtractor {
      * @return Detected [Contour] objects, each defined by a polygon and area.
      *         Returns an empty list when [Frame.data] is null or too small.
      */
-    fun extractContours(frame: Frame): List<Contour> {
+    public fun extractContours(frame: Frame): List<Contour> {
         val data = frame.data ?: return emptyList()
-        if (data.size < frame.width * frame.height * 3) return emptyList()
+        val bytesPerPixel = when (frame.format) {
+            FrameFormat.YUV_420_888 -> 1
+            FrameFormat.GRAYSCALE -> 1
+            else -> 3
+        }
+        if (data.size < frame.width * frame.height * bytesPerPixel) return emptyList()
 
-        val gray = toGrayscale(data, frame.width, frame.height)
+        val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
         return groupContours(edges, frame.width, frame.height)
     }
@@ -62,11 +84,16 @@ class FeatureExtractor {
      *
      * @return Detected [Line] objects using gradient-based line detection.
      */
-    fun extractLines(frame: Frame): List<Line> {
+    public fun extractLines(frame: Frame): List<Line> {
         val data = frame.data ?: return emptyList()
-        if (data.size < frame.width * frame.height * 3) return emptyList()
+        val bytesPerPixel = when (frame.format) {
+            FrameFormat.YUV_420_888 -> 1
+            FrameFormat.GRAYSCALE -> 1
+            else -> 3
+        }
+        if (data.size < frame.width * frame.height * bytesPerPixel) return emptyList()
 
-        val gray = toGrayscale(data, frame.width, frame.height)
+        val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
         return findLines(edges, frame.width, frame.height)
     }
@@ -82,11 +109,16 @@ class FeatureExtractor {
      *         placeholder OCR text (actual OCR requires platform-specific
      *         ML Kit or Tesseract integration).
      */
-    fun extractTextRegions(frame: Frame): List<TextRegion> {
+    public fun extractTextRegions(frame: Frame): List<TextRegion> {
         val data = frame.data ?: return emptyList()
-        if (data.size < frame.width * frame.height * 3) return emptyList()
+        val bytesPerPixel = when (frame.format) {
+            FrameFormat.YUV_420_888 -> 1
+            FrameFormat.GRAYSCALE -> 1
+            else -> 3
+        }
+        if (data.size < frame.width * frame.height * bytesPerPixel) return emptyList()
 
-        val gray = toGrayscale(data, frame.width, frame.height)
+        val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
         return findTextRegions(edges, frame.width, frame.height)
     }
@@ -102,11 +134,16 @@ class FeatureExtractor {
      * @return Detected [RegionOfInterest] objects with bounding boxes
      *         and contrast-based confidence scores.
      */
-    fun extractROIs(frame: Frame): List<RegionOfInterest> {
+    public fun extractROIs(frame: Frame): List<RegionOfInterest> {
         val data = frame.data ?: return emptyList()
-        if (data.size < frame.width * frame.height * 3) return emptyList()
+        val bytesPerPixel = when (frame.format) {
+            FrameFormat.YUV_420_888 -> 1
+            FrameFormat.GRAYSCALE -> 1
+            else -> 3
+        }
+        if (data.size < frame.width * frame.height * bytesPerPixel) return emptyList()
 
-        val gray = toGrayscale(data, frame.width, frame.height)
+        val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         return findROIs(gray, frame.width, frame.height)
     }
 
@@ -117,18 +154,29 @@ class FeatureExtractor {
      *
      * Uses standard luminance weights: 0.299R + 0.587G + 0.114B.
      */
-    private fun toGrayscale(data: ByteArray, width: Int, height: Int): IntArray {
+    private fun toGrayscale(data: ByteArray, width: Int, height: Int, format: FrameFormat = FrameFormat.RGB_888): IntArray {
         val gray = IntArray(width * height)
         val pixelCount = width * height
-        for (i in 0 until pixelCount) {
-            val offset = i * 3
-            if (offset + 2 >= data.size) break
-            val r = data[offset].toInt() and 0xFF
-            val g = data[offset + 1].toInt() and 0xFF
-            val b = data[offset + 2].toInt() and 0xFF
-            gray[i] = (0.299f * r + 0.587f * g + 0.114f * b).toInt()
+        return when (format) {
+            FrameFormat.YUV_420_888, FrameFormat.GRAYSCALE -> {
+                for (i in 0 until pixelCount) {
+                    if (i >= data.size) break
+                    gray[i] = data[i].toInt() and 0xFF
+                }
+                gray
+            }
+            else -> {
+                for (i in 0 until pixelCount) {
+                    val offset = i * 3
+                    if (offset + 2 >= data.size) break
+                    val r = data[offset].toInt() and 0xFF
+                    val g = data[offset + 1].toInt() and 0xFF
+                    val b = data[offset + 2].toInt() and 0xFF
+                    gray[i] = (0.299f * r + 0.587f * g + 0.114f * b).toInt()
+                }
+                gray
+            }
         }
-        return gray
     }
 
     // --- Internal: edge detection ---
@@ -488,11 +536,16 @@ class FeatureExtractor {
         return overlapX * overlapY
     }
 
-    fun extractAll(frame: Frame): VisionFeatures {
+    public fun extractAll(frame: Frame): VisionFeatures {
         val data = frame.data ?: return VisionFeatures()
-        if (data.size < frame.width * frame.height * 3) return VisionFeatures()
+        val bytesPerPixel = when (frame.format) {
+            FrameFormat.YUV_420_888 -> 1
+            FrameFormat.GRAYSCALE -> 1
+            else -> 3
+        }
+        if (data.size < frame.width * frame.height * bytesPerPixel) return VisionFeatures()
 
-        val gray = toGrayscale(data, frame.width, frame.height)
+        val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
 
         val contours = groupContours(edges, frame.width, frame.height)
@@ -510,7 +563,7 @@ class FeatureExtractor {
         )
     }
 
-    fun extractShapes(frame: Frame): List<DetectedShape> {
+    public fun extractShapes(frame: Frame): List<DetectedShape> {
         val contours = extractContours(frame)
         return contours.mapNotNull { classifyShape(it) }
     }
@@ -722,7 +775,7 @@ class FeatureExtractor {
         return (baseConfidence + areaBoost).coerceIn(0f, 1f)
     }
 
-    companion object {
+    public companion object {
         /** Sliding window size for ROI detection (pixels). */
         private const val windowSize = 32
 
@@ -737,7 +790,7 @@ class FeatureExtractor {
  * @param points Ordered vertices of the contour polygon.
  * @param area Enclosed area in square pixels.
  */
-data class Contour(val points: List<Point>, val area: Float)
+public data class Contour(val points: List<Point>, val area: Float)
 
 /**
  * A straight line segment detected in a frame.
@@ -746,7 +799,7 @@ data class Contour(val points: List<Point>, val area: Float)
  * @param end End point of the line.
  * @param angle Angle of the line in degrees.
  */
-data class Line(val start: Point, val end: Point, val angle: Float)
+public data class Line(val start: Point, val end: Point, val angle: Float)
 
 /**
  * A rectangular region containing detected text.
@@ -754,7 +807,7 @@ data class Line(val start: Point, val end: Point, val angle: Float)
  * @param boundingBox Bounding rectangle of the text region.
  * @param text Recognized text content (empty until OCR is integrated).
  */
-data class TextRegion(val boundingBox: BoundingBox, val text: String)
+public data class TextRegion(val boundingBox: BoundingBox, val text: String)
 
 /**
  * A rectangular region of interest detected in a frame.
@@ -762,4 +815,4 @@ data class TextRegion(val boundingBox: BoundingBox, val text: String)
  * @param boundingBox Bounding rectangle of the region.
  * @param confidence Detection confidence score between 0.0 and 1.0.
  */
-data class RegionOfInterest(val boundingBox: BoundingBox, val confidence: Float)
+public data class RegionOfInterest(val boundingBox: BoundingBox, val confidence: Float)

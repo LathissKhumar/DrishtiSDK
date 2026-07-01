@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.graph
 
 import io.drishti.core.*
@@ -26,7 +42,7 @@ import kotlinx.serialization.json.*
  * ```
  */
 @Serializable
-data class GraphDataInput(
+public data class GraphDataInput(
     val type: String = "line_chart",
     val title: String = "",
     val x_label: String = "",
@@ -39,7 +55,7 @@ data class GraphDataInput(
  * A single data point in graph input format.
  */
 @Serializable
-data class DataPointInput(
+public data class DataPointInput(
     val x: String,
     val y: String,
     val label: String? = null
@@ -49,7 +65,7 @@ data class DataPointInput(
  * Result of parsing graph data, containing the parsed [GraphContent]
  * along with metadata about the parse operation.
  */
-data class ParseResult(
+public data class ParseResult(
     val graph: GraphContent,
     val warnings: List<String> = emptyList(),
     val inferredType: Boolean = false
@@ -63,7 +79,7 @@ data class ParseResult(
  * result captures both the successfully parsed points and any errors
  * encountered during parsing.
  */
-data class CsvParseResult(
+public data class CsvParseResult(
     val dataPoints: List<DataPoint>,
     val errors: List<String> = emptyList()
 )
@@ -84,7 +100,7 @@ data class CsvParseResult(
  * val graph = result.graph
  * ```
  */
-class GraphDataParser {
+public class GraphDataParser {
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -99,7 +115,7 @@ class GraphDataParser {
      * @return [ParseResult] containing the parsed graph and any warnings
      * @throws GraphDataException if the input is malformed or invalid
      */
-    fun parseJson(input: String): ParseResult {
+    public fun parseJson(input: String): ParseResult {
         val trimmed = input.trim()
         if (trimmed.isEmpty()) {
             throw GraphDataException("Input JSON is empty")
@@ -132,7 +148,7 @@ class GraphDataParser {
      * @return [ParseResult] containing the parsed graph
      * @throws GraphDataException if the CSV is malformed
      */
-    fun parseCsv(
+    public fun parseCsv(
         input: String,
         chartType: String? = null,
         title: String = ""
@@ -203,7 +219,7 @@ class GraphDataParser {
      * @param dataPoints List of x/y pairs with optional labels
      * @return [GraphContent] ready for rendering
      */
-    fun parseDataPoints(
+    public fun parseDataPoints(
         graphType: String = "line_chart",
         title: String = "",
         xLabel: String = "",
@@ -295,8 +311,8 @@ class GraphDataParser {
                     DataPointInput(x = x, y = y, label = label)
                 }
                 elem is JsonArray && elem.size >= 2 -> {
-                    val x = elem[0].jsonPrimitive.contentOrNull ?: ""
-                    val y = elem[1].jsonPrimitive.contentOrNull ?: ""
+                    val x = try { elem[0].jsonPrimitive.contentOrNull ?: "" } catch (_: IllegalArgumentException) { "" }
+                    val y = try { elem[1].jsonPrimitive.contentOrNull ?: "" } catch (_: IllegalArgumentException) { "" }
                     DataPointInput(x = x, y = y)
                 }
                 else -> {
@@ -316,8 +332,8 @@ class GraphDataParser {
 
         val numericDataPoints = mutableListOf<DataPoint>()
         input.data.forEachIndexed { index, dp ->
-            val yFloat = dp.y.toFloatOrNull()
-            if (yFloat == null) {
+            val rawYFloat = dp.y.toFloatOrNull()
+            if (rawYFloat == null || rawYFloat.isNaN() || rawYFloat.isInfinite()) {
                 val errorMsg = "Could not parse y-value '${dp.y}' at row ${index + 1}"
                 if (errors != null) {
                     errors.add(errorMsg)
@@ -326,9 +342,19 @@ class GraphDataParser {
                     throw GraphDataException(errorMsg)
                 }
             }
-            val xFloat = dp.x.toFloatOrNull() ?: index.toFloat()
+            val rawXFloat = dp.x.toFloatOrNull()
+            if (rawXFloat != null && (rawXFloat.isNaN() || rawXFloat.isInfinite())) {
+                val errorMsg = "Invalid x-value '${dp.x}' at row ${index + 1}"
+                if (errors != null) {
+                    errors.add(errorMsg)
+                    return@forEachIndexed
+                } else {
+                    throw GraphDataException(errorMsg)
+                }
+            }
+            val xFloat = rawXFloat ?: index.toFloat()
             val label = dp.label ?: dp.x.toFloatOrNull()?.let { null } ?: dp.x
-            numericDataPoints.add(DataPoint(x = xFloat, y = yFloat, label = label))
+            numericDataPoints.add(DataPoint(x = xFloat, y = rawYFloat, label = label))
         }
 
         val xValues = numericDataPoints.map { it.x }
@@ -354,7 +380,8 @@ class GraphDataParser {
                 y = Axis(label = input.y_label, range = yRange)
             ),
             dataPoints = numericDataPoints,
-            labels = input.labels
+            labels = input.labels,
+            confidence = 1.0f
         )
     }
 
@@ -415,7 +442,7 @@ class GraphDataParser {
 /**
  * Exception thrown when graph data parsing fails.
  */
-class GraphDataException(
+public class GraphDataException(
     message: String,
     cause: Throwable? = null
 ) : IllegalArgumentException(message, cause)

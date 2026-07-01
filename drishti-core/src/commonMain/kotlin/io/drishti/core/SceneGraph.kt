@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
 import kotlinx.serialization.Serializable
@@ -9,7 +25,7 @@ import kotlinx.serialization.Serializable
  * @param height Scene height (vertical extent of all content).
  */
 @Serializable
-data class SceneBounds(val width: Float, val height: Float)
+public data class SceneBounds(val width: Float, val height: Float)
 
 /**
  * Unified semantic representation of visual content.
@@ -24,7 +40,7 @@ data class SceneBounds(val width: Float, val height: Float)
  * @param metadata Optional key-value pairs for rendering hints or debug info.
  */
 @Serializable
-data class SceneGraph(
+public data class SceneGraph(
     val nodes: List<SceneNode>,
     val edges: List<SceneEdge>,
     val bounds: SceneBounds = SceneBounds(0f, 0f),
@@ -42,19 +58,19 @@ data class SceneGraph(
     }
 
     /** Human-readable summary of the scene graph. */
-    fun describe(): String {
+    public fun describe(): String {
         return "Scene with ${nodes.size} nodes and ${edges.size} connections, " +
             "bounds=${bounds.width.toInt()}x${bounds.height.toInt()}"
     }
 
     /** Lookup a node by its unique [id], or null if not found. */
-    fun nodeById(id: String): SceneNode? = nodeIndex[id]
+    public fun nodeById(id: String): SceneNode? = nodeIndex[id]
 
     /** Return all edges incident on the given [nodeId]. */
-    fun edgesFor(nodeId: String): List<SceneEdge> = adjacencyIndex[nodeId] ?: emptyList()
+    public fun edgesFor(nodeId: String): List<SceneEdge> = adjacencyIndex[nodeId] ?: emptyList()
 
     /** Return neighbor node ids for the given [nodeId]. */
-    fun neighbors(nodeId: String): List<String> =
+    public fun neighbors(nodeId: String): List<String> =
         edgesFor(nodeId).map { if (it.sourceId == nodeId) it.targetId else it.sourceId }.distinct()
 }
 
@@ -67,15 +83,15 @@ data class SceneGraph(
  * (0 = top-level, 1 = contained inside another item, etc.).
  */
 @Serializable
-sealed class SceneNode {
-    abstract val id: String
-    abstract val position: Point
+public sealed class SceneNode {
+    public abstract val id: String
+    public abstract val position: Point
 
     /** Nesting depth: 0 for top-level items, 1+ for contained items. */
-    open val depth: Int get() = 0
+    public open val depth: Int get() = 0
 
     @Serializable
-    data class DataPointNode(
+    public data class DataPointNode(
         override val id: String,
         override val position: Point,
         val x: Float,
@@ -84,7 +100,7 @@ sealed class SceneNode {
     ) : SceneNode()
 
     @Serializable
-    data class AxisNode(
+    public data class AxisNode(
         override val id: String,
         override val position: Point,
         val axis: Axis,
@@ -92,7 +108,7 @@ sealed class SceneNode {
     ) : SceneNode()
 
     @Serializable
-    data class TextNode(
+    public data class TextNode(
         override val id: String,
         override val position: Point,
         val text: String,
@@ -100,7 +116,7 @@ sealed class SceneNode {
     ) : SceneNode()
 
     @Serializable
-    data class ShapeNode(
+    public data class ShapeNode(
         override val id: String,
         override val position: Point,
         val shapeType: ShapeType,
@@ -118,7 +134,7 @@ sealed class SceneNode {
  *                Used by renderers to prioritize haptic/audio output.
  */
 @Serializable
-data class SceneEdge(
+public data class SceneEdge(
     val sourceId: String,
     val targetId: String,
     val edgeType: EdgeType,
@@ -137,7 +153,7 @@ data class SceneEdge(
  * - **TEMPORAL** – Detection-order sequence edge.
  */
 @Serializable
-enum class EdgeType {
+public enum class EdgeType {
     CONTAINS,
     CONNECTS,
     LABELS,

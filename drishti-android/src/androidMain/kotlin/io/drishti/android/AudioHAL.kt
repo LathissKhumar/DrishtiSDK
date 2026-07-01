@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.android
 
 import android.content.Context
@@ -18,9 +34,10 @@ import kotlin.math.sin
  *
  * @param context Android context used to obtain system services.
  */
-class AudioHAL(private val context: Context) {
+public class AudioHAL(private val context: Context) {
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val capabilities = AndroidPlatformDetector().detect()
+    @Volatile private var playbackThread: Thread? = null
 
     /**
      * Play a spatial audio source.
@@ -30,15 +47,30 @@ class AudioHAL(private val context: Context) {
      *
      * @param source The audio source to play.
      */
-    fun playSpatial(source: AudioSource) {
-        Thread {
-            when (capabilities.audioLevel) {
-                AudioLevel.SPATIALIZER_OBOE -> playWithSpatializer(source)
-                AudioLevel.SPATIALIZER_BASIC -> playWithSpatializer(source)
-                AudioLevel.STEREO_ONLY -> playStereo(source)
-                AudioLevel.MONO_ONLY -> playMono(source)
+    public fun playSpatial(source: AudioSource) {
+        val thread = Thread {
+            try {
+                when (capabilities.audioLevel) {
+                    AudioLevel.SPATIALIZER_OBOE -> playWithSpatializer(source)
+                    AudioLevel.SPATIALIZER_BASIC -> playWithSpatializer(source)
+                    AudioLevel.STEREO_ONLY -> playStereo(source)
+                    AudioLevel.MONO_ONLY -> playMono(source)
+                }
+            } catch (_: InterruptedException) {
+                Thread.currentThread().interrupt()
             }
-        }.start()
+        }
+        thread.isDaemon = true
+        playbackThread = thread
+        thread.start()
+    }
+
+    /**
+     * Stop playback and release the background thread.
+     */
+    public fun stop() {
+        playbackThread?.interrupt()
+        playbackThread = null
     }
 
     /**
@@ -49,93 +81,21 @@ class AudioHAL(private val context: Context) {
      * finally block.
      */
     private fun playWithSpatializer(source: AudioSource) {
-        val sampleRate = 48000
-        val durationMs = 500L
-
-        val audioAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build()
-
-        val audioFormat = AudioFormat.Builder()
-            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-            .setSampleRate(sampleRate)
-            .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
-            .build()
-
-        val buffer = generateStereoSineBuffer(source.frequency, source.amplitude, sampleRate, durationMs)
-        val audioTrack = AudioTrack.Builder()
-            .setAudioAttributes(audioAttributes)
-            .setAudioFormat(audioFormat)
-            .setBufferSizeInBytes(buffer.size * 2) // 16-bit = 2 bytes per sample
-            .setTransferMode(AudioTrack.MODE_STREAM)
-            .build()
-
-        try {
-            audioTrack.play()
-            val writeThread = Thread {
-                audioTrack.write(buffer, 0, buffer.size)
-            }
-            writeThread.start()
-            writeThread.join(5000) // 5s timeout to avoid indefinite block
-            try { Thread.sleep(durationMs) } catch (_: InterruptedException) { }
-        } finally {
-            try { audioTrack.stop() } catch (_: IllegalStateException) { }
-            audioTrack.release()
-        }
+        val buffer = generateStereoSineBuffer(source.frequency, source.amplitude, 48000, 500L, source.spatialX)
+        playAudioTrack(buffer, 48000, AudioFormat.CHANNEL_OUT_STEREO)
     }
 
-    /**
-     * Play audio in standard stereo mode.
-     *
-     * Stereo fallback when Spatializer is unavailable. Writes PCM
-     * on a background thread and releases in a finally block.
-     */
     private fun playStereo(source: AudioSource) {
-        val sampleRate = 44100
-        val durationMs = 500L
-
-        val audioAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build()
-
-        val audioFormat = AudioFormat.Builder()
-            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-            .setSampleRate(sampleRate)
-            .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
-            .build()
-
-        val buffer = generateStereoSineBuffer(source.frequency, source.amplitude, sampleRate, durationMs)
-        val audioTrack = AudioTrack.Builder()
-            .setAudioAttributes(audioAttributes)
-            .setAudioFormat(audioFormat)
-            .setBufferSizeInBytes(buffer.size * 2)
-            .setTransferMode(AudioTrack.MODE_STREAM)
-            .build()
-
-        try {
-            audioTrack.play()
-            val writeThread = Thread {
-                audioTrack.write(buffer, 0, buffer.size)
-            }
-            writeThread.start()
-            writeThread.join(5000)
-            try { Thread.sleep(durationMs) } catch (_: InterruptedException) { }
-        } finally {
-            try { audioTrack.stop() } catch (_: IllegalStateException) { }
-            audioTrack.release()
-        }
+        val buffer = generateStereoSineBuffer(source.frequency, source.amplitude, 44100, 500L, source.spatialX)
+        playAudioTrack(buffer, 44100, AudioFormat.CHANNEL_OUT_STEREO)
     }
 
-    /**
-     * Play audio in mono fallback mode.
-     *
-     * Mono fallback for the oldest devices. Writes PCM on a
-     * background thread and releases in a finally block.
-     */
     private fun playMono(source: AudioSource) {
-        val sampleRate = 22050
+        val buffer = generateMonoSineBuffer(source.frequency, source.amplitude, 22050, 500L)
+        playAudioTrack(buffer, 22050, AudioFormat.CHANNEL_OUT_MONO)
+    }
+
+    private fun playAudioTrack(buffer: ShortArray, sampleRate: Int, channelMask: Int) {
         val durationMs = 500L
 
         val audioAttributes = AudioAttributes.Builder()
@@ -146,10 +106,9 @@ class AudioHAL(private val context: Context) {
         val audioFormat = AudioFormat.Builder()
             .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
             .setSampleRate(sampleRate)
-            .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+            .setChannelMask(channelMask)
             .build()
 
-        val buffer = generateMonoSineBuffer(source.frequency, source.amplitude, sampleRate, durationMs)
         val audioTrack = AudioTrack.Builder()
             .setAudioAttributes(audioAttributes)
             .setAudioFormat(audioFormat)
@@ -164,7 +123,6 @@ class AudioHAL(private val context: Context) {
             }
             writeThread.start()
             writeThread.join(5000)
-            try { Thread.sleep(durationMs) } catch (_: InterruptedException) { }
         } finally {
             try { audioTrack.stop() } catch (_: IllegalStateException) { }
             audioTrack.release()
@@ -178,17 +136,22 @@ class AudioHAL(private val context: Context) {
         frequency: Float,
         amplitude: Float,
         sampleRate: Int,
-        durationMs: Long
+        durationMs: Long,
+        panning: Float = 0.5f
     ): ShortArray {
         val totalSamples = (sampleRate * durationMs / 1000).toInt()
         val buffer = ShortArray(totalSamples * 2)
         val vol = amplitude.coerceIn(0f, 1f)
+        val leftGain = 1.0f - (panning * 0.5f)
+        val rightGain = 0.5f + (panning * 0.5f)
         for (i in 0 until totalSamples) {
             val t = i.toFloat() / sampleRate
             val value = (vol * 32767 * sin(2.0 * Math.PI * frequency * t)).toInt()
                 .coerceIn(-32768, 32767).toShort()
-            buffer[i * 2] = value
-            buffer[i * 2 + 1] = value
+            val leftValue = (value * leftGain).toInt().coerceIn(-32768, 32767).toShort()
+            val rightValue = (value * rightGain).toInt().coerceIn(-32768, 32767).toShort()
+            buffer[i * 2] = leftValue
+            buffer[i * 2 + 1] = rightValue
         }
         return buffer
     }
@@ -217,12 +180,12 @@ class AudioHAL(private val context: Context) {
     /**
      * Whether the device supports spatial audio output.
      */
-    fun hasSpatialAudioSupport(): Boolean =
+    public fun hasSpatialAudioSupport(): Boolean =
         capabilities.audioLevel == AudioLevel.SPATIALIZER_OBOE ||
         capabilities.audioLevel == AudioLevel.SPATIALIZER_BASIC
 
     /**
      * Get the detected audio capability level.
      */
-    fun getAudioLevel(): AudioLevel = capabilities.audioLevel
+    public fun getAudioLevel(): AudioLevel = capabilities.audioLevel
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.formula
 
 import io.drishti.core.SymbolType
@@ -15,7 +31,7 @@ import io.drishti.core.SymbolType
  * val ast2 = LatexParser.parse("\\int_{0}^{1} x^{2} \\, dx")
  * ```
  */
-object LatexParser {
+public object LatexParser {
 
     private const val MAX_BRACE_DEPTH = 50
     private const val MAX_UNARY_DEPTH = 50
@@ -27,7 +43,7 @@ object LatexParser {
      * @return Root AST node
      * @throws FormulaParseException if the input is empty, malformed, or cannot be parsed
      */
-    fun parse(latex: String): FormulaNode {
+    public fun parse(latex: String): FormulaNode {
         if (latex.isBlank()) {
             throw FormulaParseException("Cannot parse empty or blank LaTeX expression")
         }
@@ -468,7 +484,7 @@ object LatexParser {
                 "infty" -> FormulaNode.NamedSymbol("infty", SymbolType.VARIABLE)
                 "partial" -> FormulaNode.NamedSymbol("partial", SymbolType.VARIABLE)
                 "nabla" -> FormulaNode.NamedSymbol("nabla", SymbolType.VARIABLE)
-                "to", "rightarrow", "leftarrow", "Rightarrow", "Leftarrow",
+                "to", "rightarrow", "leftarrow", "Rightarrow", "Leftarrow", "Leftrightarrow",
                 "cdot", "times", "div",
                 "leq", "geq", "neq", "pm", "mp",
                 "in", "notin", "subset", "supset",
@@ -668,7 +684,7 @@ object LatexParser {
     private val RELATION_COMMANDS = setOf(
         "leq", "geq", "neq",
         "in", "notin", "subset", "supset",
-        "rightarrow", "leftarrow", "Rightarrow", "Leftarrow",
+        "rightarrow", "leftarrow", "Rightarrow", "Leftarrow", "Leftrightarrow",
         "approx", "equiv", "cup", "cap", "neg", "land", "lor", "implies", "iff", "mapsto",
         "lfloor", "rfloor", "lceil", "rceil"
     )

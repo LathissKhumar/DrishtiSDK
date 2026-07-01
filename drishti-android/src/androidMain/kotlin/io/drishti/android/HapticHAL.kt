@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.android
 
 import android.Manifest
@@ -7,6 +23,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import androidx.annotation.RequiresPermission
 import io.drishti.core.HapticPulse
 
@@ -19,7 +36,7 @@ import io.drishti.core.HapticPulse
  *
  * @param context Android context used to obtain system services.
  */
-class HapticHAL(private val context: Context) {
+public class HapticHAL(private val context: Context) {
     private val vibrator: Vibrator? by lazy {
         if (Build.VERSION.SDK_INT >= 31) {
             val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
@@ -41,8 +58,9 @@ class HapticHAL(private val context: Context) {
      * @param pulse The haptic pulse to play.
      */
     @RequiresPermission(Manifest.permission.VIBRATE)
-    fun playPulse(pulse: HapticPulse) {
+    public fun playPulse(pulse: HapticPulse) {
         if (context.checkSelfPermission(Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED) {
+            Log.w("HapticHAL", "VIBRATE permission not granted, skipping haptic playback")
             return
         }
         val effect = when (capabilities.hapticLevel) {
@@ -60,9 +78,10 @@ class HapticHAL(private val context: Context) {
      * @param pulses Ordered list of haptic pulses to play in sequence.
      */
     @RequiresPermission(Manifest.permission.VIBRATE)
-    fun playSequence(pulses: List<HapticPulse>) {
+    public fun playSequence(pulses: List<HapticPulse>) {
         if (pulses.isEmpty()) return
         if (context.checkSelfPermission(Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED) {
+            Log.w("HapticHAL", "VIBRATE permission not granted, skipping haptic sequence")
             return
         }
 
@@ -146,5 +165,5 @@ class HapticHAL(private val context: Context) {
     /**
      * Whether the device supports haptic feedback.
      */
-    fun hasHapticSupport(): Boolean = capabilities.hapticLevel != HapticLevel.NONE
+    public fun hasHapticSupport(): Boolean = capabilities.hapticLevel != HapticLevel.NONE
 }

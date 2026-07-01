@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.android
 
 import io.drishti.core.*
@@ -5,7 +21,7 @@ import io.drishti.core.*
 /**
  * High-level Drishti client for Android.
  */
-class DrishtiClient(
+public class DrishtiClient(
     private val context: android.content.Context,
     private val lifecycleOwner: androidx.lifecycle.LifecycleOwner
 ) {
@@ -14,11 +30,14 @@ class DrishtiClient(
 
     /**
      * Initialize Drishti with plugins.
+     *
+     * If already initialized, stops the previous instance first to prevent resource leaks.
      */
-    fun initialize(
+    public fun initialize(
         detectors: List<DetectorPlugin> = emptyList(),
         renderers: List<RendererPlugin> = emptyList()
     ): DrishtiClient {
+        stop()
         val builder = Drishti.Builder()
         detectors.forEach { builder.addDetector(it) }
         renderers.forEach { builder.addRenderer(it) }
@@ -29,7 +48,7 @@ class DrishtiClient(
     /**
      * Start camera capture.
      */
-    fun startCamera(
+    public fun startCamera(
         previewView: androidx.camera.view.PreviewView? = null,
         onFrame: (Frame) -> Unit = {}
     ): DrishtiClient {
@@ -43,15 +62,16 @@ class DrishtiClient(
     /**
      * Read a single frame.
      */
-    suspend fun read(frame: Frame): DrishtiDiagram? {
+    public suspend fun read(frame: Frame): DrishtiDiagram? {
         return drishti?.readAsync(frame)
     }
 
     /**
-     * Stop camera and cleanup.
+     * Stop camera and cleanup all resources.
      */
-    fun stop() {
+    public fun stop() {
         cameraCapture?.stop()
         cameraCapture = null
+        drishti = null
     }
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.molecule
 
 import io.drishti.core.*
@@ -14,10 +30,10 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
-open class PubChemException(message: String, cause: Throwable? = null) : Exception(message, cause)
-class PubChemCompoundNotFoundException(message: String) : PubChemException(message)
-class PubChemNetworkException(message: String, cause: Throwable? = null) : PubChemException(message, cause)
-class PubChemRateLimitException(message: String) : PubChemException(message)
+public open class PubChemException(message: String, cause: Throwable? = null) : Exception(message, cause)
+public class PubChemCompoundNotFoundException(message: String) : PubChemException(message)
+public class PubChemNetworkException(message: String, cause: Throwable? = null) : PubChemException(message, cause)
+public class PubChemRateLimitException(message: String) : PubChemException(message)
 
 
 /**
@@ -43,7 +59,7 @@ class PubChemRateLimitException(message: String) : PubChemException(message)
  *
  * @see <a href="https://pubchem.ncbi.nlm.nih.gov/rest/pug/">PUG REST API</a>
  */
-class PubChemClient(
+public class PubChemClient(
     private val httpClient: HttpClient,
     private val baseUrl: String = "https://pubchem.ncbi.nlm.nih.gov/rest/pug",
     private val cacheSize: Int = 100
@@ -73,7 +89,7 @@ class PubChemClient(
      * @param name Compound name to search for
      * @return [MoleculeData] if found, `null` otherwise
      */
-    suspend fun fetchByName(name: String): MoleculeData? {
+    public suspend fun fetchByName(name: String): MoleculeData? {
         val cacheKey = "name:${name.lowercase()}"
         return fetchWithCoalescing(cacheKey) {
             val cid = fetchCid("compound/name/${encodePathSegment(name)}/JSON")
@@ -87,7 +103,7 @@ class PubChemClient(
      * @param smiles Canonical or isomeric SMILES representation
      * @return [MoleculeData] if found, `null` otherwise
      */
-    suspend fun fetchBySmiles(smiles: String): MoleculeData? {
+    public suspend fun fetchBySmiles(smiles: String): MoleculeData? {
         val cacheKey = "smiles:$smiles"
         return fetchWithCoalescing(cacheKey) {
             val cid = fetchCid("compound/smiles/${encodePathSegment(smiles)}/JSON")
@@ -101,7 +117,7 @@ class PubChemClient(
      * @param formula Molecular formula (e.g., "C2H6O", "C6H12O6")
      * @return [MoleculeData] if found, `null` otherwise
      */
-    suspend fun fetchByFormula(formula: String): MoleculeData? {
+    public suspend fun fetchByFormula(formula: String): MoleculeData? {
         val cacheKey = "formula:${formula.lowercase()}"
         return fetchWithCoalescing(cacheKey) {
             val cid = fetchCid("compound/formula/${encodePathSegment(formula)}/JSON")
@@ -115,7 +131,7 @@ class PubChemClient(
      * @param inchi InChI identifier
      * @return [MoleculeData] if found, `null` otherwise
      */
-    suspend fun fetchByInchi(inchi: String): MoleculeData? {
+    public suspend fun fetchByInchi(inchi: String): MoleculeData? {
         val cacheKey = "inchi:${inchi.lowercase()}"
         return fetchWithCoalescing(cacheKey) {
             val cid = fetchCid("compound/inchi/${encodePathSegment(inchi)}/JSON")
@@ -126,7 +142,7 @@ class PubChemClient(
     /**
      * Clear all cached molecule data.
      */
-    suspend fun clearCache() = cacheMutex.withLock { cache.clear() }
+    public suspend fun clearCache(): Unit = cacheMutex.withLock { cache.clear() }
 
     // ── Request coalescing ─────────────────────────────────────────────
 
@@ -153,6 +169,9 @@ class PubChemClient(
             val result = block()
             if (result != null) putCache(cacheKey, result)
             deferred.complete(result)
+        } catch (e: CancellationException) {
+            deferred.completeExceptionally(e)
+            throw e
         } catch (e: Exception) {
             deferred.completeExceptionally(e)
             throw e
@@ -194,6 +213,8 @@ class PubChemClient(
                     }
                     else -> throw PubChemNetworkException("Unexpected HTTP status: ${response.status}")
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 if (e is PubChemException) throw e
                 lastException = e
@@ -239,6 +260,8 @@ class PubChemClient(
                     }
                     else -> throw PubChemNetworkException("Unexpected HTTP status: ${response.status}")
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 if (e is PubChemException) throw e
                 lastException = e
@@ -282,6 +305,8 @@ class PubChemClient(
                     }
                     else -> throw PubChemNetworkException("Unexpected HTTP status: ${response.status}")
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 if (e is PubChemException) throw e
                 lastException = e
@@ -297,35 +322,15 @@ class PubChemClient(
     }
 
     private suspend fun fetchPropertiesWithRetry(cid: Int, retries: Int): PubChemCompoundData? {
-        var lastException: Exception? = null
-        repeat(retries + 1) { attempt ->
-            try {
-                val result = fetchProperties(cid)
-                if (result != null) return result
-                return null // Compound properties explicitly not found
-            } catch (e: Exception) {
-                lastException = e
-            }
-            if (attempt < retries) delay(1000L * (1 shl attempt)) // exponential backoff
-        }
-        if (lastException != null) throw lastException
-        return null
+        // fetchProperties() already handles its own retry with MAX_RETRY_ATTEMPTS.
+        // Avoid double retry stacking — delegate directly.
+        return fetchProperties(cid)
     }
 
     private suspend fun fetchConformerWithRetry(cid: Int, retries: Int): Pair<List<PubChemAtomData>, List<PubChemBondData>>? {
-        var lastException: Exception? = null
-        repeat(retries + 1) { attempt ->
-            try {
-                val result = fetchConformer(cid)
-                if (result != null) return result
-                return null // Conformer explicitly not found
-            } catch (e: Exception) {
-                lastException = e
-            }
-            if (attempt < retries) delay(1000L * (1 shl attempt)) // exponential backoff
-        }
-        if (lastException != null) throw lastException
-        return null
+        // fetchConformer() already handles its own retry with MAX_RETRY_ATTEMPTS.
+        // Avoid double retry stacking — delegate directly.
+        return fetchConformer(cid)
     }
 
     private suspend fun fetchFullMoleculeData(cid: Int, retries: Int = 2): MoleculeData? {

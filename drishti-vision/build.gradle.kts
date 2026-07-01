@@ -4,6 +4,13 @@ plugins {
 }
 
 kotlin {
+    explicitApi()
+
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -23,11 +30,6 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.android)
-                implementation(libs.opencv)
-                implementation(libs.tensorflow.lite)
-                implementation(libs.onnx.runtime)
-                implementation(libs.camerax.core)
-                implementation(libs.camerax.camera2)
             }
         }
         val commonTest by getting {

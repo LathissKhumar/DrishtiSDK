@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.haptics
 
 import io.drishti.core.*
@@ -8,11 +24,11 @@ import io.drishti.core.*
  * Provides both ContentItem-based rendering (via [HapticsRenderer] interface)
  * and SceneGraph-based rendering for direct pipeline integration.
  */
-class HapticsPlugin : HapticsRenderer {
+public class HapticsPlugin : HapticsRenderer {
     private val renderer = HapticRenderer()
     private val encoder = HapticEncoder()
 
-    override val name = "haptics"
+    override val name: String = "haptics"
 
     // ── ContentItem facade (HapticsRenderer interface) ───────────────────
 
@@ -42,7 +58,7 @@ class HapticsPlugin : HapticsRenderer {
      * Each edge becomes a haptic pulse with intensity from weight and
      * waveform from edge type. Each node becomes a spatial anchor.
      */
-    fun renderSceneGraphHaptic(graph: SceneGraph): HapticOutput {
+    public fun renderSceneGraphHaptic(graph: SceneGraph): HapticOutput {
         return renderer.renderFromSceneGraph(graph)
     }
 
@@ -52,7 +68,7 @@ class HapticsPlugin : HapticsRenderer {
      * Returns one pattern per edge and one per node, each with
      * [HapticEventSpec] data mapping to VibrationEffect.Composition parameters.
      */
-    fun encodeSceneGraphPatterns(graph: SceneGraph): List<HapticPatternDefinition> {
+    public fun encodeSceneGraphPatterns(graph: SceneGraph): List<HapticPatternDefinition> {
         return renderer.renderSceneGraphPatterns(graph)
     }
 
@@ -61,14 +77,14 @@ class HapticsPlugin : HapticsRenderer {
     /**
      * Encode haptic output to platform format (timing/amplitude arrays).
      */
-    fun encode(output: HapticOutput): EncodedPattern {
+    public fun encode(output: HapticOutput): EncodedPattern {
         return encoder.encode(output.pulses)
     }
 
     /**
      * Encode for VibrationEffect.Composition (API 30+).
      */
-    fun encodeComposition(output: HapticOutput): List<CompositionPrimitive> {
+    public fun encodeComposition(output: HapticOutput): List<CompositionPrimitive> {
         return encoder.encodeComposition(output.pulses)
     }
 }

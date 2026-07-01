@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
 import kotlin.reflect.KClass
@@ -8,7 +24,7 @@ import kotlin.reflect.KClass
  * @param compatible Whether all registered plugins are compatible.
  * @param issues Human-readable list of compatibility issues found.
  */
-data class ValidationReport(
+public data class ValidationReport(
     val compatible: Boolean,
     val issues: List<String>
 )
@@ -28,7 +44,7 @@ data class ValidationReport(
  * registry.linkDetectorToRenderer(ContentType.GRAPH, StubHapticsRenderer::class)
  * ```
  */
-class PluginRegistry {
+public class PluginRegistry {
 
     private val lock = Lock()
 
@@ -65,7 +81,7 @@ class PluginRegistry {
      * @param plugin The detector to register.
      * @return The previously registered detector for this type, or null.
      */
-    fun registerDetector(plugin: DetectorPlugin): DetectorPlugin? = lock.withLock {
+    public fun registerDetector(plugin: DetectorPlugin): DetectorPlugin? = lock.withLock {
         val previous = detectors.put(plugin.contentType, plugin)
         return previous
     }
@@ -77,7 +93,7 @@ class PluginRegistry {
      *
      * @param plugin The renderer to register.
      */
-    fun registerRenderer(plugin: RendererPlugin) = lock.withLock {
+    public fun registerRenderer(plugin: RendererPlugin): Unit = lock.withLock {
         renderers[plugin::class] = plugin
     }
 
@@ -92,7 +108,7 @@ class PluginRegistry {
      * @param contentType The content type produced by a detector.
      * @param rendererClass The renderer class to handle this content type.
      */
-    fun linkDetectorToRenderer(contentType: ContentType, rendererClass: KClass<out RendererPlugin>) = lock.withLock {
+    public fun linkDetectorToRenderer(contentType: ContentType, rendererClass: KClass<out RendererPlugin>): Unit = lock.withLock {
         contentTypeToRenderers.getOrPut(contentType) { mutableSetOf() }.add(rendererClass)
     }
 
@@ -105,7 +121,7 @@ class PluginRegistry {
      * @param rendererClass The renderer class.
      * @param requiredContentTypes The content types this renderer requires.
      */
-    fun declareDependency(rendererClass: KClass<out RendererPlugin>, requiredContentTypes: Set<ContentType>) = lock.withLock {
+    public fun declareDependency(rendererClass: KClass<out RendererPlugin>, requiredContentTypes: Set<ContentType>): Unit = lock.withLock {
         rendererDependencies[rendererClass] = requiredContentTypes
     }
 
@@ -116,7 +132,7 @@ class PluginRegistry {
      *
      * @return The registered detector, or null if none registered.
      */
-    fun getDetector(contentType: ContentType): DetectorPlugin? = lock.withLock {
+    public fun getDetector(contentType: ContentType): DetectorPlugin? = lock.withLock {
         detectors[contentType]
     }
 
@@ -125,7 +141,7 @@ class PluginRegistry {
      *
      * @return The registered renderer cast to [T], or null if not found.
      */
-    fun <T : RendererPlugin> getRenderer(type: KClass<T>): T? = lock.withLock {
+    public fun <T : RendererPlugin> getRenderer(type: KClass<T>): T? = lock.withLock {
         @Suppress("UNCHECKED_CAST")
         return renderers[type] as? T
     }
@@ -135,7 +151,7 @@ class PluginRegistry {
      *
      * @return Set of renderer classes that should handle this content type.
      */
-    fun getRenderersForContentType(contentType: ContentType): Set<KClass<out RendererPlugin>> = lock.withLock {
+    public fun getRenderersForContentType(contentType: ContentType): Set<KClass<out RendererPlugin>> = lock.withLock {
         return contentTypeToRenderers[contentType]?.toSet() ?: emptySet()
     }
 
@@ -144,7 +160,7 @@ class PluginRegistry {
      *
      * @return Set of content types the renderer handles.
      */
-    fun getContentTypesForRenderer(rendererClass: KClass<out RendererPlugin>): Set<ContentType> = lock.withLock {
+    public fun getContentTypesForRenderer(rendererClass: KClass<out RendererPlugin>): Set<ContentType> = lock.withLock {
         return contentTypeToRenderers
             .filter { it.value.contains(rendererClass) }
             .keys
@@ -155,19 +171,19 @@ class PluginRegistry {
      *
      * @return The set of content types this renderer requires, or empty.
      */
-    fun getDependencies(rendererClass: KClass<out RendererPlugin>): Set<ContentType> = lock.withLock {
+    public fun getDependencies(rendererClass: KClass<out RendererPlugin>): Set<ContentType> = lock.withLock {
         return rendererDependencies[rendererClass] ?: emptySet()
     }
 
     // --- Bulk lookups ---
 
     /** Return all registered detectors. */
-    fun getAllDetectors(): List<DetectorPlugin> = lock.withLock {
+    public fun getAllDetectors(): List<DetectorPlugin> = lock.withLock {
         detectors.values.toList()
     }
 
     /** Return all registered renderers. */
-    fun getAllRenderers(): List<RendererPlugin> = lock.withLock {
+    public fun getAllRenderers(): List<RendererPlugin> = lock.withLock {
         renderers.values.toList()
     }
 
@@ -183,7 +199,7 @@ class PluginRegistry {
      *
      * @return A [ValidationReport] with the result and any issues found.
      */
-    fun validate(): ValidationReport = lock.withLock {
+    public fun validate(): ValidationReport = lock.withLock {
         val issues = mutableListOf<String>()
 
         // Check that every linked content type has a registered detector

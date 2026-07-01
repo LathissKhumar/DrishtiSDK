@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.voice
 
 import io.drishti.core.*
@@ -24,7 +40,7 @@ import io.drishti.core.*
  * val desc = plugin.describe(graphContent)
  * ```
  */
-class VoicePlugin(
+public class VoicePlugin(
     private val voiceData: VoiceData = VoiceData.default()
 ) : VoiceOutputRenderer {
 
@@ -32,7 +48,7 @@ class VoicePlugin(
     private val speechGenerator = SpeechGenerator()
     private val describer = ContentDescriber()
 
-    override val name = "voice"
+    override val name: String = "voice"
 
     /**
      * Render content items as voice output.
@@ -60,7 +76,7 @@ class VoicePlugin(
      *
      * Useful for custom announcements outside the content pipeline.
      */
-    fun generateSpeech(text: String): SpeechSegment {
+    public fun generateSpeech(text: String): SpeechSegment {
         return speechGenerator.generate(text)
     }
 
@@ -70,7 +86,7 @@ class VoicePlugin(
      * @param latex LaTeX math expression
      * @return Natural language speech description
      */
-    fun latexToSpeech(latex: String): String {
+    public fun latexToSpeech(latex: String): String {
         return FormulaSpeech.fromLatex(latex)
     }
 
@@ -80,7 +96,7 @@ class VoicePlugin(
      * @param formula Formula content from the vision pipeline
      * @return Complete speech text with type intro
      */
-    fun formulaToSpeech(formula: FormulaContent): String {
+    public fun formulaToSpeech(formula: FormulaContent): String {
         return FormulaSpeech.fromContent(formula)
     }
 
@@ -90,7 +106,7 @@ class VoicePlugin(
      * @param item Content item to describe
      * @return Natural language description
      */
-    fun describe(item: ContentItem): String {
+    public fun describe(item: ContentItem): String {
         return when (item) {
             is GraphContent -> describer.describeGraph(item)
             is FormulaContent -> FormulaSpeech.fromContent(item)

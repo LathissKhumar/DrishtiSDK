@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.haptics
 
 import io.drishti.core.*
@@ -14,7 +30,7 @@ import io.drishti.core.*
  * - Node position → spatial mapping for dual-motor phones
  * - Node depth → vibration frequency (deeper = faster pulses)
  */
-class HapticRenderer {
+public class HapticRenderer {
     private val encoder = HapticEncoder()
     private val patternBuilder = PatternBuilder()
     private val spatialMapper = SpatialMapper()
@@ -24,7 +40,7 @@ class HapticRenderer {
     /**
      * Render content items as haptic output.
      */
-    fun render(items: List<ContentItem>, focusIndex: Int = 0): HapticOutput {
+    public fun render(items: List<ContentItem>, focusIndex: Int = 0): HapticOutput {
         val pulses = mutableListOf<HapticPulse>()
 
         items.forEachIndexed { index, item ->
@@ -51,15 +67,15 @@ class HapticRenderer {
     /**
      * Render exploration sequence.
      */
-    fun renderExploration(
+    public fun renderExploration(
         item: ContentItem,
         direction: ExplorationDirection,
         elementIndex: Int = -1
     ): HapticOutput {
         val pulses = when (item) {
-            is GraphContent -> renderGraphExploration(item, direction)
-            is FormulaContent -> renderFormulaExploration(item, direction)
-            is MoleculeContent -> renderMoleculeExploration(item, direction)
+            is GraphContent -> renderGraphExploration(item, direction, elementIndex)
+            is FormulaContent -> renderFormulaExploration(item, direction, elementIndex)
+            is MoleculeContent -> renderMoleculeExploration(item, direction, elementIndex)
             else -> emptyList()
         }
 
@@ -82,7 +98,7 @@ class HapticRenderer {
      * - DOUBLE_TAP edges produce two pulses (primary + 70% secondary)
      * - RAPID_TAP edges produce three sequential pulses with decaying amplitude
      */
-    fun renderFromSceneGraph(graph: SceneGraph): HapticOutput {
+    public fun renderFromSceneGraph(graph: SceneGraph): HapticOutput {
         if (graph.nodes.isEmpty()) {
             return HapticOutput(pulses = emptyList(), pattern = "empty_scene")
         }
@@ -111,7 +127,7 @@ class HapticRenderer {
      * - API 31+: Composition primitive with waveform, scale, delay
      * - API 30: createWaveform() timing/amplitude arrays
      */
-    fun renderSceneGraphPatterns(graph: SceneGraph): List<HapticPatternDefinition> {
+    public fun renderSceneGraphPatterns(graph: SceneGraph): List<HapticPatternDefinition> {
         if (graph.nodes.isEmpty()) return emptyList()
 
         val patterns = mutableListOf<HapticPatternDefinition>()
@@ -318,49 +334,127 @@ class HapticRenderer {
         return result
     }
 
-    private fun renderGraphExploration(graph: GraphContent, direction: ExplorationDirection): List<HapticPulse> {
+    private fun renderGraphExploration(
+        graph: GraphContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): List<HapticPulse> {
+        val points = graph.dataPoints
+        val currentIndex = elementIndex.coerceIn(-1, points.size - 1)
         return when (direction) {
-            ExplorationDirection.NEXT -> renderNextDataPoint(graph)
-            ExplorationDirection.PREVIOUS -> renderPreviousDataPoint(graph)
+            ExplorationDirection.NEXT -> {
+                val nextIdx = currentIndex + 1
+                points.getOrNull(nextIdx)?.let { point ->
+                    listOf(
+                        HapticPulse(
+                            intensity = 0.8f,
+                            duration = 80L,
+                            x = normalizePosition(point.x, graph.axes.x.range),
+                            y = normalizePosition(point.y, graph.axes.y.range)
+                        )
+                    )
+                } ?: emptyList()
+            }
+            ExplorationDirection.PREVIOUS -> {
+                val prevIdx = (currentIndex - 1).coerceAtLeast(0)
+                if (currentIndex > 0) {
+                    points.getOrNull(prevIdx)?.let { point ->
+                        listOf(
+                            HapticPulse(
+                                intensity = 0.6f,
+                                duration = 60L,
+                                x = normalizePosition(point.x, graph.axes.x.range),
+                                y = normalizePosition(point.y, graph.axes.y.range)
+                            )
+                        )
+                    } ?: emptyList()
+                } else emptyList()
+            }
             ExplorationDirection.POSITION -> renderCurrentPosition(graph)
         }
     }
 
-    private fun renderFormulaExploration(formula: FormulaContent, direction: ExplorationDirection): List<HapticPulse> {
+    private fun renderFormulaExploration(
+        formula: FormulaContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): List<HapticPulse> {
+        val symbols = formula.symbols
+        val maxX = symbols.maxOfOrNull { it.position.x }?.coerceAtLeast(1f) ?: 1f
+        val maxY = symbols.maxOfOrNull { it.position.y }?.coerceAtLeast(1f) ?: 1f
+        val currentIndex = elementIndex.coerceIn(-1, symbols.size - 1)
         return when (direction) {
-            ExplorationDirection.NEXT -> renderNextSymbol(formula)
-            ExplorationDirection.PREVIOUS -> renderPreviousSymbol(formula)
+            ExplorationDirection.NEXT -> {
+                val nextIdx = currentIndex + 1
+                symbols.getOrNull(nextIdx)?.let { symbol ->
+                    listOf(
+                        HapticPulse(
+                            intensity = symbolIntensity(symbol.type),
+                            duration = 60L,
+                            x = (symbol.position.x / maxX).coerceIn(0.05f, 0.95f),
+                            y = (symbol.position.y / maxY).coerceIn(0.05f, 0.95f)
+                        )
+                    )
+                } ?: emptyList()
+            }
+            ExplorationDirection.PREVIOUS -> {
+                val prevIdx = (currentIndex - 1).coerceAtLeast(0)
+                if (currentIndex > 0) {
+                    symbols.getOrNull(prevIdx)?.let { symbol ->
+                        listOf(
+                            HapticPulse(
+                                intensity = symbolIntensity(symbol.type),
+                                duration = 60L,
+                                x = (symbol.position.x / maxX).coerceIn(0.05f, 0.95f),
+                                y = (symbol.position.y / maxY).coerceIn(0.05f, 0.95f)
+                            )
+                        )
+                    } ?: emptyList()
+                } else emptyList()
+            }
             ExplorationDirection.POSITION -> renderCurrentPosition(formula)
         }
     }
 
-    private fun renderMoleculeExploration(molecule: MoleculeContent, direction: ExplorationDirection): List<HapticPulse> {
+    private fun renderMoleculeExploration(
+        molecule: MoleculeContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): List<HapticPulse> {
+        val atoms = molecule.atoms
+        val maxX = atoms.maxOfOrNull { it.position.x }?.coerceAtLeast(1f) ?: 1f
+        val maxY = atoms.maxOfOrNull { it.position.y }?.coerceAtLeast(1f) ?: 1f
+        val currentIndex = elementIndex.coerceIn(-1, atoms.size - 1)
         return when (direction) {
-            ExplorationDirection.NEXT -> renderNextAtom(molecule)
-            ExplorationDirection.PREVIOUS -> renderPreviousAtom(molecule)
+            ExplorationDirection.NEXT -> {
+                val nextIdx = currentIndex + 1
+                atoms.getOrNull(nextIdx)?.let { atom ->
+                    listOf(
+                        HapticPulse(
+                            intensity = atomIntensity(atom.element),
+                            duration = 60L,
+                            x = (atom.position.x / maxX).coerceIn(0.05f, 0.95f),
+                            y = (atom.position.y / maxY).coerceIn(0.05f, 0.95f)
+                        )
+                    )
+                } ?: emptyList()
+            }
+            ExplorationDirection.PREVIOUS -> {
+                val prevIdx = (currentIndex - 1).coerceAtLeast(0)
+                if (currentIndex > 0) {
+                    atoms.getOrNull(prevIdx)?.let { atom ->
+                        listOf(
+                            HapticPulse(
+                                intensity = atomIntensity(atom.element),
+                                duration = 60L,
+                                x = (atom.position.x / maxX).coerceIn(0.05f, 0.95f),
+                                y = (atom.position.y / maxY).coerceIn(0.05f, 0.95f)
+                            )
+                        )
+                    } ?: emptyList()
+                } else emptyList()
+            }
             ExplorationDirection.POSITION -> renderCurrentPosition(molecule)
-        }
-    }
-
-    private fun renderNextDataPoint(graph: GraphContent): List<HapticPulse> {
-        return graph.dataPoints.takeLast(1).map { point ->
-            HapticPulse(
-                intensity = 0.8f,
-                duration = 80L,
-                x = normalizePosition(point.x, graph.axes.x.range),
-                y = normalizePosition(point.y, graph.axes.y.range)
-            )
-        }
-    }
-
-    private fun renderPreviousDataPoint(graph: GraphContent): List<HapticPulse> {
-        return graph.dataPoints.take(1).map { point ->
-            HapticPulse(
-                intensity = 0.6f,
-                duration = 60L,
-                x = normalizePosition(point.x, graph.axes.x.range),
-                y = normalizePosition(point.y, graph.axes.y.range)
-            )
         }
     }
 
@@ -368,60 +462,8 @@ class HapticRenderer {
         return listOf(HapticPulse(intensity = 1.0f, duration = 150L, x = 0.5f, y = 0.5f))
     }
 
-    private fun renderNextSymbol(formula: FormulaContent): List<HapticPulse> {
-        val maxX = formula.symbols.maxOfOrNull { it.position.x }?.coerceAtLeast(1f) ?: 1f
-        val maxY = formula.symbols.maxOfOrNull { it.position.y }?.coerceAtLeast(1f) ?: 1f
-        return formula.symbols.takeLast(1).map { symbol ->
-            HapticPulse(
-                intensity = symbolIntensity(symbol.type),
-                duration = 60L,
-                x = (symbol.position.x / maxX).coerceIn(0.05f, 0.95f),
-                y = (symbol.position.y / maxY).coerceIn(0.05f, 0.95f)
-            )
-        }
-    }
-
-    private fun renderPreviousSymbol(formula: FormulaContent): List<HapticPulse> {
-        val maxX = formula.symbols.maxOfOrNull { it.position.x }?.coerceAtLeast(1f) ?: 1f
-        val maxY = formula.symbols.maxOfOrNull { it.position.y }?.coerceAtLeast(1f) ?: 1f
-        return formula.symbols.take(1).map { symbol ->
-            HapticPulse(
-                intensity = symbolIntensity(symbol.type),
-                duration = 60L,
-                x = (symbol.position.x / maxX).coerceIn(0.05f, 0.95f),
-                y = (symbol.position.y / maxY).coerceIn(0.05f, 0.95f)
-            )
-        }
-    }
-
     private fun renderCurrentPosition(formula: FormulaContent): List<HapticPulse> {
         return listOf(HapticPulse(intensity = 1.0f, duration = 150L, x = 0.5f, y = 0.5f))
-    }
-
-    private fun renderNextAtom(molecule: MoleculeContent): List<HapticPulse> {
-        val maxX = molecule.atoms.maxOfOrNull { it.position.x }?.coerceAtLeast(1f) ?: 1f
-        val maxY = molecule.atoms.maxOfOrNull { it.position.y }?.coerceAtLeast(1f) ?: 1f
-        return molecule.atoms.takeLast(1).map { atom ->
-            HapticPulse(
-                intensity = atomIntensity(atom.element),
-                duration = 60L,
-                x = (atom.position.x / maxX).coerceIn(0.05f, 0.95f),
-                y = (atom.position.y / maxY).coerceIn(0.05f, 0.95f)
-            )
-        }
-    }
-
-    private fun renderPreviousAtom(molecule: MoleculeContent): List<HapticPulse> {
-        val maxX = molecule.atoms.maxOfOrNull { it.position.x }?.coerceAtLeast(1f) ?: 1f
-        val maxY = molecule.atoms.maxOfOrNull { it.position.y }?.coerceAtLeast(1f) ?: 1f
-        return molecule.atoms.take(1).map { atom ->
-            HapticPulse(
-                intensity = atomIntensity(atom.element),
-                duration = 60L,
-                x = (atom.position.x / maxX).coerceIn(0.05f, 0.95f),
-                y = (atom.position.y / maxY).coerceIn(0.05f, 0.95f)
-            )
-        }
     }
 
     private fun renderCurrentPosition(molecule: MoleculeContent): List<HapticPulse> {

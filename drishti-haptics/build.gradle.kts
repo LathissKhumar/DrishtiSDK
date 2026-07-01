@@ -4,6 +4,12 @@ plugins {
 }
 
 kotlin {
+    explicitApi()
+
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+    }
+
     androidTarget {
         compilations.all {
             kotlinOptions {

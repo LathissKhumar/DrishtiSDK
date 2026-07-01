@@ -1,17 +1,34 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.vision
 
 import io.drishti.core.AudioOutput
 import io.drishti.core.AudioSource
 import io.drishti.core.ContentItem
+import io.drishti.core.ExplorationDirection
 import io.drishti.core.HapticOutput
 import io.drishti.core.HapticPulse
 import io.drishti.core.ShapeContent
 import io.drishti.core.VoiceOutput
 import io.drishti.core.SpeechSegment
 
-class VisionRenderer {
+public class VisionRenderer {
 
-    fun renderHaptic(items: List<ContentItem>): HapticOutput {
+    public fun renderHaptic(items: List<ContentItem>): HapticOutput {
         val pulses = items.flatMap { item ->
             when (item) {
                 is ShapeContent -> shapeToHapticPulses(item)
@@ -21,7 +38,46 @@ class VisionRenderer {
         return HapticOutput(pulses = pulses, pattern = "vision_haptic")
     }
 
-    fun renderVoice(items: List<ContentItem>): VoiceOutput {
+    public fun renderExplorationHaptic(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): HapticOutput {
+        val pulses = when (item) {
+            is ShapeContent -> shapeExplorationHaptic(item, direction, elementIndex)
+            else -> emptyList()
+        }
+        return HapticOutput(pulses = pulses, pattern = "vision_exploration_haptic")
+    }
+
+    public fun renderExplorationAudio(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): AudioOutput {
+        val sources = when (item) {
+            is ShapeContent -> shapeExplorationAudio(item, direction, elementIndex)
+            else -> emptyList()
+        }
+        return AudioOutput(sources = sources, spatial = true)
+    }
+
+    public fun renderExplorationVoice(
+        item: ContentItem,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): VoiceOutput {
+        val text = when (item) {
+            is ShapeContent -> shapeExplorationVoice(item, direction, elementIndex)
+            else -> "No visual content to explore."
+        }
+        return VoiceOutput(
+            speech = SpeechSegment(text = text, rate = 1.0f, pitch = 1.0f),
+            language = "en-US"
+        )
+    }
+
+    public fun renderVoice(items: List<ContentItem>): VoiceOutput {
         val text = describeItems(items)
         return VoiceOutput(
             speech = SpeechSegment(text = text, rate = 1.0f, pitch = 1.0f),
@@ -29,7 +85,7 @@ class VisionRenderer {
         )
     }
 
-    fun renderAudio(items: List<ContentItem>): AudioOutput {
+    public fun renderAudio(items: List<ContentItem>): AudioOutput {
         val sources = items.flatMap { item ->
             when (item) {
                 is ShapeContent -> shapeToAudioSources(item)
@@ -39,7 +95,7 @@ class VisionRenderer {
         return AudioOutput(sources = sources, spatial = true)
     }
 
-    fun renderHaptic(features: VisionFeatures): HapticOutput {
+    public fun renderHaptic(features: VisionFeatures): HapticOutput {
         val pulses = mutableListOf<HapticPulse>()
 
         val allCenters = mutableListOf<io.drishti.core.Point>()
@@ -87,7 +143,7 @@ class VisionRenderer {
         return HapticOutput(pulses = pulses, pattern = "vision_haptic")
     }
 
-    fun renderVoice(features: VisionFeatures): VoiceOutput {
+    public fun renderVoice(features: VisionFeatures): VoiceOutput {
         val text = describeFeatures(features)
         return VoiceOutput(
             speech = SpeechSegment(text = text, rate = 1.0f, pitch = 1.0f),
@@ -95,7 +151,7 @@ class VisionRenderer {
         )
     }
 
-    fun renderAudio(features: VisionFeatures): AudioOutput {
+    public fun renderAudio(features: VisionFeatures): AudioOutput {
         val maxX = features.shapes.maxOfOrNull { it.boundingBox.x + it.boundingBox.width / 2 }
             ?.coerceAtLeast(1f) ?: 1f
         val maxY = features.shapes.maxOfOrNull { it.boundingBox.y + it.boundingBox.height / 2 }
@@ -114,26 +170,40 @@ class VisionRenderer {
     }
 
     private fun shapeToHapticPulses(shape: ShapeContent): List<HapticPulse> {
+        val (sx, sy) = shapeCenter(shape)
         return listOf(
             HapticPulse(
                 intensity = 0.7f,
                 duration = 100L,
-                x = 0.5f,
-                y = 0.5f
+                x = sx,
+                y = sy
             )
         )
     }
 
     private fun shapeToAudioSources(shape: ShapeContent): List<AudioSource> {
+        val (sx, sy) = shapeCenter(shape)
         return listOf(
             AudioSource(
                 frequency = 440f,
                 amplitude = 0.5f,
-                spatialX = 0.5f,
-                spatialY = 0.5f,
+                spatialX = sx,
+                spatialY = sy,
                 spatialZ = 0.5f
             )
         )
+    }
+
+    /** Falls back to center (0.5, 0.5) when boundingBox dimensions are zero. */
+    private fun shapeCenter(shape: ShapeContent): Pair<Float, Float> {
+        val hasBounds = shape.width > 0f && shape.height > 0f
+        return if (hasBounds) {
+            val cx = shape.x + shape.width / 2f
+            val cy = shape.y + shape.height / 2f
+            Pair(cx.coerceIn(0.05f, 0.95f), cy.coerceIn(0.05f, 0.95f))
+        } else {
+            Pair(0.5f, 0.5f)
+        }
     }
 
     private fun describeItems(items: List<ContentItem>): String {
@@ -179,6 +249,85 @@ class VisionRenderer {
             "${area.toLong()} sq px"
         } else {
             "%.1f sq px".format(area)
+        }
+    }
+
+    private fun shapeExplorationHaptic(
+        shape: ShapeContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): List<HapticPulse> {
+        val (sx, sy) = shapeCenter(shape)
+        val intensity = if (direction == ExplorationDirection.POSITION) 1.0f else 0.7f
+        val duration = if (direction == ExplorationDirection.POSITION) 150L else 100L
+        return when (direction) {
+            ExplorationDirection.NEXT -> {
+                if (elementIndex >= 0) {
+                    listOf(HapticPulse(intensity = intensity, duration = duration, x = sx, y = sy))
+                } else {
+                    emptyList()
+                }
+            }
+            ExplorationDirection.PREVIOUS -> {
+                if (elementIndex > 0) {
+                    listOf(HapticPulse(intensity = intensity, duration = duration, x = sx, y = sy))
+                } else {
+                    emptyList()
+                }
+            }
+            ExplorationDirection.POSITION -> {
+                listOf(HapticPulse(intensity = intensity, duration = duration, x = sx, y = sy))
+            }
+        }
+    }
+
+    private fun shapeExplorationAudio(
+        shape: ShapeContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): List<AudioSource> {
+        val (sx, sy) = shapeCenter(shape)
+        val amplitude = if (direction == ExplorationDirection.POSITION) 1.0f else 0.5f
+        val freq = if (direction == ExplorationDirection.POSITION) 800f else 440f
+        return when (direction) {
+            ExplorationDirection.NEXT -> {
+                if (elementIndex >= 0) {
+                    listOf(AudioSource(frequency = freq, amplitude = amplitude, spatialX = sx, spatialY = sy, spatialZ = 0.5f))
+                } else {
+                    emptyList()
+                }
+            }
+            ExplorationDirection.PREVIOUS -> {
+                if (elementIndex > 0) {
+                    listOf(AudioSource(frequency = freq, amplitude = amplitude, spatialX = sx, spatialY = sy, spatialZ = 0.5f))
+                } else {
+                    emptyList()
+                }
+            }
+            ExplorationDirection.POSITION -> {
+                listOf(AudioSource(frequency = freq, amplitude = amplitude, spatialX = sx, spatialY = sy, spatialZ = 0.5f))
+            }
+        }
+    }
+
+    private fun shapeExplorationVoice(
+        shape: ShapeContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): String {
+        val label = shape.shapeType.name.lowercase().replaceFirstChar { it.uppercase() }
+        val description = "$label shape with area ${formatArea(shape.area)} " +
+            "and perimeter ${"%.1f".format(shape.perimeter)}."
+        return when (direction) {
+            ExplorationDirection.NEXT -> {
+                if (elementIndex >= 0) description else "No shape at this position."
+            }
+            ExplorationDirection.PREVIOUS -> {
+                if (elementIndex > 0) description else "At the first shape."
+            }
+            ExplorationDirection.POSITION -> {
+                "Showing $label shape."
+            }
         }
     }
 }

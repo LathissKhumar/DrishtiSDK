@@ -1,6 +1,24 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
-fun generateEdges(
+private const val PROXIMITY_SCALE = 200f
+
+public fun generateEdges(
     items: List<ContentItem>, 
     nodes: List<SceneNode>,
     config: PipelineConfig
@@ -28,7 +46,7 @@ fun generateEdges(
  * Create [EdgeType.SPATIAL] edges between nodes whose centers are within
  * [spatialThreshold] of each other.
  */
-fun generateSpatialEdges(nodes: List<SceneNode>, spatialThreshold: Float): List<SceneEdge> {
+public fun generateSpatialEdges(nodes: List<SceneNode>, spatialThreshold: Float): List<SceneEdge> {
     val edges = mutableListOf<SceneEdge>()
     for (i in nodes.indices) {
         for (j in i + 1 until nodes.size) {
@@ -53,7 +71,7 @@ fun generateSpatialEdges(nodes: List<SceneNode>, spatialThreshold: Float): List<
  * Create [EdgeType.CONTAINS] edges when one item's bounding box
  * significantly overlaps another item's bounding box.
  */
-fun generateContainmentEdges(
+public fun generateContainmentEdges(
     items: List<ContentItem>, 
     nodes: List<SceneNode>, 
     containmentOverlapRatio: Float
@@ -97,7 +115,7 @@ fun generateContainmentEdges(
  * - GRAPH ↔ TABLE (table provides graph data)
  * - MOLECULE ↔ SHAPE (molecular geometry)
  */
-fun generateSemanticEdges(items: List<ContentItem>, nodes: List<SceneNode>): List<SceneEdge> {
+public fun generateSemanticEdges(items: List<ContentItem>, nodes: List<SceneNode>): List<SceneEdge> {
     val edges = mutableListOf<SceneEdge>()
     val complementaryPairs = setOf(
         ContentType.FORMULA to ContentType.GRAPH,
@@ -112,7 +130,7 @@ fun generateSemanticEdges(items: List<ContentItem>, nodes: List<SceneNode>): Lis
             val reversePair = items[j].contentType to items[i].contentType
             if (pair in complementaryPairs || reversePair in complementaryPairs) {
                 val dist = distance(nodes[i].position, nodes[j].position)
-                val proximity = 1f / (1f + dist / 200f)
+                val proximity = 1f / (1f + dist / PROXIMITY_SCALE)
                 val weight = minOf(items[i].confidence, items[j].confidence) * proximity
                 edges.add(
                     SceneEdge(
@@ -133,11 +151,11 @@ fun generateSemanticEdges(items: List<ContentItem>, nodes: List<SceneNode>): Lis
  *
  * Each node is connected to the next one detected, forming a chain.
  */
-fun generateTemporalEdges(nodes: List<SceneNode>): List<SceneEdge> {
+public fun generateTemporalEdges(nodes: List<SceneNode>): List<SceneEdge> {
     val edges = mutableListOf<SceneEdge>()
     for (i in 0 until nodes.size - 1) {
         val dist = distance(nodes[i].position, nodes[i + 1].position)
-        val proximity = 1f / (1f + dist / 200f)
+        val proximity = 1f / (1f + dist / PROXIMITY_SCALE)
         val weight = (0.5f + 0.5f * proximity).coerceIn(0.1f, 1.0f)
         edges.add(
             SceneEdge(
@@ -159,11 +177,10 @@ fun generateTemporalEdges(nodes: List<SceneNode>): List<SceneEdge> {
  * the same pair are all preserved (e.g., a pair can have both a
  * SPATIAL and a TEMPORAL edge).
  */
-fun deduplicateEdges(edges: List<SceneEdge>): List<SceneEdge> {
+public fun deduplicateEdges(edges: List<SceneEdge>): List<SceneEdge> {
     val best = mutableMapOf<String, SceneEdge>()
     for (edge in edges) {
-        val sorted = listOf(edge.sourceId, edge.targetId).sorted()
-        val key = "${sorted[0]}-${sorted[1]}-${edge.edgeType}"
+        val key = "${edge.sourceId}-${edge.targetId}-${edge.edgeType}"
         val existing = best[key]
         if (existing == null || edge.weight > existing.weight) {
             best[key] = edge

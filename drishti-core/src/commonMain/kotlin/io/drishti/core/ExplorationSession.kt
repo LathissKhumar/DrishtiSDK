@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 DrishtiSTEM
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.drishti.core
 
 import kotlinx.coroutines.sync.Mutex
@@ -12,7 +28,7 @@ import kotlinx.coroutines.sync.withLock
  * @property contentItems The list of content items to explore.
  * @property renderers Available renderers for haptic/audio/voice output.
  */
-class ExplorationSession(
+public class ExplorationSession(
     private val contentItems: List<ContentItem>,
     private val renderers: List<RendererPlugin>
 ) {
@@ -26,7 +42,7 @@ class ExplorationSession(
      * @return [ExplorationResult.Item] with the next item and description,
      *         or [ExplorationResult.End] if already at the end.
      */
-    suspend fun next(): ExplorationResult = mutex.withLock {
+    public suspend fun next(): ExplorationResult = mutex.withLock {
         if (contentItems.isEmpty()) {
             return@withLock ExplorationResult.End
         }
@@ -46,7 +62,7 @@ class ExplorationSession(
      * @return [ExplorationResult.Item] with the previous item and description,
      *         or [ExplorationResult.Beginning] if already at the start.
      */
-    suspend fun previous(): ExplorationResult = mutex.withLock {
+    public suspend fun previous(): ExplorationResult = mutex.withLock {
         if (contentItems.isEmpty()) {
             return@withLock ExplorationResult.Beginning
         }
@@ -63,7 +79,7 @@ class ExplorationSession(
     /**
      * Move to the next element within the current content item.
      */
-    suspend fun nextElement(): ExplorationResult = mutex.withLock {
+    public suspend fun nextElement(): ExplorationResult = mutex.withLock {
         if (currentItemIndex !in contentItems.indices) {
             return@withLock ExplorationResult.End
         }
@@ -80,7 +96,7 @@ class ExplorationSession(
     /**
      * Move to the previous element within the current content item.
      */
-    suspend fun previousElement(): ExplorationResult = mutex.withLock {
+    public suspend fun previousElement(): ExplorationResult = mutex.withLock {
         if (currentItemIndex !in contentItems.indices) {
             return@withLock ExplorationResult.Beginning
         }
@@ -96,7 +112,7 @@ class ExplorationSession(
     /**
      * Get the position of the element within the current item.
      */
-    suspend fun elementPosition(): ExplorationPosition = mutex.withLock {
+    public suspend fun elementPosition(): ExplorationPosition = mutex.withLock {
         if (currentItemIndex !in contentItems.indices) {
             return@withLock ExplorationPosition(0, 0)
         }
@@ -113,7 +129,7 @@ class ExplorationSession(
      *
      * @return [ExplorationPosition] with current index and total count.
      */
-    suspend fun position(): ExplorationPosition = mutex.withLock {
+    public suspend fun position(): ExplorationPosition = mutex.withLock {
         ExplorationPosition(
             current = (currentItemIndex + 1).coerceIn(0, contentItems.size),
             total = contentItems.size
@@ -125,7 +141,7 @@ class ExplorationSession(
      *
      * @return [HapticOutput] if a renderer is available and item exists, null otherwise.
      */
-    suspend fun haptic(): HapticOutput? = mutex.withLock {
+    public suspend fun haptic(): HapticOutput? = mutex.withLock {
         if (currentItemIndex !in contentItems.indices) {
             return@withLock null
         }
@@ -139,7 +155,7 @@ class ExplorationSession(
      *
      * @return [AudioOutput] if a renderer is available and item exists, null otherwise.
      */
-    suspend fun audio(): AudioOutput? = mutex.withLock {
+    public suspend fun audio(): AudioOutput? = mutex.withLock {
         if (currentItemIndex !in contentItems.indices) {
             return@withLock null
         }
@@ -153,7 +169,7 @@ class ExplorationSession(
      *
      * @return [VoiceOutput] if a renderer is available and item exists, null otherwise.
      */
-    suspend fun voice(): VoiceOutput? = mutex.withLock {
+    public suspend fun voice(): VoiceOutput? = mutex.withLock {
         if (currentItemIndex !in contentItems.indices) {
             return@withLock null
         }
@@ -165,7 +181,7 @@ class ExplorationSession(
     /**
      * Render exploration feedback using haptics.
      */
-    suspend fun exploreHaptic(direction: ExplorationDirection): HapticOutput? = mutex.withLock {
+    public suspend fun exploreHaptic(direction: ExplorationDirection): HapticOutput? = mutex.withLock {
         if (currentItemIndex !in contentItems.indices) return@withLock null
         val renderer = renderers.filterIsInstance<HapticsRenderer>().firstOrNull()
             ?: return@withLock null
@@ -175,7 +191,7 @@ class ExplorationSession(
     /**
      * Render exploration feedback using audio.
      */
-    suspend fun exploreAudio(direction: ExplorationDirection): AudioOutput? = mutex.withLock {
+    public suspend fun exploreAudio(direction: ExplorationDirection): AudioOutput? = mutex.withLock {
         if (currentItemIndex !in contentItems.indices) return@withLock null
         val renderer = renderers.filterIsInstance<AudioRenderer>().firstOrNull()
             ?: return@withLock null
@@ -185,7 +201,7 @@ class ExplorationSession(
     /**
      * Render exploration feedback using voice.
      */
-    suspend fun exploreVoice(direction: ExplorationDirection): VoiceOutput? = mutex.withLock {
+    public suspend fun exploreVoice(direction: ExplorationDirection): VoiceOutput? = mutex.withLock {
         if (currentItemIndex !in contentItems.indices) return@withLock null
         val renderer = renderers.filterIsInstance<VoiceOutputRenderer>().firstOrNull()
             ?: return@withLock null
@@ -231,13 +247,13 @@ class ExplorationSession(
     }
 }
 
-sealed class ExplorationResult {
-    data class Item(val item: ContentItem, val description: String) : ExplorationResult()
-    data object End : ExplorationResult()
-    data object Beginning : ExplorationResult()
+public sealed class ExplorationResult {
+    public data class Item(val item: ContentItem, val description: String) : ExplorationResult()
+    public data object End : ExplorationResult()
+    public data object Beginning : ExplorationResult()
 }
 
-data class ExplorationPosition(
+public data class ExplorationPosition(
     val current: Int,
     val total: Int
 )
