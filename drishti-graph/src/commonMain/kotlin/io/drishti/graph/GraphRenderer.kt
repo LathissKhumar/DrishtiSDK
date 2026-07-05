@@ -42,6 +42,13 @@ import io.drishti.core.*
  */
 public class GraphRenderer {
 
+    private companion object {
+        /** Minimum frequency for audio rendering (Hz), C3. */
+        const val MIN_FREQUENCY = 130f
+        /** Maximum frequency for audio rendering (Hz), C5. */
+        const val MAX_FREQUENCY = 523f
+    }
+
     private val vegaLiteSpec = VegaLiteSpec()
 
     /**
@@ -235,7 +242,7 @@ public class GraphRenderer {
             val sliceValue = if (index < graph.dataPoints.size) graph.dataPoints[index].y else 0f
             val proportion = (sliceValue / total).coerceIn(0.1f, 1.0f)
             AudioSource(
-                frequency = 130f + (proportion * 393f), // 130Hz–523Hz proportional to slice value
+                frequency = MIN_FREQUENCY + (proportion * (MAX_FREQUENCY - MIN_FREQUENCY)),
                 amplitude = proportion,
                 spatialX = ((cosVal + 1f) / 2f).coerceIn(0.05f, 0.95f),
                 spatialY = ((sinVal + 1f) / 2f).coerceIn(0.05f, 0.95f),
@@ -335,6 +342,6 @@ public class GraphRenderer {
 
     private fun mapToFrequency(value: Float, range: ClosedFloatingPointRange<Float>): Float {
         val normalized = normalizeValue(value, range)
-        return 130f + (normalized * 393f) // 130Hz to 523Hz (musical range)
+        return MIN_FREQUENCY + (normalized * (MAX_FREQUENCY - MIN_FREQUENCY))
     }
 }

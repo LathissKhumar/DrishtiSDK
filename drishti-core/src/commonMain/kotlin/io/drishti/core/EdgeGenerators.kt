@@ -16,7 +16,13 @@
 
 package io.drishti.core
 
-private const val PROXIMITY_SCALE = 200f
+/**
+ * Default scale factor for proximity-based edge generation.
+ * Override to customize sensitivity.
+ */
+public object EdgeGeneratorDefaults {
+    public var proximityScale: Float = 200f
+}
 
 public fun generateEdges(
     items: List<ContentItem>, 
@@ -130,7 +136,7 @@ public fun generateSemanticEdges(items: List<ContentItem>, nodes: List<SceneNode
             val reversePair = items[j].contentType to items[i].contentType
             if (pair in complementaryPairs || reversePair in complementaryPairs) {
                 val dist = distance(nodes[i].position, nodes[j].position)
-                val proximity = 1f / (1f + dist / PROXIMITY_SCALE)
+                val proximity = 1f / (1f + dist / EdgeGeneratorDefaults.proximityScale)
                 val weight = minOf(items[i].confidence, items[j].confidence) * proximity
                 edges.add(
                     SceneEdge(
@@ -155,7 +161,7 @@ public fun generateTemporalEdges(nodes: List<SceneNode>): List<SceneEdge> {
     val edges = mutableListOf<SceneEdge>()
     for (i in 0 until nodes.size - 1) {
         val dist = distance(nodes[i].position, nodes[i + 1].position)
-        val proximity = 1f / (1f + dist / PROXIMITY_SCALE)
+        val proximity = 1f / (1f + dist / EdgeGeneratorDefaults.proximityScale)
         val weight = (0.5f + 0.5f * proximity).coerceIn(0.1f, 1.0f)
         edges.add(
             SceneEdge(

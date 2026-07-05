@@ -44,7 +44,7 @@ public data class VoiceData(
     val rateAdjustments: Map<ContentType, Float> = defaultRateAdjustments(),
 
     /** Pitch adjustments per content type. */
-    val pitchAdjustments: Map<ContentType, Float> = defaultPitchAdjustments(),
+    val pitchAdjustments: Map<ContentType, Float> = emptyMap(),
 
     /** Sherpa-ONNX TTS model identifier (offline synthesis). */
     val ttsModel: String = DEFAULT_TTS_MODEL,
@@ -57,9 +57,8 @@ public data class VoiceData(
     public fun rateForContentType(type: ContentType): Float =
         rate * (rateAdjustments[type] ?: 1.0f)
 
-    /** Pitch for the given content type, falling back to base pitch. */
-    public fun pitchForContentType(type: ContentType): Float =
-        pitch * (pitchAdjustments[type] ?: 1.0f)
+    /** Pitch for the given content type. All content types use the base pitch. */
+    public fun pitchForContentType(type: ContentType): Float = pitch
 
     public companion object {
         public const val DEFAULT_LANGUAGE: String = "en-US"
@@ -79,15 +78,6 @@ public data class VoiceData(
             ContentType.MOLECULE to 0.95f,
             ContentType.SHAPE to 1.0f,
             ContentType.TABLE to 0.9f,
-            ContentType.CUSTOM to 1.0f
-        )
-
-        private fun defaultPitchAdjustments(): Map<ContentType, Float> = mapOf(
-            ContentType.FORMULA to 1.0f,
-            ContentType.GRAPH to 1.0f,
-            ContentType.MOLECULE to 1.0f,
-            ContentType.SHAPE to 1.0f,
-            ContentType.TABLE to 1.0f,
             ContentType.CUSTOM to 1.0f
         )
     }

@@ -107,8 +107,10 @@ public class CameraCapture(
         try {
             provider.unbindAll()
             provider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalysis)
-        } catch (e: Exception) {
-            Log.e("CameraCapture", "Failed to bind camera use cases", e)
+        } catch (e: IllegalArgumentException) {
+            Log.e("CameraCapture", "Invalid camera use case configuration", e)
+        } catch (e: IllegalStateException) {
+            Log.e("CameraCapture", "Camera lifecycle already destroyed", e)
         }
     }
 

@@ -16,6 +16,8 @@
 
 package io.drishti.formula
 
+import kotlin.coroutines.cancellation.CancellationException
+
 /**
  * Evaluates [FormulaNode] ASTs to numeric results via [MxparserBridge].
  *
@@ -26,13 +28,80 @@ package io.drishti.formula
 public object FormulaEvaluator {
 
     public fun evaluate(ast: FormulaNode, variables: Map<String, Double> = emptyMap()): Double? {
+        // Handle node types that need direct evaluation (not expressible as mXparser strings)
+        val directResult = evaluateDirectly(ast, variables)
+        if (directResult != null) return directResult
+
         val expr = toMxparserExpression(ast) ?: return null
         return try {
             val result = MxparserBridge.evaluate(expr, variables)
             if (result.isNaN() || result.isInfinite()) null else result
+        } catch (e: CancellationException) {
+            throw e
         } catch (_: Exception) {
             null
         }
+    }
+
+    private fun evaluateDirectly(ast: FormulaNode, variables: Map<String, Double>): Double? = when (ast) {
+        is FormulaNode.Limit -> evaluateLimit(ast, variables)
+        is FormulaNode.Cases -> evaluateCases(ast, variables)
+        is FormulaNode.Matrix -> evaluateMatrix(ast, variables)
+        is FormulaNode.Product -> evaluateProduct(ast, variables)
+        else -> null
+    }
+
+    private fun evaluateLimit(ast: FormulaNode.Limit, variables: Map<String, Double>): Double? {
+        val varName = (ast.variable as? FormulaNode.Variable)?.name ?: return null
+        val targetVal = evaluate(ast.target, variables) ?: return null
+        val body = ast.body
+
+        val epsilon = 1e-7
+        val varsPlus = variables + (varName to targetVal + epsilon)
+        val varsMinus = variables + (varName to targetVal - epsilon)
+
+        val fromPlus = evaluate(body, varsPlus)
+        val fromMinus = evaluate(body, varsMinus)
+
+        return when {
+            fromPlus != null && fromMinus != null -> (fromPlus + fromMinus) / 2.0
+            fromPlus != null -> fromPlus
+            fromMinus != null -> fromMinus
+            else -> null
+        }
+    }
+
+    private fun evaluateCases(ast: FormulaNode.Cases, variables: Map<String, Double>): Double? {
+        for ((_, value) in ast.branches) {
+            val result = evaluate(value, variables)
+            if (result != null) return result
+        }
+        return null
+    }
+
+    private fun evaluateMatrix(ast: FormulaNode.Matrix, variables: Map<String, Double>): Double? {
+        if (ast.rows == 2 && ast.columns == 2) {
+            val a = evaluate(ast.entries[0][0], variables) ?: return null
+            val b = evaluate(ast.entries[0][1], variables) ?: return null
+            val c = evaluate(ast.entries[1][0], variables) ?: return null
+            val d = evaluate(ast.entries[1][1], variables) ?: return null
+            return a * d - b * c
+        }
+        return ast.entries.firstOrNull()?.firstOrNull()?.let { evaluate(it, variables) }
+    }
+
+    private fun evaluateProduct(ast: FormulaNode.Product, variables: Map<String, Double>): Double? {
+        val lower = ast.lower?.let { evaluate(it, variables) }?.toInt() ?: return null
+        val upper = ast.upper?.let { evaluate(it, variables) }?.toInt() ?: return null
+        val term = ast.term
+
+        var product = 1.0
+        for (i in lower..upper) {
+            val vars = variables + ("i" to i.toDouble())
+            val value = evaluate(term, vars) ?: return null
+            product *= value
+        }
+        return product
     }
 
     public fun toMxparserExpression(ast: FormulaNode): String? {
@@ -126,7 +195,16 @@ public object FormulaEvaluator {
                     termExpr
                 }
             }
-            is FormulaNode.Limit -> toMxparserExpression(ast.body)
+            is FormulaNode.Limit -> {
+                val varName = (ast.variable as? FormulaNode.Variable)?.name
+                val targetExpr = toMxparserExpression(ast.target)
+                val bodyExpr = toMxparserExpression(ast.body)
+                if (varName != null && targetExpr != null && bodyExpr != null) {
+                    "limit($varName, $targetExpr, $bodyExpr)"
+                } else {
+                    toMxparserExpression(ast.body)
+                }
+            }
             is FormulaNode.Group -> {
                 if (ast.children.isEmpty()) return null
                 val parts = ast.children.mapNotNull { toMxparserExpression(it) }
@@ -143,9 +221,9 @@ public object FormulaEvaluator {
                 val k = toMxparserExpression(ast.k) ?: return null
                 "choose($n, $k)"
             }
-            is FormulaNode.Cases -> null // piecewise not natively supported by mXparser
-            is FormulaNode.Matrix -> null // matrix not natively supported by mXparser
-            is FormulaNode.Product -> null // product not natively supported by mXparser
+            is FormulaNode.Cases -> null // handled by evaluateDirectly
+            is FormulaNode.Matrix -> null // handled by evaluateDirectly
+            is FormulaNode.Product -> null // handled by evaluateDirectly
         }
     }
 

@@ -39,7 +39,8 @@ class MoleculeRendererTest {
             moleculeType = MoleculeType.SIMPLE,
             atoms = listOf(Atom(id = 0, element = "C", position = Point(50f, 50f), charge = 0, label = "C")),
             bonds = emptyList(),
-            name = "Carbon"
+            name = "Carbon",
+            confidence = 0.85f
         )
         val output = renderer.renderHaptic(molecule)
         assertEquals(1, output.pulses.size)
@@ -53,7 +54,8 @@ class MoleculeRendererTest {
             moleculeType = MoleculeType.SIMPLE,
             atoms = listOf(Atom(id = 0, element = "H", position = Point(50f, 50f), charge = 0, label = "H")),
             bonds = emptyList(),
-            name = "Hydrogen"
+            name = "Hydrogen",
+            confidence = 0.85f
         )
         val output = renderer.renderHaptic(molecule)
         assertEquals(0.5f, output.pulses[0].intensity)
@@ -65,7 +67,8 @@ class MoleculeRendererTest {
             moleculeType = MoleculeType.SIMPLE,
             atoms = listOf(Atom(id = 0, element = "Fe", position = Point(50f, 50f), charge = 0, label = "Fe")),
             bonds = emptyList(),
-            name = "Iron"
+            name = "Iron",
+            confidence = 0.85f
         )
         val output = renderer.renderHaptic(molecule)
         assertEquals(0.95f, output.pulses[0].intensity)
@@ -80,7 +83,8 @@ class MoleculeRendererTest {
                 Atom(id = 1, element = "C", position = Point(10f, 0f), charge = 0, label = "C")
             ),
             bonds = listOf(Bond(from = 0, to = 1, type = BondType.SINGLE, strength = 1.0f)),
-            name = "C-C"
+            name = "C-C",
+            confidence = 0.85f
         )
         val output = renderer.renderHaptic(molecule)
         val bondPulse = output.pulses.last()
@@ -97,7 +101,8 @@ class MoleculeRendererTest {
                 Atom(id = 1, element = "N", position = Point(10f, 0f), charge = 0, label = "N")
             ),
             bonds = listOf(Bond(from = 0, to = 1, type = BondType.TRIPLE, strength = 1.0f)),
-            name = "C≡N"
+            name = "C≡N",
+            confidence = 0.85f
         )
         val output = renderer.renderHaptic(molecule)
         val bondPulse = output.pulses.last()
@@ -118,7 +123,8 @@ class MoleculeRendererTest {
             moleculeType = MoleculeType.SIMPLE,
             atoms = listOf(Atom(id = 0, element = "C", position = Point(50f, 50f), charge = 0, label = "C")),
             bonds = emptyList(),
-            name = "Carbon"
+            name = "Carbon",
+            confidence = 0.85f
         )
         val output = renderer.renderAudio(molecule)
         assertEquals(300f, output.sources[0].frequency)
@@ -131,7 +137,8 @@ class MoleculeRendererTest {
             moleculeType = MoleculeType.SIMPLE,
             atoms = listOf(Atom(id = 0, element = "H", position = Point(50f, 50f), charge = 0, label = "H")),
             bonds = emptyList(),
-            name = "Hydrogen"
+            name = "Hydrogen",
+            confidence = 0.85f
         )
         val output = renderer.renderAudio(molecule)
         assertEquals(600f, output.sources[0].frequency)
@@ -144,7 +151,8 @@ class MoleculeRendererTest {
             moleculeType = MoleculeType.SIMPLE,
             atoms = listOf(Atom(id = 0, element = "O", position = Point(100f, 200f), charge = 0, label = "O")),
             bonds = emptyList(),
-            name = "Oxygen"
+            name = "Oxygen",
+            confidence = 0.85f
         )
         val output = renderer.renderAudio(molecule)
         assertEquals(0.95f, output.sources[0].spatialX)
@@ -172,7 +180,8 @@ class MoleculeRendererTest {
                 Atom(id = 2, element = "O", position = Point(5f, 10f), charge = 0, label = "O")
             ),
             bonds = listOf(Bond(from = 0, to = 2, type = BondType.SINGLE, strength = 1.0f)),
-            name = "Water"
+            name = "Water",
+            confidence = 0.85f
         )
         val output = renderer.renderVoice(molecule)
         assertTrue(output.speech.text.contains("3 atoms"))
@@ -189,7 +198,8 @@ class MoleculeRendererTest {
                 Atom(id = 2, element = "O", position = Point(5f, 10f), charge = 0, label = "O")
             ),
             bonds = emptyList(),
-            name = "Water"
+            name = "Water",
+            confidence = 0.85f
         )
         val output = renderer.renderVoice(molecule)
         assertTrue(output.speech.text.contains("2 H"))
@@ -202,7 +212,8 @@ class MoleculeRendererTest {
             moleculeType = MoleculeType.COMPLEX,
             atoms = listOf(Atom(id = 0, element = "Xx", position = Point(50f, 50f), charge = 0, label = "Xx")),
             bonds = emptyList(),
-            name = "Unknown"
+            name = "Unknown",
+            confidence = 0.85f
         )
         val output = renderer.renderHaptic(molecule)
         assertEquals(0.6f, output.pulses[0].intensity)
@@ -217,7 +228,8 @@ class MoleculeRendererTest {
                 Atom(id = 1, element = "O", position = Point(100f, 200f), z = 50f, charge = 0, label = "O")
             ),
             bonds = emptyList(),
-            name = "Oxygen2"
+            name = "Oxygen2",
+            confidence = 0.85f
         )
         val output = renderer.renderAudio(molecule)
         // maxZ should be 50f.

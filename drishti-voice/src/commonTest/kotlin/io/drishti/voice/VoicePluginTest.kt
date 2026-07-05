@@ -16,9 +16,19 @@
 
 package io.drishti.voice
 
+import io.drishti.core.ContentType
+import io.drishti.core.ExplorationDirection
+import io.drishti.core.FormulaContent
+import io.drishti.core.FormulaType
+import io.drishti.core.ShapeContent
+import io.drishti.core.ShapeType
+import io.drishti.core.TableContent
 import io.drishti.core.TestFixtures
-import io.drishti.core.*
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class VoicePluginTest {
 
@@ -246,7 +256,8 @@ class FormulaSpeechTest {
     fun fromContentFormula() {
         val content = FormulaContent(
             formulaType = FormulaType.ALGEBRAIC,
-            expression = "x + y = z"
+            expression = "x + y = z",
+            confidence = 0.85f
         )
         val speech = FormulaSpeech.fromContent(content)
         assertTrue(speech.startsWith("This is an algebraic formula:"))
@@ -257,7 +268,8 @@ class FormulaSpeechTest {
     fun fromContentCalculusFormula() {
         val content = FormulaContent(
             formulaType = FormulaType.CALCULUS,
-            expression = "\\int_{0}^{1} x^{2} \\, dx"
+            expression = "\\int_{0}^{1} x^{2} \\, dx",
+            confidence = 0.85f
         )
         val speech = FormulaSpeech.fromContent(content)
         assertTrue(speech.contains("calculus formula"))
@@ -268,7 +280,8 @@ class FormulaSpeechTest {
     fun expressionOnlyReturnsJustExpression() {
         val content = FormulaContent(
             formulaType = FormulaType.TRIGONOMETRIC,
-            expression = "\\sin(\\theta)"
+            expression = "\\sin(\\theta)",
+            confidence = 0.85f
         )
         val speech = FormulaSpeech.expressionOnly(content)
         assertEquals("sine of theta", speech)
@@ -385,7 +398,7 @@ class ContentDescriberTest {
     @Test
     fun describeShape() {
         val describer = ContentDescriber()
-        val shape = ShapeContent(ShapeType.CIRCLE, 100f, 35f)
+        val shape = ShapeContent(ShapeType.CIRCLE, 100f, 35f, confidence = 0.85f)
         val desc = describer.describeShape(shape)
         assertTrue(desc.contains("Circle"))
         assertTrue(desc.contains("100.0"))
@@ -394,7 +407,7 @@ class ContentDescriberTest {
     @Test
     fun describeTable() {
         val describer = ContentDescriber()
-        val table = TableContent(3, 4, emptyList())
+        val table = TableContent(3, 4, emptyList(), confidence = 0.85f)
         val desc = describer.describeTable(table)
         assertTrue(desc.contains("3 rows"))
         assertTrue(desc.contains("4 columns"))

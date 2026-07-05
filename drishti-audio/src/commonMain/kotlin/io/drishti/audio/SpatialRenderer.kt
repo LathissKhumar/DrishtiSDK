@@ -130,6 +130,8 @@ public class SpatialRenderer {
             is GraphContent -> renderGraphExploration(item, direction, elementIndex)
             is FormulaContent -> renderFormulaExploration(item, direction, elementIndex)
             is MoleculeContent -> renderMoleculeExploration(item, direction, elementIndex)
+            is ShapeContent -> renderShapeExploration(item, direction, elementIndex)
+            is TableContent -> renderTableExploration(item, direction, elementIndex)
             else -> emptyList()
         }
         return AudioOutput(sources = sources, spatial = true)
@@ -275,6 +277,25 @@ public class SpatialRenderer {
                 is GraphContent -> buildGraphNodes(item, xPosition, index)
                 is FormulaContent -> buildFormulaNodes(item, xPosition, index)
                 is MoleculeContent -> buildMoleculeNodes(item, xPosition, index)
+                is ShapeContent -> listOf(
+                    SceneNode.ShapeNode(
+                        id = "shape_$index",
+                        position = Point(xPosition + item.x + item.width / 2f, item.y + item.height / 2f),
+                        shapeType = item.shapeType,
+                        depth = if (index == focusIndex) 0 else 1
+                    )
+                )
+                is TableContent -> (0 until item.rows).flatMap { row ->
+                    (0 until item.columns).map { col ->
+                        SceneNode.DataPointNode(
+                            id = "table_${index}_r${row}_c${col}",
+                            position = Point(xPosition + col * 30f, row * 30f),
+                            x = col.toFloat(),
+                            y = row.toFloat(),
+                            depth = if (index == focusIndex) 0 else 1
+                        )
+                    }
+                }
                 else -> listOf(
                     SceneNode.TextNode(
                         id = "item_$index",
@@ -475,6 +496,92 @@ public class SpatialRenderer {
             }
             ExplorationDirection.POSITION -> renderCurrentPosition()
         }
+    }
+
+    private fun renderShapeExploration(
+        shape: ShapeContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): List<AudioSource> {
+        val cx = shape.x + shape.width / 2f
+        val cy = shape.y + shape.height / 2f
+        val freq = mapShapeToFrequency(shape.shapeType)
+        return when (direction) {
+            ExplorationDirection.NEXT, ExplorationDirection.POSITION -> listOf(
+                AudioSource(
+                    frequency = freq,
+                    amplitude = (shape.area / 10000f).coerceIn(0.3f, 1.0f),
+                    spatialX = cx.coerceIn(0f, 1f),
+                    spatialY = cy.coerceIn(0f, 1f),
+                    spatialZ = 0.5f
+                )
+            )
+            ExplorationDirection.PREVIOUS -> listOf(
+                AudioSource(
+                    frequency = freq,
+                    amplitude = ((shape.area / 10000f).coerceIn(0.3f, 1.0f) * 0.6f).coerceIn(0f, 1.0f),
+                    spatialX = cx.coerceIn(0f, 1f),
+                    spatialY = cy.coerceIn(0f, 1f),
+                    spatialZ = 0.5f
+                )
+            )
+        }
+    }
+
+    private fun renderTableExploration(
+        table: TableContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): List<AudioSource> {
+        val cellWidth = 1.0f / table.columns
+        val cellHeight = 1.0f / table.rows
+        return when (direction) {
+            ExplorationDirection.POSITION -> renderCurrentPosition()
+            ExplorationDirection.NEXT -> {
+                val idx = elementIndex.coerceIn(-1, table.rows * table.columns - 1)
+                val nextIdx = idx + 1
+                val row = nextIdx / table.columns
+                val col = nextIdx % table.columns
+                if (row < table.rows && col < table.columns) {
+                    listOf(
+                        AudioSource(
+                            frequency = 300f + (row * 50f),
+                            amplitude = 0.4f,
+                            spatialX = (cellWidth * (col + 0.5f)).coerceIn(0f, 1f),
+                            spatialY = (cellHeight * (row + 0.5f)).coerceIn(0f, 1f),
+                            spatialZ = 0.5f
+                        )
+                    )
+                } else emptyList()
+            }
+            ExplorationDirection.PREVIOUS -> {
+                val idx = elementIndex.coerceIn(1, table.rows * table.columns)
+                val prevIdx = idx - 1
+                val row = prevIdx / table.columns
+                val col = prevIdx % table.columns
+                if (row in 0 until table.rows && col in 0 until table.columns) {
+                    listOf(
+                        AudioSource(
+                            frequency = 300f + (row * 50f),
+                            amplitude = 0.3f,
+                            spatialX = (cellWidth * (col + 0.5f)).coerceIn(0f, 1f),
+                            spatialY = (cellHeight * (row + 0.5f)).coerceIn(0f, 1f),
+                            spatialZ = 0.5f
+                        )
+                    )
+                } else emptyList()
+            }
+        }
+    }
+
+    private fun mapShapeToFrequency(shapeType: ShapeType): Float = when (shapeType) {
+        ShapeType.RECTANGLE -> 440f
+        ShapeType.CIRCLE -> 523f
+        ShapeType.TRIANGLE -> 659f
+        ShapeType.ELLIPSE -> 494f
+        ShapeType.LINE -> 330f
+        ShapeType.POLYGON -> 587f
+        ShapeType.UNKNOWN -> 440f
     }
 
     private fun renderCurrentPosition(): List<AudioSource> {

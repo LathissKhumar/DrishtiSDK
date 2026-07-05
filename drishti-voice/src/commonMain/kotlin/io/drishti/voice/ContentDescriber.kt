@@ -16,7 +16,11 @@
 
 package io.drishti.voice
 
-import io.drishti.core.*
+import io.drishti.core.FormulaContent
+import io.drishti.core.GraphContent
+import io.drishti.core.MoleculeContent
+import io.drishti.core.ShapeContent
+import io.drishti.core.TableContent
 
 /**
  * Generates descriptions for content items.

@@ -64,7 +64,7 @@ public class SonificationMapper {
      */
     public fun mapToPanning(value: Float, min: Float, max: Float): Float {
         if (min == max) return 0f
-        return ((value - min) / (max - min)).coerceIn(-1f, 1f)
+        return (((value - min) / (max - min)) * 2f - 1f).coerceIn(-1f, 1f)
     }
 
     /**

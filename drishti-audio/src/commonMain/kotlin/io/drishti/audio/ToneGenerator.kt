@@ -81,15 +81,26 @@ public class ToneGenerator {
 
     /**
      * Apply amplitude envelope to samples.
+     *
+     * All parameters are time proportions (0.0-1.0) that must sum to <= 1.0.
+     * Note: [sustainDuration] is the time fraction for the sustain phase, NOT an amplitude level.
+     * The sustain amplitude is fixed at 0.7.
+     *
+     * @param samples The audio samples to apply the envelope to.
+     * @param attack Time proportion for the attack phase (0.0-1.0).
+     * @param decay Time proportion for the decay phase (0.0-1.0).
+     * @param sustainDuration Time proportion for the sustain phase (0.0-1.0), NOT an amplitude level.
+     * @param release Time proportion for the release phase (0.0-1.0).
+     * @return The samples with the ADSR envelope applied.
      */
-    public fun applyEnvelope(samples: FloatArray, attack: Float = 0.1f, decay: Float = 0.1f, sustain: Float = 0.6f, release: Float = 0.2f): FloatArray {
-        require(attack + decay + sustain + release <= 1.0f) {
-            "ADSR parameters must sum to <= 1.0, was ${attack + decay + sustain + release}"
+    public fun applyEnvelope(samples: FloatArray, attack: Float = 0.1f, decay: Float = 0.1f, sustainDuration: Float = 0.6f, release: Float = 0.2f): FloatArray {
+        require(attack + decay + sustainDuration + release <= 1.0f) {
+            "ADSR parameters must sum to <= 1.0, was ${attack + decay + sustainDuration + release}"
         }
         val totalSamples = samples.size
         val attackSamples = (totalSamples * attack).toInt()
         val decaySamples = (totalSamples * decay).toInt()
-        val sustainSamples = (totalSamples * sustain).toInt()
+        val sustainSamples = (totalSamples * sustainDuration).toInt()
         val releaseSamples = (totalSamples * release).toInt()
 
         return FloatArray(totalSamples) { i ->

@@ -96,8 +96,6 @@ public class AudioHAL(private val context: Context) {
     }
 
     private fun playAudioTrack(buffer: ShortArray, sampleRate: Int, channelMask: Int) {
-        val durationMs = 500L
-
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)

@@ -21,6 +21,7 @@ import io.drishti.core.ContentType
 import io.drishti.core.DetectorPlugin
 import io.drishti.core.FormulaType
 import io.drishti.core.Frame
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Detects mathematical formula content using LaTeX parsing.
@@ -51,7 +52,9 @@ public class FormulaDetector : DetectorPlugin {
     override suspend fun detect(frame: Frame): ContentItem? {
         val text = try {
             frame.data?.decodeToString()
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
             null
         } ?: return null
         if (text.isBlank()) return null

@@ -238,6 +238,52 @@ class ExplorationSessionTest {
         assertEquals(0, session.position().current)
     }
 
+    // CORE-2: describeElement must throw on out-of-bounds index, not return ""
+    @Test
+    fun describeElementThrowsOnOOBGraphIndex() = runTest {
+        val graph = TestFixtures.graphContent(dataPoints = listOf(DataPoint(1f, 2f)))
+        val session = ExplorationSession(listOf(graph), emptyList())
+        session.next()
+        val ex = assertFailsWith<IllegalArgumentException> {
+            session.describeElement(graph, 99)
+        }
+        assertTrue(ex.message!!.contains("99"), "Exception message should reference index 99: ${ex.message}")
+    }
+
+    @Test
+    fun describeElementThrowsOnOOBFormulaIndex() = runTest {
+        val formula = TestFixtures.formulaContent()
+        val session = ExplorationSession(listOf(formula), emptyList())
+        session.next()
+        val ex = assertFailsWith<IllegalArgumentException> {
+            session.describeElement(formula, 999)
+        }
+        assertTrue(ex.message!!.contains("999"), "Exception message should reference index 999: ${ex.message}")
+    }
+
+    @Test
+    fun describeElementThrowsOnOOBMoleculeIndex() = runTest {
+        val molecule = TestFixtures.moleculeContent(
+            atoms = listOf(Atom(0, "O", Point(0f, 0f)))
+        )
+        val session = ExplorationSession(listOf(molecule), emptyList())
+        session.next()
+        val ex = assertFailsWith<IllegalArgumentException> {
+            session.describeElement(molecule, 5)
+        }
+        assertTrue(ex.message!!.contains("5"), "Exception message should reference index 5: ${ex.message}")
+    }
+
+    @Test
+    fun describeElementReturnsValidDescriptionForGraph() = runTest {
+        val graph = TestFixtures.graphContent(dataPoints = listOf(DataPoint(1f, 2f), DataPoint(3f, 4f)))
+        val session = ExplorationSession(listOf(graph), emptyList())
+        session.next()
+        val description = session.describeElement(graph, 0)
+        assertTrue(description.contains("Point 1 of 2"), "Description should contain point info: $description")
+        assertTrue(description.contains("x = 1.0"), "Description should contain x value: $description")
+    }
+
     @Test
     fun exploreFeedbackInvokesRenderers() = runTest {
         val graph = TestFixtures.graphContent(dataPoints = listOf(DataPoint(1f, 2f)))

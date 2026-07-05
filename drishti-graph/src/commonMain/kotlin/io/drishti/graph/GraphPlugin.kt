@@ -173,9 +173,8 @@ public class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voice
         if (graphItems.isEmpty()) {
             return HapticOutput(pulses = emptyList(), pattern = "empty")
         }
-        val pulses = items.mapIndexedNotNull { index, item ->
+        val pulses = graphItems.mapIndexedNotNull { index, item ->
             if (focusIndex in items.indices && index != focusIndex) return@mapIndexedNotNull null
-            if (item !is GraphContent) return@mapIndexedNotNull null
             renderer.renderHaptic(item).pulses
         }.flatten()
         val pattern = if (items.size > 1 && focusIndex in items.indices) {
@@ -196,9 +195,8 @@ public class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voice
         if (graphItems.isEmpty()) {
             return AudioOutput(sources = emptyList(), spatial = true)
         }
-        val sources = items.mapIndexedNotNull { index, item ->
+        val sources = graphItems.mapIndexedNotNull { index, item ->
             if (focusIndex in items.indices && index != focusIndex) return@mapIndexedNotNull null
-            if (item !is GraphContent) return@mapIndexedNotNull null
             renderer.renderAudio(item).sources
         }.flatten()
         return AudioOutput(sources = sources, spatial = true)
@@ -217,9 +215,8 @@ public class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voice
                 language = "en-US"
             )
         }
-        val speeches = items.mapIndexedNotNull { index, item ->
+        val speeches = graphItems.mapIndexedNotNull { index, item ->
             if (focusIndex in items.indices && index != focusIndex) return@mapIndexedNotNull null
-            if (item !is GraphContent) return@mapIndexedNotNull null
             val speech = renderer.renderVoice(item).speech
             if (focusIndex in items.indices && index == focusIndex) {
                 SpeechSegment(
@@ -328,7 +325,7 @@ public class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voice
             }
             val point = item.dataPoints.getOrNull(idx)
             val text = if (point != null) {
-                "Point ${idx + 1}: x=${"%.1f".format(point.x)}, y=${"%.1f".format(point.y)}${point.label?.let { ", label=$it" } ?: ""}"
+                "Point ${idx + 1}: x=${formatDecimal(point.x)}, y=${formatDecimal(point.y)}${point.label?.let { ", label=$it" } ?: ""}"
             } else {
                 when (direction) {
                     ExplorationDirection.NEXT -> "No more data points"
@@ -342,5 +339,10 @@ public class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voice
             speech = SpeechSegment(text = "Exploration", rate = 1.0f, pitch = 1.0f),
             language = "en-US"
         )
+    }
+
+    private fun formatDecimal(value: Float): String {
+        val rounded = kotlin.math.round(value * 10) / 10
+        return rounded.toString()
     }
 }

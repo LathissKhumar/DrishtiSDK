@@ -16,7 +16,16 @@
 
 package io.drishti.voice
 
-import io.drishti.core.*
+import io.drishti.core.ContentItem
+import io.drishti.core.ExplorationDirection
+import io.drishti.core.FormulaContent
+import io.drishti.core.GraphContent
+import io.drishti.core.MoleculeContent
+import io.drishti.core.ShapeContent
+import io.drishti.core.SpeechSegment
+import io.drishti.core.TableContent
+import io.drishti.core.VoiceOutput
+import io.drishti.core.VoiceOutputRenderer
 
 /**
  * Voice renderer plugin facade.

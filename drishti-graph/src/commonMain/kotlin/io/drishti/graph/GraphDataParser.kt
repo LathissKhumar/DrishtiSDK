@@ -102,6 +102,17 @@ public data class CsvParseResult(
  */
 public class GraphDataParser {
 
+    internal companion object ChartInferenceDefaults {
+        /** Max data points to consider as bar chart. */
+        const val BAR_CHART_MAX_POINTS = 8
+        /** Min data points for line chart inference. */
+        const val LINE_CHART_MIN_POINTS = 10
+        /** Min data points for scatter plot inference. */
+        const val SCATTER_MIN_POINTS = 20
+        /** Default chart type when inference fails. */
+        const val DEFAULT_CHART_TYPE = "line_chart"
+    }
+
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
@@ -168,13 +179,14 @@ public class GraphDataParser {
 
         val xIndex = headers.indexOfFirst { it == "x" || it == "category" || it == "label" || it == "name" }
             .coerceAtLeast(0)
-        val yIndex = headers.indexOfFirst { it == "y" || it == "value" || it == "count" }
+        var yIndex = headers.indexOfFirst { it == "y" || it == "value" || it == "count" }
             .coerceAtLeast(1).coerceAtMost(headers.size - 1)
         val labelIndex = headers.indexOfFirst { it == "label" || it == "name" || it == "series" }
 
         val warnings = mutableListOf<String>()
         if (xIndex == yIndex) {
             warnings.add("Could not distinguish x and y columns, using first two numeric columns")
+            yIndex = (xIndex + 1).coerceAtMost(headers.size - 1)
         }
 
         val dataPoints = dataLines.mapNotNull { line ->
@@ -194,7 +206,7 @@ public class GraphDataParser {
         val inferredType = chartType == null
         val resolvedType = chartType ?: inferChartType(dataPoints)
 
-        val input = GraphDataInput(
+        val graphInput = GraphDataInput(
             type = resolvedType,
             title = title,
             x_label = headers.getOrElse(xIndex) { "X" },
@@ -204,7 +216,7 @@ public class GraphDataParser {
         )
 
         val parseErrors = mutableListOf<String>()
-        val graph = buildGraphContent(input, resolvedType, errors = parseErrors)
+        val graph = buildGraphContent(graphInput, resolvedType, errors = parseErrors)
         warnings.addAll(parseErrors)
         return ParseResult(graph = graph, warnings = warnings, inferredType = inferredType)
     }
@@ -363,13 +375,13 @@ public class GraphDataParser {
         val xRange = if (xValues.isNotEmpty()) {
             xValues.min()..xValues.max()
         } else {
-            0f..100f
+            0f..0f
         }
 
         val yRange = if (yValues.isNotEmpty()) {
             yValues.min()..yValues.max()
         } else {
-            0f..100f
+            0f..0f
         }
 
         return GraphContent(
@@ -397,17 +409,23 @@ public class GraphDataParser {
         }
     }
 
+    /**
+     * Infer chart type from data shape when no explicit type is provided.
+     *
+     * Heuristic: labeled non-numeric data → pie; small numeric sets → bar;
+     * large sets → scatter; everything else → line.
+     */
     internal fun inferChartType(dataPoints: List<DataPointInput>): String {
-        if (dataPoints.isEmpty()) return "line_chart"
+        if (dataPoints.isEmpty()) return ChartInferenceDefaults.DEFAULT_CHART_TYPE
 
         val allNumeric = dataPoints.all { it.x.toFloatOrNull() != null && it.y.toFloatOrNull() != null }
         val hasLabels = dataPoints.any { it.label != null }
 
         return when {
             hasLabels && !allNumeric -> "pie_chart"
-            dataPoints.size in 2..8 && allNumeric -> "bar_chart"
-            dataPoints.size > 20 -> "scatter_plot"
-            else -> "line_chart"
+            dataPoints.size in 2..ChartInferenceDefaults.BAR_CHART_MAX_POINTS && allNumeric -> "bar_chart"
+            dataPoints.size > ChartInferenceDefaults.SCATTER_MIN_POINTS -> "scatter_plot"
+            else -> ChartInferenceDefaults.DEFAULT_CHART_TYPE
         }
     }
 

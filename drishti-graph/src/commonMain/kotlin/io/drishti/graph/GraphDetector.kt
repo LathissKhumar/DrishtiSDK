@@ -40,10 +40,12 @@ import io.drishti.core.*
  * val graph = detector.detectFromOcrText(ocrOutput)
  * ```
  */
-public class GraphDetector : DetectorPlugin {
+public class GraphDetector(
+    private val defaultConfidence: Float = 0.95f
+) : DetectorPlugin {
 
     override val contentType: ContentType = ContentType.GRAPH
-    override val confidence: Float = 0.95f
+    override val confidence: Float get() = defaultConfidence
 
     private val extractor = DataExtractor()
 
@@ -185,8 +187,9 @@ public class GraphDetector : DetectorPlugin {
         // Try to extract numeric pairs from text
         val numericPairs = extractNumericPairs(trimmed)
         if (numericPairs.size >= 2) {
+            val inferredType = inferChartTypeFromText(trimmed)
             return detectFromDataPoints(
-                type = "line_chart",
+                type = inferredType,
                 title = title,
                 points = numericPairs
             )
@@ -203,14 +206,26 @@ public class GraphDetector : DetectorPlugin {
      */
     public fun dataExtractor(): DataExtractor = extractor
 
+    private fun inferChartTypeFromText(text: String): String {
+        val lower = text.lowercase()
+        return when {
+            "bar" in lower -> "bar_chart"
+            "pie" in lower -> "pie_chart"
+            "scatter" in lower -> "scatter_plot"
+            "area" in lower -> "area_chart"
+            "histogram" in lower || "hist" in lower -> "histogram"
+            else -> GraphDataParser.ChartInferenceDefaults.DEFAULT_CHART_TYPE
+        }
+    }
+
     private fun extractNumericPairs(text: String): List<Pair<Number, Number>> {
         val pairs = mutableListOf<Pair<Number, Number>>()
-        val numberPattern = Regex("""-?\d+\.?\d*""")
+        val numberPattern = Regex("""-?\d+\.?\d*([eE][+-]?\d+)?""")
 
         val lines = text.lines().filter { it.isNotBlank() }
         for (line in lines) {
             val numbers = numberPattern.findAll(line).map {
-                it.value.toFloatOrNull() ?: it.value.toDoubleOrNull() ?: return@map null
+                it.value.toDoubleOrNull() ?: it.value.toFloatOrNull() ?: return@map null
             }.filterNotNull().toList()
 
             if (numbers.size >= 2) {

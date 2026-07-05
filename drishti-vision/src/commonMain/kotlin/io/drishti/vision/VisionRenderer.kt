@@ -22,7 +22,11 @@ import io.drishti.core.ContentItem
 import io.drishti.core.ExplorationDirection
 import io.drishti.core.HapticOutput
 import io.drishti.core.HapticPulse
+import io.drishti.core.FormulaContent
+import io.drishti.core.GraphContent
+import io.drishti.core.MoleculeContent
 import io.drishti.core.ShapeContent
+import io.drishti.core.TableContent
 import io.drishti.core.VoiceOutput
 import io.drishti.core.SpeechSegment
 
@@ -208,16 +212,18 @@ public class VisionRenderer {
 
     private fun describeItems(items: List<ContentItem>): String {
         if (items.isEmpty()) return "No visual content detected."
-
-        val shapes = items.filterIsInstance<ShapeContent>()
         return buildString {
-            if (shapes.isNotEmpty()) {
-                append("${shapes.size} shape(s) detected: ")
-                append(shapes.joinToString(", ") { shape ->
-                    "${shape.shapeType.name.lowercase()} with area ${formatArea(shape.area)}"
-                })
-                append(".")
+            items.forEach { item ->
+                when (item) {
+                    is ShapeContent -> append("${item.shapeType.name.lowercase()} shape with area ${formatArea(item.area)}, ")
+                    is TableContent -> append("table with ${item.rows} rows and ${item.columns} columns, ")
+                    is GraphContent -> append("${item.graphType.name.lowercase()} graph, ")
+                    is FormulaContent -> append("formula '${item.expression.take(50)}', ")
+                    is MoleculeContent -> append("molecule ${item.name.ifEmpty { item.canonicalSmiles }}, ")
+                    else -> append("content, ")
+                }
             }
+            if (length > 2) deleteCharAt(length - 2)
         }
     }
 
@@ -262,11 +268,7 @@ public class VisionRenderer {
         val duration = if (direction == ExplorationDirection.POSITION) 150L else 100L
         return when (direction) {
             ExplorationDirection.NEXT -> {
-                if (elementIndex >= 0) {
-                    listOf(HapticPulse(intensity = intensity, duration = duration, x = sx, y = sy))
-                } else {
-                    emptyList()
-                }
+                listOf(HapticPulse(intensity = intensity, duration = duration, x = sx, y = sy))
             }
             ExplorationDirection.PREVIOUS -> {
                 if (elementIndex > 0) {
@@ -291,11 +293,7 @@ public class VisionRenderer {
         val freq = if (direction == ExplorationDirection.POSITION) 800f else 440f
         return when (direction) {
             ExplorationDirection.NEXT -> {
-                if (elementIndex >= 0) {
-                    listOf(AudioSource(frequency = freq, amplitude = amplitude, spatialX = sx, spatialY = sy, spatialZ = 0.5f))
-                } else {
-                    emptyList()
-                }
+                listOf(AudioSource(frequency = freq, amplitude = amplitude, spatialX = sx, spatialY = sy, spatialZ = 0.5f))
             }
             ExplorationDirection.PREVIOUS -> {
                 if (elementIndex > 0) {
@@ -320,7 +318,7 @@ public class VisionRenderer {
             "and perimeter ${"%.1f".format(shape.perimeter)}."
         return when (direction) {
             ExplorationDirection.NEXT -> {
-                if (elementIndex >= 0) description else "No shape at this position."
+                description
             }
             ExplorationDirection.PREVIOUS -> {
                 if (elementIndex > 0) description else "At the first shape."

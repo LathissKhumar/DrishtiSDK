@@ -143,12 +143,13 @@ public class DataExtractor {
             properties.forEach { (key, value) ->
                 when (key) {
                     "data" -> {
-                        // Try to parse data as JSON array
+                        // JSON→CSV fallback: try parsing as JSON array first,
+                        // fall back to semicolon/comma-separated key-value pairs
                         try {
                             val dataElement = Json.parseToJsonElement(value)
                             put(key, dataElement)
-                        } catch (e: Exception) {
-                            // Treat as comma-separated values
+                        } catch (e: IllegalArgumentException) {
+                            if (e is kotlinx.coroutines.CancellationException) throw e
                             val points = value.split(";").mapNotNull { pair ->
                                 val parts = pair.split(",")
                                 if (parts.size >= 2) {

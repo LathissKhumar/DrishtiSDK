@@ -356,7 +356,19 @@ public class FormulaRenderer {
         return SpeechSegment(text = speechText, rate = 0.9f, pitch = 1.0f)
     }
 
+    public companion object {
+        /**
+         * Divisor that converts raw symbol coordinates (in pixel-range values)
+         * to normalized [0,1] spatial coordinates for haptic/audio output.
+         *
+         * Raw coordinates are typically in the range 0–200; dividing by this
+         * constant maps them into the normalized space, then [coerceIn]
+         * clamps to [0.05, 0.95] to avoid edge clipping.
+         */
+        private const val COORDINATE_SCALE = 200f
+    }
+
     private fun normalizePosition(value: Float): Float {
-        return (value / 200f).coerceIn(0.05f, 0.95f)
+        return (value / COORDINATE_SCALE).coerceIn(0.05f, 0.95f)
     }
 }

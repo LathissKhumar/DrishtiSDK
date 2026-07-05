@@ -192,7 +192,10 @@ public class PatternBuilder private constructor(
     /**
      * Build the haptic pattern from accumulated primitives.
      *
-     * @return A complete [HapticPattern] with all accumulated primitives
+     * Note: This builder is single-use. After build(), internal state is cleared
+     * and the builder cannot be reused. Create a new PatternBuilder for the next pattern.
+     *
+     * @return The constructed [HapticPattern].
      * @throws IllegalStateException if no primitives have been added
      */
     public fun build(): HapticPattern {

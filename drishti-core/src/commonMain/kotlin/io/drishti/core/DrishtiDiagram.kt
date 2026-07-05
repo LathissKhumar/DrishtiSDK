@@ -30,6 +30,8 @@ public class DrishtiDiagram(
             ?: return Result.failure(IllegalStateException("No haptic renderer registered. Add HapticsPlugin to Drishti.Builder."))
         return try {
             Result.success(hapticRenderer.renderHaptic(contentItems))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -40,6 +42,8 @@ public class DrishtiDiagram(
             ?: return Result.failure(IllegalStateException("No audio renderer registered. Add AudioPlugin to Drishti.Builder."))
         return try {
             Result.success(audioRenderer.renderAudio(contentItems))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -50,6 +54,8 @@ public class DrishtiDiagram(
             ?: return Result.failure(IllegalStateException("No voice renderer registered. Add VoicePlugin to Drishti.Builder."))
         return try {
             Result.success(voiceRenderer.renderVoice(contentItems))
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }

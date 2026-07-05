@@ -181,31 +181,40 @@ public class ExplorationSession(
     /**
      * Render exploration feedback using haptics.
      */
-    public suspend fun exploreHaptic(direction: ExplorationDirection): HapticOutput? = mutex.withLock {
-        if (currentItemIndex !in contentItems.indices) return@withLock null
-        val renderer = renderers.filterIsInstance<HapticsRenderer>().firstOrNull()
-            ?: return@withLock null
-        renderer.renderExplorationHaptic(contentItems[currentItemIndex], direction, currentElementIndex)
+    public suspend fun exploreHaptic(direction: ExplorationDirection): HapticOutput? {
+        val (renderer, item, elementIndex) = mutex.withLock {
+            if (currentItemIndex !in contentItems.indices) return null
+            val r = renderers.filterIsInstance<HapticsRenderer>().firstOrNull()
+                ?: return null
+            Triple(r, contentItems[currentItemIndex], currentElementIndex)
+        }
+        return renderer.renderExplorationHaptic(item, direction, elementIndex)
     }
 
     /**
      * Render exploration feedback using audio.
      */
-    public suspend fun exploreAudio(direction: ExplorationDirection): AudioOutput? = mutex.withLock {
-        if (currentItemIndex !in contentItems.indices) return@withLock null
-        val renderer = renderers.filterIsInstance<AudioRenderer>().firstOrNull()
-            ?: return@withLock null
-        renderer.renderExplorationAudio(contentItems[currentItemIndex], direction, currentElementIndex)
+    public suspend fun exploreAudio(direction: ExplorationDirection): AudioOutput? {
+        val (renderer, item, elementIndex) = mutex.withLock {
+            if (currentItemIndex !in contentItems.indices) return null
+            val r = renderers.filterIsInstance<AudioRenderer>().firstOrNull()
+                ?: return null
+            Triple(r, contentItems[currentItemIndex], currentElementIndex)
+        }
+        return renderer.renderExplorationAudio(item, direction, elementIndex)
     }
 
     /**
      * Render exploration feedback using voice.
      */
-    public suspend fun exploreVoice(direction: ExplorationDirection): VoiceOutput? = mutex.withLock {
-        if (currentItemIndex !in contentItems.indices) return@withLock null
-        val renderer = renderers.filterIsInstance<VoiceOutputRenderer>().firstOrNull()
-            ?: return@withLock null
-        renderer.renderExplorationVoice(contentItems[currentItemIndex], direction, currentElementIndex)
+    public suspend fun exploreVoice(direction: ExplorationDirection): VoiceOutput? {
+        val (renderer, item, elementIndex) = mutex.withLock {
+            if (currentItemIndex !in contentItems.indices) return null
+            val r = renderers.filterIsInstance<VoiceOutputRenderer>().firstOrNull()
+                ?: return null
+            Triple(r, contentItems[currentItemIndex], currentElementIndex)
+        }
+        return renderer.renderExplorationVoice(item, direction, elementIndex)
     }
 
     private fun getElementCount(item: ContentItem): Int = when (item) {
@@ -215,24 +224,27 @@ public class ExplorationSession(
         else -> 0
     }
 
-    private fun describeElement(item: ContentItem, index: Int): String = when (item) {
+    internal fun describeElement(item: ContentItem, index: Int): String = when (item) {
         is GraphContent -> {
-            val point = item.dataPoints.getOrNull(index)
-            if (point != null) {
-                "Point ${index + 1} of ${item.dataPoints.size}: x = ${point.x}, y = ${point.y}${point.label?.let { ", label = $it" } ?: ""}"
-            } else ""
+            require(index in item.dataPoints.indices) {
+                "Element index $index out of range for graph with ${item.dataPoints.size} points"
+            }
+            val point = item.dataPoints[index]
+            "Point ${index + 1} of ${item.dataPoints.size}: x = ${point.x}, y = ${point.y}${point.label?.let { ", label = $it" } ?: ""}"
         }
         is FormulaContentItem -> {
-            val symbol = item.symbols.getOrNull(index)
-            if (symbol != null) {
-                "Symbol ${index + 1} of ${item.symbols.size}: ${symbol.value}"
-            } else ""
+            require(index in item.symbols.indices) {
+                "Element index $index out of range for formula with ${item.symbols.size} symbols"
+            }
+            val symbol = item.symbols[index]
+            "Symbol ${index + 1} of ${item.symbols.size}: ${symbol.value}"
         }
         is MoleculeContent -> {
-            val atom = item.atoms.getOrNull(index)
-            if (atom != null) {
-                "Atom ${index + 1} of ${item.atoms.size}: ${atom.element} at x = ${atom.position.x}, y = ${atom.position.y}"
-            } else ""
+            require(index in item.atoms.indices) {
+                "Element index $index out of range for molecule with ${item.atoms.size} atoms"
+            }
+            val atom = item.atoms[index]
+            "Atom ${index + 1} of ${item.atoms.size}: ${atom.element} at x = ${atom.position.x}, y = ${atom.position.y}"
         }
         else -> ""
     }

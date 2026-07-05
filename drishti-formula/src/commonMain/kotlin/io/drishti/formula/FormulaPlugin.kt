@@ -109,6 +109,19 @@ public class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voi
      */
     public fun renderHaptic(formula: ParsedFormula): HapticOutput = renderer.renderHaptic(formula)
 
+    private fun computeExplorationIndex(
+        elementIndex: Int,
+        direction: ExplorationDirection,
+        symbolCount: Int
+    ): Int {
+        if (elementIndex >= 0) return elementIndex
+        return when (direction) {
+            ExplorationDirection.NEXT -> 0
+            ExplorationDirection.PREVIOUS -> symbolCount - 1
+            ExplorationDirection.POSITION -> 0
+        }
+    }
+
     override fun renderExplorationHaptic(
         item: ContentItem,
         direction: ExplorationDirection,
@@ -116,13 +129,7 @@ public class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voi
     ): HapticOutput {
         val base = when (item) {
             is ParsedFormula -> {
-                val idx = if (elementIndex >= 0) elementIndex else {
-                    when (direction) {
-                        ExplorationDirection.NEXT -> 0
-                        ExplorationDirection.PREVIOUS -> item.symbols.size - 1
-                        ExplorationDirection.POSITION -> 0
-                    }
-                }
+                val idx = computeExplorationIndex(elementIndex, direction, item.symbols.size)
                 renderer.renderHaptic(item).let { baseOutput ->
                     val singlePulse = baseOutput.pulses.getOrNull(idx)
                     HapticOutput(
@@ -132,13 +139,7 @@ public class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voi
                 }
             }
             is FormulaContent -> {
-                val idx = if (elementIndex >= 0) elementIndex else {
-                    when (direction) {
-                        ExplorationDirection.NEXT -> 0
-                        ExplorationDirection.PREVIOUS -> item.symbols.size - 1
-                        ExplorationDirection.POSITION -> 0
-                    }
-                }
+                val idx = computeExplorationIndex(elementIndex, direction, item.symbols.size)
                 renderer.renderHaptic(item).let { baseOutput ->
                     val singlePulse = baseOutput.pulses.getOrNull(idx)
                     HapticOutput(
@@ -178,13 +179,7 @@ public class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voi
     ): AudioOutput {
         val base = when (item) {
             is ParsedFormula -> {
-                val idx = if (elementIndex >= 0) elementIndex else {
-                    when (direction) {
-                        ExplorationDirection.NEXT -> 0
-                        ExplorationDirection.PREVIOUS -> item.symbols.size - 1
-                        ExplorationDirection.POSITION -> 0
-                    }
-                }
+                val idx = computeExplorationIndex(elementIndex, direction, item.symbols.size)
                 renderer.renderAudio(item).let { baseOutput ->
                     val singleSource = baseOutput.sources.getOrNull(idx)
                     AudioOutput(
@@ -194,13 +189,7 @@ public class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voi
                 }
             }
             is FormulaContent -> {
-                val idx = if (elementIndex >= 0) elementIndex else {
-                    when (direction) {
-                        ExplorationDirection.NEXT -> 0
-                        ExplorationDirection.PREVIOUS -> item.symbols.size - 1
-                        ExplorationDirection.POSITION -> 0
-                    }
-                }
+                val idx = computeExplorationIndex(elementIndex, direction, item.symbols.size)
                 renderer.renderAudio(item).let { baseOutput ->
                     val singleSource = baseOutput.sources.getOrNull(idx)
                     AudioOutput(
@@ -258,13 +247,7 @@ public class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voi
         elementIndex: Int
     ): VoiceOutput = when (item) {
         is ParsedFormula -> {
-            val idx = if (elementIndex >= 0) elementIndex else {
-                when (direction) {
-                    ExplorationDirection.NEXT -> 0
-                    ExplorationDirection.PREVIOUS -> item.symbols.size - 1
-                    ExplorationDirection.POSITION -> 0
-                }
-            }
+            val idx = computeExplorationIndex(elementIndex, direction, item.symbols.size)
             val symbol = item.symbols.getOrNull(idx)
             val text = if (symbol != null) {
                 "Symbol ${idx + 1}: ${symbol.value}"
@@ -278,13 +261,7 @@ public class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voi
             VoiceOutput(speech = SpeechSegment(text = text, rate = 0.9f, pitch = 1.0f), language = "en-US")
         }
         is FormulaContent -> {
-            val idx = if (elementIndex >= 0) elementIndex else {
-                when (direction) {
-                    ExplorationDirection.NEXT -> 0
-                    ExplorationDirection.PREVIOUS -> item.symbols.size - 1
-                    ExplorationDirection.POSITION -> 0
-                }
-            }
+            val idx = computeExplorationIndex(elementIndex, direction, item.symbols.size)
             val symbol = item.symbols.getOrNull(idx)
             val text = if (symbol != null) {
                 "Symbol ${idx + 1}: ${symbol.value}"

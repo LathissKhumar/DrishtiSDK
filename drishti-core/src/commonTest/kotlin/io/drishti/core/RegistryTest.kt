@@ -220,6 +220,16 @@ class RegistryTest {
     }
 
     @Test
+    fun registerDetectorRejectsOutOfRangeConfidence() {
+        val registry = PluginRegistry()
+        val detector = StubDetector(ContentType.GRAPH, confidence = 1.5f)
+        val ex = kotlin.test.assertFailsWith<IllegalArgumentException> {
+            registry.registerDetector(detector)
+        }
+        assertTrue(ex.message!!.contains("confidence"))
+    }
+
+    @Test
     fun validateEmptyRegistryIsCompatible() {
         val registry = PluginRegistry()
         val report = registry.validate()

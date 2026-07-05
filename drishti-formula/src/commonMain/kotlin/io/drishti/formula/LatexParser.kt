@@ -21,9 +21,10 @@ import io.drishti.core.SymbolType
 /**
  * Recursive descent parser that converts LaTeX math strings into [FormulaNode] ASTs.
  *
- * Supports: fractions, roots, integrals, summations, limits, Greek letters,
+ * Supports: fractions, roots, integrals, contour integrals, summations, limits, Greek letters,
  * trigonometric / logarithmic functions, superscripts, subscripts, standard arithmetic,
- * absolute value, matrix/cases environments, and delimited groups via \left/\right.
+ * absolute value, matrix/cases environments, delimited groups via \left/\right,
+ * and text style commands (\mathbf, \mathrm, \mathcal, \text, \operatorname).
  *
  * Usage:
  * ```
@@ -453,6 +454,62 @@ public object LatexParser {
                     FormulaNode.Binomial(n, k)
                 }
                 "mathbb" -> parseBlock()
+                // Contour integral — same structure as \int but with contour semantics
+                "oint" -> {
+                    val lower = if (peek() is Token.Underscore) {
+                        advance(); parseAtom()
+                    } else null
+                    val upper = if (peek() is Token.Caret) {
+                        advance(); parseAtom()
+                    } else null
+                    val integrand = parseMulDiv()
+                    var differential: FormulaNode? = null
+                    if (peek() is Token.Letter && (peek() as Token.Letter).ch == 'd') {
+                        val nextPos = position + 1
+                        if (nextPos < tokens.size && tokens[nextPos] is Token.Letter) {
+                            advance() // consume 'd'
+                            val varTok = advance() as Token.Letter
+                            differential = FormulaNode.Variable(varTok.ch.toString())
+                        }
+                    }
+                    while (peek() is Token.Letter) advance()
+                    FormulaNode.Integral(lower, upper, integrand, differential)
+                }
+                // Bold math — parse block, return as VariableNode (bold is a rendering concern)
+                "mathbf" -> {
+                    val content = parseBlock()
+                    variableFromNode(content)
+                }
+                // Roman math — parse block, return as VariableNode (roman is a rendering concern)
+                "mathrm" -> {
+                    val content = parseBlock()
+                    variableFromNode(content)
+                }
+                // Calligraphic math — parse block, return as VariableNode
+                "mathcal" -> {
+                    val content = parseBlock()
+                    variableFromNode(content)
+                }
+                // Text content — parse block, return as VariableNode with text name
+                "text" -> {
+                    val content = parseBlock()
+                    variableFromNode(content)
+                }
+                // Operator name — parse block as function call (e.g. \operatorname{sin}{x})
+                "operatorname" -> {
+                    val nameNode = parseBlock()
+                    val funcName = if (nameNode is FormulaNode.Variable) nameNode.name
+                        else nameNode.toString()
+                    val arg = if (peek() is Token.LParen) {
+                        advance() // (
+                        val expr = parseExpression()
+                        advance() // )
+                        expr
+                    } else {
+                        parseUnary()
+                    }
+                    FormulaNode.FunctionCall(funcName, arg)
+                }
                 "hat" -> FormulaNode.Accent(FormulaNode.AccentType.HAT, parseAtom())
                 "tilde" -> FormulaNode.Accent(FormulaNode.AccentType.TILDE, parseAtom())
                 "bar" -> FormulaNode.Accent(FormulaNode.AccentType.BAR, parseAtom())
@@ -500,6 +557,19 @@ public object LatexParser {
                 )
                 else -> FormulaNode.NamedSymbol(tok.name, SymbolType.VARIABLE)
             }
+        }
+
+        private fun variableFromNode(node: FormulaNode): FormulaNode = when (node) {
+            is FormulaNode.Variable -> node
+            is FormulaNode.Group -> {
+                if (node.children.size == 1) variableFromNode(node.children[0])
+                else FormulaNode.Variable(node.children.joinToString("") {
+                    if (it is FormulaNode.Variable) it.name else it.toString()
+                })
+            }
+            is FormulaNode.Number -> FormulaNode.Variable(node.value)
+            is FormulaNode.NamedSymbol -> FormulaNode.Variable(node.name)
+            else -> FormulaNode.Variable(node.toString())
         }
 
         // ── \left / \right ─────────────────────────────────────────────

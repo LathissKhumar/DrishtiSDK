@@ -31,7 +31,8 @@ object TestFixtures {
         }
         return FormulaContent(
             formulaType = formulaType,
-            expression = expression
+            expression = expression,
+            confidence = 0.85f
         )
     }
 }

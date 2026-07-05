@@ -62,6 +62,40 @@ class PipelineTest {
         assertTrue(results.isEmpty())
     }
 
+    @Test
+    fun detectFiltersLowConfidenceByConfig() = kotlinx.coroutines.test.runTest {
+        val pipeline = Pipeline(config = PipelineConfig(minConfidence = 0.5f))
+        val frame = TestFixtures.frame()
+        val lowConfDetector = StubDetector(
+            ContentType.GRAPH,
+            createItem = GraphContent(
+                graphType = GraphType.LINE_CHART,
+                dataPoints = listOf(DataPoint(10f, 20f)),
+                confidence = 0.3f
+            )
+        )
+        val highConfDetector = StubDetector(
+            ContentType.FORMULA,
+            createItem = TestFixtures.formulaContent(confidence = 0.9f)
+        )
+        val results = pipeline.detect(frame, listOf(lowConfDetector, highConfDetector))
+        assertEquals(1, results.size, "Should keep only confidence >= 0.5f")
+        assertEquals(ContentType.FORMULA, results[0].contentType)
+    }
+
+    @Test
+    fun detectTruncatesAtMaxItemsPerFrame() = kotlinx.coroutines.test.runTest {
+        val pipeline = Pipeline(config = PipelineConfig(maxItemsPerFrame = 2))
+        val frame = TestFixtures.frame()
+        val detectors = listOf(
+            StubDetector(ContentType.GRAPH, createItem = TestFixtures.graphContent()),
+            StubDetector(ContentType.FORMULA, createItem = TestFixtures.formulaContent()),
+            StubDetector(ContentType.MOLECULE, createItem = TestFixtures.moleculeContent())
+        )
+        val results = pipeline.detect(frame, detectors)
+        assertEquals(2, results.size, "Should truncate to 2 items")
+    }
+
     // --- buildSceneGraph: empty / single item ---
 
     @Test
@@ -160,8 +194,9 @@ class PipelineTest {
         )
         val graph = pipeline.buildSceneGraph(listOf(content))
         val node = graph.nodes[0] as SceneNode.DataPointNode
-        assertEquals(100f, node.position.x, 0.5f)
-        assertEquals(100f, node.position.y, 0.5f)
+        // orderPosition(0) returns (0.1, 0.1) in normalized coords
+        assertEquals(0.1f, node.position.x, 0.5f)
+        assertEquals(0.1f, node.position.y, 0.5f)
     }
 
     @Test
@@ -215,8 +250,9 @@ class PipelineTest {
         )
         val graph = pipeline.buildSceneGraph(listOf(content))
         val node = graph.nodes[0] as SceneNode.ShapeNode
-        assertEquals(100f, node.position.x, 0.5f)
-        assertEquals(100f, node.position.y, 0.5f)
+        // orderPosition(0) returns (0.1, 0.1) in normalized coords
+        assertEquals(0.1f, node.position.x, 0.5f)
+        assertEquals(0.1f, node.position.y, 0.5f)
     }
 
     @Test

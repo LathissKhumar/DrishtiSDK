@@ -100,7 +100,7 @@ public class MoleculeDetector(
     override suspend fun detect(frame: Frame): ContentItem? {
         val text = try {
             frame.data?.decodeToString()
-        } catch (_: Exception) {
+        } catch (_: IllegalArgumentException) {
             null
         } ?: return null
         if (text.isBlank()) return null

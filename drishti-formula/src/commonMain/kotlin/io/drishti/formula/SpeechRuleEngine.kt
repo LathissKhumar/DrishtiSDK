@@ -16,6 +16,8 @@
 
 package io.drishti.formula
 
+import kotlin.coroutines.cancellation.CancellationException
+
 /**
  * Converts [FormulaNode] ASTs into accessible speech text following
  * Harvard sentence structure for STEM accessibility.
@@ -40,7 +42,9 @@ public object SpeechRuleEngine {
     public fun speechFromLatex(latex: String): String {
         val ast = try {
             LatexParser.parse(latex)
-        } catch (_: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: FormulaParseException) {
             return latex
         }
         return toSpeech(ast)
@@ -208,6 +212,11 @@ public object SpeechRuleEngine {
             "abs" -> "absolute value"
             "min" -> "minimum"
             "max" -> "maximum"
+            "coth" -> "hyperbolic cotangent"
+            "lg" -> "common logarithm"
+            "det" -> "determinant"
+            "dim" -> "dimension"
+            "ker" -> "kernel"
             else -> node.name
         }
         return "$funcName of ${toSpeech(node.argument)}"

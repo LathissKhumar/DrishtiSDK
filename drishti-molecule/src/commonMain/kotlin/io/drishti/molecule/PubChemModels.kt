@@ -17,6 +17,8 @@
 package io.drishti.molecule
 
 import io.drishti.core.*
+import kotlinx.serialization.SerializationException
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.serialization.json.*
 
 /**
@@ -72,7 +74,13 @@ internal object PubChemResponseParser {
             root["IdentifierList"]
                 ?.jsonObject?.get("CID")
                 ?.jsonArray?.firstOrNull()?.jsonPrimitive?.intOrNull
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: SerializationException) {
+            null
+        } catch (_: IllegalArgumentException) {
+            null
+        } catch (_: IllegalStateException) {
             null
         }
     }
@@ -96,7 +104,13 @@ internal object PubChemResponseParser {
                 canonicalSmiles = first["CanonicalSMILES"]?.jsonPrimitive?.content ?: "",
                 inchiKey = first["InChIKey"]?.jsonPrimitive?.content ?: ""
             )
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: SerializationException) {
+            null
+        } catch (_: IllegalArgumentException) {
+            null
+        } catch (_: IllegalStateException) {
             null
         }
     }
@@ -119,7 +133,13 @@ internal object PubChemResponseParser {
             val bonds = parseBonds(bondsJson)
 
             atoms to bonds
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: SerializationException) {
+            emptyList<PubChemAtomData>() to emptyList()
+        } catch (_: IllegalArgumentException) {
+            emptyList<PubChemAtomData>() to emptyList()
+        } catch (_: IllegalStateException) {
             emptyList<PubChemAtomData>() to emptyList()
         }
     }
@@ -143,7 +163,13 @@ internal object PubChemResponseParser {
                     z = zCoords.getOrElse(i) { 0.0 }
                 )
             }
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: SerializationException) {
+            emptyList()
+        } catch (_: IllegalArgumentException) {
+            emptyList()
+        } catch (_: IllegalStateException) {
             emptyList()
         }
     }
@@ -162,7 +188,13 @@ internal object PubChemResponseParser {
                     order = order.getOrElse(i) { 1 }
                 )
             }
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: SerializationException) {
+            emptyList()
+        } catch (_: IllegalArgumentException) {
+            emptyList()
+        } catch (_: IllegalStateException) {
             emptyList()
         }
     }

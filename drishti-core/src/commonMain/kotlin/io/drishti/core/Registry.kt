@@ -82,6 +82,9 @@ public class PluginRegistry {
      * @return The previously registered detector for this type, or null.
      */
     public fun registerDetector(plugin: DetectorPlugin): DetectorPlugin? = lock.withLock {
+        require(plugin.confidence in 0f..1f) {
+            "DetectorPlugin '${plugin.contentType}' confidence must be in 0.0..1.0, got ${plugin.confidence}"
+        }
         val previous = detectors.put(plugin.contentType, plugin)
         return previous
     }

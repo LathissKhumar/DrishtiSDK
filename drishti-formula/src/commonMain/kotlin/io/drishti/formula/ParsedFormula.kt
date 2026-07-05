@@ -24,6 +24,7 @@ import io.drishti.core.FormulaSymbol
 import io.drishti.core.FormulaType
 import io.drishti.core.Geometry
 import io.drishti.core.SymbolType
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Enriched formula representation produced by [FormulaDetector].
@@ -106,6 +107,8 @@ public data class ParsedFormula(
             val latex = formulaContent.expression
             val ast = try {
                 LatexParser.parse(latex)
+            } catch (e: CancellationException) {
+                throw e
             } catch (_: Exception) {
                 FormulaNode.Group(
                     formulaContent.symbols.map {

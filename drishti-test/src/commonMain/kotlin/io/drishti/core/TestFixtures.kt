@@ -73,13 +73,14 @@ public object TestFixtures {
                 value = "y"
             )
         ),
-        geometry: Geometry? = null
+        geometry: Geometry? = null,
+        confidence: Float = 0.88f
     ): FormulaContent = FormulaContent(
         formulaType = formulaType,
         expression = expression,
         symbols = symbols,
         geometry = geometry,
-        confidence = 0.85f
+        confidence = confidence
     )
 
     public fun moleculeContent(
@@ -94,14 +95,15 @@ public object TestFixtures {
             Bond(from = 0, to = 2, type = BondType.DOUBLE, strength = 1.0f)
         ),
         name: String = "Methanol",
-        geometry: Geometry? = null
+        geometry: Geometry? = null,
+        confidence: Float = 0.92f
     ): MoleculeContent = MoleculeContent(
         moleculeType = moleculeType,
         atoms = atoms,
         bonds = bonds,
         name = name,
         geometry = geometry,
-        confidence = 0.85f
+        confidence = confidence
     )
 
     public fun hapticOutput(
@@ -133,9 +135,10 @@ public object TestFixtures {
 
 public class StubDetector(
     override val contentType: ContentType,
-    private val createItem: ContentItem? = null
+    private val createItem: ContentItem? = null,
+    confidence: Float = 0.8f
 ) : DetectorPlugin {
-    override val confidence: Float = 0.8f
+    override val confidence: Float = confidence
     override suspend fun detect(frame: Frame): ContentItem? = createItem
 }
 

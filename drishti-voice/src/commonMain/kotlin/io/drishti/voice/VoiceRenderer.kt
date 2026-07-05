@@ -16,7 +16,20 @@
 
 package io.drishti.voice
 
-import io.drishti.core.*
+import io.drishti.core.BondType
+import io.drishti.core.ContentItem
+import io.drishti.core.DataPoint
+import io.drishti.core.ExplorationDirection
+import io.drishti.core.FormulaContent
+import io.drishti.core.FormulaSymbol
+import io.drishti.core.GraphContent
+import io.drishti.core.GraphType
+import io.drishti.core.MoleculeContent
+import io.drishti.core.ShapeContent
+import io.drishti.core.SpeechSegment
+import io.drishti.core.SymbolType
+import io.drishti.core.TableContent
+import io.drishti.core.VoiceOutput
 
 /**
  * Renders content items as natural-language voice output.

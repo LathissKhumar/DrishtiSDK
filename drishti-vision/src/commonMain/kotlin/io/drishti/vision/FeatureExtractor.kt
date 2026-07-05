@@ -20,6 +20,7 @@ import io.drishti.core.Frame
 import io.drishti.core.FrameFormat
 import io.drishti.core.Point
 import io.drishti.core.BoundingBox
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -63,12 +64,7 @@ public class FeatureExtractor {
      */
     public fun extractContours(frame: Frame): List<Contour> {
         val data = frame.data ?: return emptyList()
-        val bytesPerPixel = when (frame.format) {
-            FrameFormat.YUV_420_888 -> 1
-            FrameFormat.GRAYSCALE -> 1
-            else -> 3
-        }
-        if (data.size < frame.width * frame.height * bytesPerPixel) return emptyList()
+        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return emptyList()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
@@ -86,12 +82,7 @@ public class FeatureExtractor {
      */
     public fun extractLines(frame: Frame): List<Line> {
         val data = frame.data ?: return emptyList()
-        val bytesPerPixel = when (frame.format) {
-            FrameFormat.YUV_420_888 -> 1
-            FrameFormat.GRAYSCALE -> 1
-            else -> 3
-        }
-        if (data.size < frame.width * frame.height * bytesPerPixel) return emptyList()
+        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return emptyList()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
@@ -111,12 +102,7 @@ public class FeatureExtractor {
      */
     public fun extractTextRegions(frame: Frame): List<TextRegion> {
         val data = frame.data ?: return emptyList()
-        val bytesPerPixel = when (frame.format) {
-            FrameFormat.YUV_420_888 -> 1
-            FrameFormat.GRAYSCALE -> 1
-            else -> 3
-        }
-        if (data.size < frame.width * frame.height * bytesPerPixel) return emptyList()
+        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return emptyList()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
@@ -136,15 +122,17 @@ public class FeatureExtractor {
      */
     public fun extractROIs(frame: Frame): List<RegionOfInterest> {
         val data = frame.data ?: return emptyList()
-        val bytesPerPixel = when (frame.format) {
-            FrameFormat.YUV_420_888 -> 1
-            FrameFormat.GRAYSCALE -> 1
-            else -> 3
-        }
-        if (data.size < frame.width * frame.height * bytesPerPixel) return emptyList()
+        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return emptyList()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         return findROIs(gray, frame.width, frame.height)
+    }
+
+    // --- Internal: frame validation ---
+
+    private fun bytesPerPixelFor(format: FrameFormat): Int = when (format) {
+        FrameFormat.YUV_420_888, FrameFormat.GRAYSCALE -> 1
+        else -> 3
     }
 
     // --- Internal: grayscale conversion ---
@@ -292,8 +280,6 @@ public class FeatureExtractor {
     ): List<Line> {
         if (edges.size < minLinePoints) return emptyList()
 
-        // Compute gradient directions at each edge point
-        val gray = IntArray(width * height) // already available if needed; recompute minimal
         // For simplicity, use position-based angle estimation for edge clusters
         val binCount = 36
         val bins = Array(binCount) { mutableListOf<Pair<Int, Int>>() }
@@ -538,12 +524,7 @@ public class FeatureExtractor {
 
     public fun extractAll(frame: Frame): VisionFeatures {
         val data = frame.data ?: return VisionFeatures()
-        val bytesPerPixel = when (frame.format) {
-            FrameFormat.YUV_420_888 -> 1
-            FrameFormat.GRAYSCALE -> 1
-            else -> 3
-        }
-        if (data.size < frame.width * frame.height * bytesPerPixel) return VisionFeatures()
+        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return VisionFeatures()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
@@ -570,6 +551,22 @@ public class FeatureExtractor {
 
     private fun classifyShape(contour: Contour): DetectedShape? {
         val rawPoints = contour.points
+
+        if (rawPoints.size == 2) {
+            val dx = rawPoints[1].x - rawPoints[0].x
+            val dy = rawPoints[1].y - rawPoints[0].y
+            val len = sqrt(dx * dx + dy * dy)
+            if (len < 1f) return null
+            return DetectedShape(
+                type = ShapeKind.LINE_SEGMENT,
+                vertices = rawPoints,
+                boundingBox = computeBoundingBox(rawPoints),
+                area = 0f,
+                perimeter = len,
+                confidence = computeShapeConfidence(contour, ShapeKind.LINE_SEGMENT)
+            )
+        }
+
         if (rawPoints.size < 3) return null
 
         val hull = convexHull(rawPoints)
@@ -588,7 +585,18 @@ public class FeatureExtractor {
             vertexCount == 6 -> ShapeKind.HEXAGON
             vertexCount > 6 -> {
                 val circularity = computeCircularity(contour.area, perimeter)
-                if (circularity > 0.7f) ShapeKind.CIRCLE else ShapeKind.POLYGON
+                if (circularity > 0.7f) {
+                    ShapeKind.CIRCLE
+                } else {
+                    val bbox = computeBoundingBox(rawPoints)
+                    val rx = bbox.width / 2f
+                    val ry = bbox.height / 2f
+                    val ellipseArea = if (rx > 0f && ry > 0f) {
+                        PI.toFloat() * rx * ry
+                    } else 0f
+                    val fitRatio = if (ellipseArea > 0f) contour.area / ellipseArea else 0f
+                    if (fitRatio > 0.85f) ShapeKind.ELLIPSE else ShapeKind.POLYGON
+                }
             }
             else -> ShapeKind.UNKNOWN
         }
@@ -660,12 +668,6 @@ public class FeatureExtractor {
         val ex = point.x - projX
         val ey = point.y - projY
         return sqrt(ex * ex + ey * ey)
-    }
-
-    private fun sortByAngleFromCentroid(points: List<Point>): List<Point> {
-        val cx = points.map { it.x }.average().toFloat()
-        val cy = points.map { it.y }.average().toFloat()
-        return points.sortedBy { kotlin.math.atan2((it.y - cy).toDouble(), (it.x - cx).toDouble()) }
     }
 
     private fun convexHull(points: List<Point>): List<Point> {

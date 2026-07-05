@@ -34,17 +34,20 @@ public class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
      * Run all detectors on the frame concurrently.
      *
      * Each [DetectorPlugin] produces at most one [ContentItem] per frame.
-     * Null results (no detection) are filtered out.
+     * Null results (no detection) are filtered out, items below the
+     * configured [PipelineConfig.minConfidence] threshold are dropped,
+     * and the result is truncated to [PipelineConfig.maxItemsPerFrame].
      *
      * @param frame The input image frame.
      * @param detectors List of detector plugins to run.
-     * @return Non-null detected content items.
+     * @return Non-null detected content items passing the confidence threshold,
+     *   capped at [PipelineConfig.maxItemsPerFrame].
      */
     public suspend fun detect(frame: Frame, detectors: List<DetectorPlugin>): List<ContentItem> {
         if (frame.data == null || frame.data.isEmpty()) {
             return emptyList()
         }
-        return coroutineScope {
+        val detected = coroutineScope {
             detectors.map { detector ->
                 async {
                     try {
@@ -60,8 +63,11 @@ public class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
                         }
                     }
                 }
-            }.awaitAll().filterNotNull()
+            }.awaitAll()
+                .filterNotNull()
+                .filter { it.confidence >= config.minConfidence }
         }
+        return detected.take(config.maxItemsPerFrame)
     }
 
     /**

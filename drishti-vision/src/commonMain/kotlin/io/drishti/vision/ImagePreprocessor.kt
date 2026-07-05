@@ -281,8 +281,21 @@ public class ImagePreprocessor {
 
     /**
      * Full preprocessing pipeline: grayscale, contrast enhancement, noise reduction, binarization.
+     *
+     * For unknown formats the frame is returned unchanged to avoid garbled conversions.
      */
     public fun preprocess(frame: Frame): ProcessedFrame {
+        val isKnownFormat = frame.format == FrameFormat.RGB_888 ||
+            frame.format == FrameFormat.YUV_420_888 ||
+            frame.format == FrameFormat.GRAYSCALE
+        if (!isKnownFormat) {
+            return ProcessedFrame(
+                width = frame.width,
+                height = frame.height,
+                data = frame.data,
+                format = ProcessedFormat.GRAYSCALE
+            )
+        }
         return binarize(
             reduceNoise(
                 enhanceContrast(
@@ -303,10 +316,7 @@ public data class ProcessedFrame(
     val format: ProcessedFormat
 ) {
     public fun toFrame(): Frame {
-        val frameFormat = when (format) {
-            ProcessedFormat.GRAYSCALE -> FrameFormat.GRAYSCALE
-            else -> FrameFormat.GRAYSCALE
-        }
+        val frameFormat = FrameFormat.GRAYSCALE
         return Frame(
             width = width,
             height = height,

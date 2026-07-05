@@ -57,13 +57,17 @@ public fun formulaBounds(item: FormulaContent): BoundingBox? {
     return BoundingBox(minX, minY, maxX - minX, maxY - minY)
 }
 
-public fun moleculeBounds(item: MoleculeContent): BoundingBox? {
+/**
+ * Compute bounding box for a [MoleculeContent] item.
+ *
+ * @param padding padding applied around the atomic positions in coordinate units.
+ */
+public fun moleculeBounds(item: MoleculeContent, padding: Float = 30f): BoundingBox? {
     if (item.atoms.isEmpty()) return null
     val minX = item.atoms.minOf { it.position.x }
     val maxX = item.atoms.maxOf { it.position.x }
     val minY = item.atoms.minOf { it.position.y }
     val maxY = item.atoms.maxOf { it.position.y }
-    val padding = 30f
     return BoundingBox(minX - padding, minY - padding, maxX - minX + 2 * padding, maxY - minY + 2 * padding)
 }
 

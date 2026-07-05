@@ -43,6 +43,7 @@ public class SpeechGenerator {
      * Generate number speech.
      */
     public fun generateNumber(value: Float, decimalPlaces: Int = 1): SpeechSegment {
+        require(decimalPlaces in 0..10) { "decimalPlaces must be in 0..10, was $decimalPlaces" }
         val formatted = "%.${decimalPlaces}f".format(value)
         return SpeechSegment(text = formatted, rate = 1.0f, pitch = 1.0f)
     }

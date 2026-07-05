@@ -101,8 +101,6 @@ public class VegaLiteSpec {
     }
 
     private fun buildMark(graph: GraphContent): JsonElement {
-        val markType = markTypeForGraph(graph.graphType)
-
         return when (graph.graphType) {
             GraphType.LINE_CHART -> buildJsonObject {
                 put("type", "line")
@@ -431,6 +429,7 @@ internal fun formatNumber(value: Float): String {
     return if (value == value.toLong().toFloat()) {
         value.toLong().toString()
     } else {
-        "%.2f".format(value)
+        val rounded = kotlin.math.round(value * 100) / 100
+        rounded.toString()
     }
 }

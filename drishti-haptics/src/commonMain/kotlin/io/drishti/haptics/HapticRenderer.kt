@@ -48,6 +48,8 @@ public class HapticRenderer {
                 is GraphContent -> renderGraphHaptic(item)
                 is FormulaContent -> renderFormulaHaptic(item)
                 is MoleculeContent -> renderMoleculeHaptic(item)
+                is ShapeContent -> renderShapeHaptic(item)
+                is TableContent -> renderTableHaptic(item)
                 else -> emptyList()
             }
 
@@ -76,6 +78,8 @@ public class HapticRenderer {
             is GraphContent -> renderGraphExploration(item, direction, elementIndex)
             is FormulaContent -> renderFormulaExploration(item, direction, elementIndex)
             is MoleculeContent -> renderMoleculeExploration(item, direction, elementIndex)
+            is ShapeContent -> renderShapeExploration(item, direction, elementIndex)
+            is TableContent -> renderTableExploration(item, direction, elementIndex)
             else -> emptyList()
         }
 
@@ -320,6 +324,117 @@ public class HapticRenderer {
         }
 
         return pulses
+    }
+
+    private fun renderShapeHaptic(shape: ShapeContent): List<HapticPulse> {
+        val pulses = mutableListOf<HapticPulse>()
+        val x = shape.x + shape.width / 2f
+        val y = shape.y + shape.height / 2f
+        val intensity = (shape.area / 10000f).coerceIn(0.3f, 1.0f)
+        pulses.add(
+            HapticPulse(
+                intensity = intensity,
+                duration = 150L,
+                x = x.coerceIn(0f, 1f),
+                y = y.coerceIn(0f, 1f)
+            )
+        )
+        return pulses
+    }
+
+    private fun renderTableHaptic(table: TableContent): List<HapticPulse> {
+        val pulses = mutableListOf<HapticPulse>()
+        val cellWidth = 1.0f / table.columns
+        val cellHeight = 1.0f / table.rows
+        for (row in 0 until table.rows) {
+            for (col in 0 until table.columns) {
+                val x = cellWidth * (col + 0.5f)
+                val y = cellHeight * (row + 0.5f)
+                pulses.add(
+                    HapticPulse(
+                        intensity = 0.5f,
+                        duration = 50L,
+                        x = x.coerceIn(0f, 1f),
+                        y = y.coerceIn(0f, 1f)
+                    )
+                )
+            }
+        }
+        return pulses
+    }
+
+    private fun renderShapeExploration(
+        shape: ShapeContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): List<HapticPulse> {
+        val x = shape.x + shape.width / 2f
+        val y = shape.y + shape.height / 2f
+        val intensity = (shape.area / 10000f).coerceIn(0.3f, 1.0f)
+        return when (direction) {
+            ExplorationDirection.NEXT, ExplorationDirection.POSITION -> listOf(
+                HapticPulse(
+                    intensity = intensity,
+                    duration = 80L,
+                    x = x.coerceIn(0f, 1f),
+                    y = y.coerceIn(0f, 1f)
+                )
+            )
+            ExplorationDirection.PREVIOUS -> listOf(
+                HapticPulse(
+                    intensity = (intensity * 0.6f).coerceIn(0f, 1f),
+                    duration = 60L,
+                    x = x.coerceIn(0f, 1f),
+                    y = y.coerceIn(0f, 1f)
+                )
+            )
+        }
+    }
+
+    private fun renderTableExploration(
+        table: TableContent,
+        direction: ExplorationDirection,
+        elementIndex: Int
+    ): List<HapticPulse> {
+        val cellWidth = 1.0f / table.columns
+        val cellHeight = 1.0f / table.rows
+        return when (direction) {
+            ExplorationDirection.POSITION -> listOf(
+                HapticPulse(intensity = 1.0f, duration = 150L, x = 0.5f, y = 0.5f)
+            )
+            ExplorationDirection.NEXT -> {
+                val idx = elementIndex.coerceIn(-1, table.rows * table.columns - 1)
+                val nextIdx = idx + 1
+                val row = nextIdx / table.columns
+                val col = nextIdx % table.columns
+                if (row < table.rows && col < table.columns) {
+                    listOf(
+                        HapticPulse(
+                            intensity = 0.7f,
+                            duration = 60L,
+                            x = (cellWidth * (col + 0.5f)).coerceIn(0f, 1f),
+                            y = (cellHeight * (row + 0.5f)).coerceIn(0f, 1f)
+                        )
+                    )
+                } else emptyList()
+            }
+            ExplorationDirection.PREVIOUS -> {
+                val idx = elementIndex.coerceIn(1, table.rows * table.columns)
+                val prevIdx = idx - 1
+                val row = prevIdx / table.columns
+                val col = prevIdx % table.columns
+                if (row in 0 until table.rows && col in 0 until table.columns) {
+                    listOf(
+                        HapticPulse(
+                            intensity = 0.5f,
+                            duration = 60L,
+                            x = (cellWidth * (col + 0.5f)).coerceIn(0f, 1f),
+                            y = (cellHeight * (row + 0.5f)).coerceIn(0f, 1f)
+                        )
+                    )
+                } else emptyList()
+            }
+        }
     }
 
     private fun addFocusIndicator(pulses: List<HapticPulse>): List<HapticPulse> {

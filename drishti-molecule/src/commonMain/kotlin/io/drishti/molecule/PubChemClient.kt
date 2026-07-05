@@ -56,28 +56,37 @@ public class PubChemRateLimitException(message: String) : PubChemException(messa
  *   timeout as an additional safety net.
  * @param baseUrl PubChem PUG REST base URL
  * @param cacheSize Maximum number of molecules to cache (default 100)
+ * @param cacheTtlMs Cache time-to-live in milliseconds. Cached entries older
+ *   than this are evicted on next access. Default: [DEFAULT_CACHE_TTL_MS].
+ * @param maxRequestsPerSecond Maximum PubChem API requests per second.
+ *   PubChem enforces a 5 req/sec policy. Default: [DEFAULT_MAX_REQUESTS_PER_SECOND].
  *
  * @see <a href="https://pubchem.ncbi.nlm.nih.gov/rest/pug/">PUG REST API</a>
  */
 public class PubChemClient(
     private val httpClient: HttpClient,
     private val baseUrl: String = "https://pubchem.ncbi.nlm.nih.gov/rest/pug",
-    private val cacheSize: Int = 100
+    private val cacheSize: Int = 100,
+    private val cacheTtlMs: Long = DEFAULT_CACHE_TTL_MS,
+    private val maxRequestsPerSecond: Int = DEFAULT_MAX_REQUESTS_PER_SECOND,
 ) {
     private data class CacheEntry(val data: MoleculeData, val timestamp: TimeMark)
     private val cache = linkedMapOf<String, CacheEntry>()
     private val cacheMutex = Mutex()
-    private val cacheTtlMs = 3600_000L
     private val rateLimitMutex = Mutex()
-    private val minRequestIntervalMs = 200L // 5 requests per second
+    private val minRequestIntervalMs = 1000L / maxRequestsPerSecond
 
     // Request coalescing: concurrent callers for the same key share one in-flight request
     private val inflight = mutableMapOf<String, CompletableDeferred<MoleculeData?>>()
     private val inflightMutex = Mutex()
 
-    private companion object {
-        const val NETWORK_TIMEOUT_MS = 30_000L
-        const val MAX_RETRY_ATTEMPTS = 3
+    public companion object {
+        /** Default cache TTL: 1 hour (3,600,000 ms) */
+        public const val DEFAULT_CACHE_TTL_MS: Long = 3_600_000L
+        /** Default rate limit: 5 requests per second (PubChem policy) */
+        public const val DEFAULT_MAX_REQUESTS_PER_SECOND: Int = 5
+        internal const val NETWORK_TIMEOUT_MS: Long = 30_000L
+        internal const val MAX_RETRY_ATTEMPTS: Int = 3
     }
 
     /**
@@ -321,21 +330,9 @@ public class PubChemClient(
         throw PubChemNetworkException("Network request failed after retries")
     }
 
-    private suspend fun fetchPropertiesWithRetry(cid: Int, retries: Int): PubChemCompoundData? {
-        // fetchProperties() already handles its own retry with MAX_RETRY_ATTEMPTS.
-        // Avoid double retry stacking — delegate directly.
-        return fetchProperties(cid)
-    }
-
-    private suspend fun fetchConformerWithRetry(cid: Int, retries: Int): Pair<List<PubChemAtomData>, List<PubChemBondData>>? {
-        // fetchConformer() already handles its own retry with MAX_RETRY_ATTEMPTS.
-        // Avoid double retry stacking — delegate directly.
-        return fetchConformer(cid)
-    }
-
-    private suspend fun fetchFullMoleculeData(cid: Int, retries: Int = 2): MoleculeData? {
-        val properties = fetchPropertiesWithRetry(cid, retries) ?: return null
-        val conformer = fetchConformerWithRetry(cid, retries)
+    private suspend fun fetchFullMoleculeData(cid: Int): MoleculeData? {
+        val properties = fetchProperties(cid) ?: return null
+        val conformer = fetchConformer(cid)
 
         val atoms = conformer?.first?.map { atomData ->
             Atom(

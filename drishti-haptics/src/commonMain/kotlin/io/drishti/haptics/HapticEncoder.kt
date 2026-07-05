@@ -76,7 +76,11 @@ public class HapticEncoder {
                 HapticEvent(
                     time = currentTime,
                     intensity = pulse.intensity,
-                    sharpness = 0.5f
+                    sharpness = when {
+                        pulse.intensity > 0.8f -> 0.9f  // sharp, high-intensity
+                        pulse.duration > 100L -> 0.3f   // dull, long vibration
+                        else -> 0.5f
+                    }
                 )
             )
             currentTime += pulse.duration
