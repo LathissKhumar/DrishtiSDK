@@ -1,0 +1,200 @@
+public final class io/drishti/audio/AudioCoordinate {
+	public fun <init> (FFF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun copy (FFF)Lio/drishti/audio/AudioCoordinate;
+	public static synthetic fun copy$default (Lio/drishti/audio/AudioCoordinate;FFFILjava/lang/Object;)Lio/drishti/audio/AudioCoordinate;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getX ()F
+	public final fun getY ()F
+	public final fun getZ ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/audio/AudioDataKt {
+	public static final field MAX_DISTANCE F
+	public static final field MAX_FREQUENCY F
+	public static final field MIN_DISTANCE F
+	public static final field MIN_FREQUENCY F
+	public static final field REFERENCE_DISTANCE F
+}
+
+public final class io/drishti/audio/AudioPlugin : io/drishti/core/AudioRenderer {
+	public fun <init> ()V
+	public final fun applyEnvelope ([F)[F
+	public final fun describeContent (Ljava/util/List;)Ljava/util/List;
+	public final fun generateTone (FJ)[F
+	public fun getName ()Ljava/lang/String;
+	public fun renderAudio (Ljava/util/List;I)Lio/drishti/core/AudioOutput;
+	public fun renderExplorationAudio (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/AudioOutput;
+	public final fun renderSpatialFromItems (Ljava/util/List;I)Lio/drishti/audio/SpatialAudioScene;
+	public static synthetic fun renderSpatialFromItems$default (Lio/drishti/audio/AudioPlugin;Ljava/util/List;IILjava/lang/Object;)Lio/drishti/audio/SpatialAudioScene;
+	public final fun renderSpatialScene (Lio/drishti/core/SceneGraph;Ljava/lang/String;)Lio/drishti/audio/SpatialAudioScene;
+	public static synthetic fun renderSpatialScene$default (Lio/drishti/audio/AudioPlugin;Lio/drishti/core/SceneGraph;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/audio/SpatialAudioScene;
+}
+
+public final class io/drishti/audio/AudioRegion {
+	public fun <init> (FFFF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (FFFF)Lio/drishti/audio/AudioRegion;
+	public static synthetic fun copy$default (Lio/drishti/audio/AudioRegion;FFFFILjava/lang/Object;)Lio/drishti/audio/AudioRegion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBottom ()F
+	public final fun getLeft ()F
+	public final fun getRight ()F
+	public final fun getTop ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/audio/AudioSpatialMapper {
+	public fun <init> ()V
+	public final fun computeFalloff (FF)F
+	public static synthetic fun computeFalloff$default (Lio/drishti/audio/AudioSpatialMapper;FFILjava/lang/Object;)F
+	public final fun distance (Lio/drishti/audio/AudioCoordinate;Lio/drishti/audio/AudioCoordinate;)F
+	public final fun mapRegion (FFFF)Lio/drishti/audio/AudioRegion;
+	public final fun mapToAudio (Lio/drishti/core/Point;FFI)Lio/drishti/audio/AudioCoordinate;
+	public static synthetic fun mapToAudio$default (Lio/drishti/audio/AudioSpatialMapper;Lio/drishti/core/Point;FFIILjava/lang/Object;)Lio/drishti/audio/AudioCoordinate;
+}
+
+public final class io/drishti/audio/SonificationMapper {
+	public fun <init> ()V
+	public final fun mapToAmplitude (FFF)F
+	public final fun mapToDuration (FFFJJ)J
+	public static synthetic fun mapToDuration$default (Lio/drishti/audio/SonificationMapper;FFFJJILjava/lang/Object;)J
+	public final fun mapToFrequency (FFFFF)F
+	public static synthetic fun mapToFrequency$default (Lio/drishti/audio/SonificationMapper;FFFFFILjava/lang/Object;)F
+	public final fun mapToPanning (FFF)F
+}
+
+public final class io/drishti/audio/SoundType : java/lang/Enum {
+	public static final field AMBIENT Lio/drishti/audio/SoundType;
+	public static final field MUSICAL_TONE Lio/drishti/audio/SoundType;
+	public static final field SPEECH Lio/drishti/audio/SoundType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/audio/SoundType;
+	public static fun values ()[Lio/drishti/audio/SoundType;
+}
+
+public final class io/drishti/audio/SpatialAudioScene {
+	public fun <init> (Ljava/util/List;Ljava/util/List;Lio/drishti/core/SceneBounds;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Lio/drishti/core/SceneBounds;
+	public final fun copy (Ljava/util/List;Ljava/util/List;Lio/drishti/core/SceneBounds;)Lio/drishti/audio/SpatialAudioScene;
+	public static synthetic fun copy$default (Lio/drishti/audio/SpatialAudioScene;Ljava/util/List;Ljava/util/List;Lio/drishti/core/SceneBounds;ILjava/lang/Object;)Lio/drishti/audio/SpatialAudioScene;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSceneBounds ()Lio/drishti/core/SceneBounds;
+	public final fun getSources ()Ljava/util/List;
+	public final fun getSpeechDescriptions ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/audio/SpatialAudioSource {
+	public fun <init> (Lio/drishti/audio/SpatialPosition;FLio/drishti/audio/SoundType;FLjava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/drishti/audio/SpatialPosition;FLio/drishti/audio/SoundType;FLjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/audio/SpatialPosition;
+	public final fun component2 ()F
+	public final fun component3 ()Lio/drishti/audio/SoundType;
+	public final fun component4 ()F
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun copy (Lio/drishti/audio/SpatialPosition;FLio/drishti/audio/SoundType;FLjava/lang/String;Ljava/lang/String;)Lio/drishti/audio/SpatialAudioSource;
+	public static synthetic fun copy$default (Lio/drishti/audio/SpatialAudioSource;Lio/drishti/audio/SpatialPosition;FLio/drishti/audio/SoundType;FLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/audio/SpatialAudioSource;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFrequency ()F
+	public final fun getNodeId ()Ljava/lang/String;
+	public final fun getPosition ()Lio/drishti/audio/SpatialPosition;
+	public final fun getSoundType ()Lio/drishti/audio/SoundType;
+	public final fun getSpeechText ()Ljava/lang/String;
+	public final fun getVolume ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/audio/SpatialPosition {
+	public fun <init> (FFF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun copy (FFF)Lio/drishti/audio/SpatialPosition;
+	public static synthetic fun copy$default (Lio/drishti/audio/SpatialPosition;FFFILjava/lang/Object;)Lio/drishti/audio/SpatialPosition;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAzimuth ()F
+	public final fun getDistance ()F
+	public final fun getElevation ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/audio/SpatialRenderer {
+	public fun <init> ()V
+	public final fun buildSceneGraphFromItems (Ljava/util/List;I)Lio/drishti/core/SceneGraph;
+	public static synthetic fun buildSceneGraphFromItems$default (Lio/drishti/audio/SpatialRenderer;Ljava/util/List;IILjava/lang/Object;)Lio/drishti/core/SceneGraph;
+	public final fun computeVolumeByNode (Lio/drishti/core/SceneGraph;)Ljava/util/Map;
+	public final fun nodeToFrequency (Lio/drishti/core/SceneNode;)F
+	public final fun nodeToPosition (Lio/drishti/core/SceneNode;Lio/drishti/core/SceneBounds;)Lio/drishti/audio/SpatialPosition;
+	public final fun nodeToSpeechText (Lio/drishti/core/SceneNode;)Ljava/lang/String;
+	public final fun nodeTypeToSoundType (Lio/drishti/core/SceneNode;)Lio/drishti/audio/SoundType;
+	public final fun render (Lio/drishti/core/SceneGraph;Ljava/lang/String;)Lio/drishti/core/AudioOutput;
+	public final fun render (Ljava/util/List;I)Lio/drishti/core/AudioOutput;
+	public static synthetic fun render$default (Lio/drishti/audio/SpatialRenderer;Lio/drishti/core/SceneGraph;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/AudioOutput;
+	public static synthetic fun render$default (Lio/drishti/audio/SpatialRenderer;Ljava/util/List;IILjava/lang/Object;)Lio/drishti/core/AudioOutput;
+	public final fun renderExploration (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/AudioOutput;
+	public static synthetic fun renderExploration$default (Lio/drishti/audio/SpatialRenderer;Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;IILjava/lang/Object;)Lio/drishti/core/AudioOutput;
+	public final fun renderScene (Lio/drishti/core/SceneGraph;Ljava/lang/String;)Lio/drishti/audio/SpatialAudioScene;
+	public static synthetic fun renderScene$default (Lio/drishti/audio/SpatialRenderer;Lio/drishti/core/SceneGraph;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/audio/SpatialAudioScene;
+	public final fun sphericalToCartesian (Lio/drishti/audio/SpatialPosition;)Lio/drishti/audio/SpatialRenderer$Cartesian3D;
+	public final fun toAudioOutput (Lio/drishti/audio/SpatialAudioScene;)Lio/drishti/core/AudioOutput;
+}
+
+public final class io/drishti/audio/SpatialRenderer$Cartesian3D {
+	public fun <init> (FFF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun copy (FFF)Lio/drishti/audio/SpatialRenderer$Cartesian3D;
+	public static synthetic fun copy$default (Lio/drishti/audio/SpatialRenderer$Cartesian3D;FFFILjava/lang/Object;)Lio/drishti/audio/SpatialRenderer$Cartesian3D;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getX ()F
+	public final fun getY ()F
+	public final fun getZ ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/audio/SpeechDescription {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/drishti/audio/SpatialPosition;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lio/drishti/audio/SpatialPosition;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lio/drishti/audio/SpatialPosition;)Lio/drishti/audio/SpeechDescription;
+	public static synthetic fun copy$default (Lio/drishti/audio/SpeechDescription;Ljava/lang/String;Ljava/lang/String;Lio/drishti/audio/SpatialPosition;ILjava/lang/Object;)Lio/drishti/audio/SpeechDescription;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPosition ()Lio/drishti/audio/SpatialPosition;
+	public final fun getSourceNodeId ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/audio/ToneGenerator {
+	public fun <init> ()V
+	public final fun applyEnvelope ([FFFFF)[F
+	public static synthetic fun applyEnvelope$default (Lio/drishti/audio/ToneGenerator;[FFFFFILjava/lang/Object;)[F
+	public final fun generateSawtoothWave (FJI)[F
+	public static synthetic fun generateSawtoothWave$default (Lio/drishti/audio/ToneGenerator;FJIILjava/lang/Object;)[F
+	public final fun generateSineWave (FJI)[F
+	public static synthetic fun generateSineWave$default (Lio/drishti/audio/ToneGenerator;FJIILjava/lang/Object;)[F
+	public final fun generateSquareWave (FJI)[F
+	public static synthetic fun generateSquareWave$default (Lio/drishti/audio/ToneGenerator;FJIILjava/lang/Object;)[F
+	public final fun generateTriangleWave (FJI)[F
+	public static synthetic fun generateTriangleWave$default (Lio/drishti/audio/ToneGenerator;FJIILjava/lang/Object;)[F
+}
+

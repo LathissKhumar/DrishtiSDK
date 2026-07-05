@@ -1,0 +1,312 @@
+public final class io/drishti/haptics/CompositionPrimitive {
+	public fun <init> (Ljava/lang/String;FI)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()F
+	public final fun component3 ()I
+	public final fun copy (Ljava/lang/String;FI)Lio/drishti/haptics/CompositionPrimitive;
+	public static synthetic fun copy$default (Lio/drishti/haptics/CompositionPrimitive;Ljava/lang/String;FIILjava/lang/Object;)Lio/drishti/haptics/CompositionPrimitive;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDelay ()I
+	public final fun getPrimitiveType ()Ljava/lang/String;
+	public final fun getScale ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/EdgeWaveformMapper {
+	public static final field INSTANCE Lio/drishti/haptics/EdgeWaveformMapper;
+	public final fun mapBaseDuration (Lio/drishti/core/EdgeType;)J
+	public final fun mapWaveform (Lio/drishti/core/EdgeType;)Lio/drishti/haptics/HapticWaveform;
+}
+
+public final class io/drishti/haptics/EncodedPattern {
+	public fun <init> ([J[II)V
+	public final fun component1 ()[J
+	public final fun component2 ()[I
+	public final fun component3 ()I
+	public final fun copy ([J[II)Lio/drishti/haptics/EncodedPattern;
+	public static synthetic fun copy$default (Lio/drishti/haptics/EncodedPattern;[J[IIILjava/lang/Object;)Lio/drishti/haptics/EncodedPattern;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAmplitudes ()[I
+	public final fun getRepeat ()I
+	public final fun getTimings ()[J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticAmplitudeRange {
+	public static final field INSTANCE Lio/drishti/haptics/HapticAmplitudeRange;
+	public static final field MAX I
+	public static final field MIN I
+	public final fun toAmplitude (F)I
+}
+
+public final class io/drishti/haptics/HapticChannel {
+	public fun <init> (ILjava/util/List;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (ILjava/util/List;)Lio/drishti/haptics/HapticChannel;
+	public static synthetic fun copy$default (Lio/drishti/haptics/HapticChannel;ILjava/util/List;ILjava/lang/Object;)Lio/drishti/haptics/HapticChannel;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEvents ()Ljava/util/List;
+	public final fun getId ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticCoordinate {
+	public fun <init> (FFF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun copy (FFF)Lio/drishti/haptics/HapticCoordinate;
+	public static synthetic fun copy$default (Lio/drishti/haptics/HapticCoordinate;FFFILjava/lang/Object;)Lio/drishti/haptics/HapticCoordinate;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getX ()F
+	public final fun getY ()F
+	public final fun getZ ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticDurationPresets {
+	public static final field CONNECT_BASE J
+	public static final field CONTAIN_BASE J
+	public static final field INSTANCE Lio/drishti/haptics/HapticDurationPresets;
+	public static final field LABEL_BASE J
+	public static final field MEASURE_BASE J
+	public static final field SEMANTIC_BASE J
+	public static final field SPATIAL_BASE J
+	public static final field TEMPORAL_BASE J
+}
+
+public final class io/drishti/haptics/HapticEncoder {
+	public fun <init> ()V
+	public final fun encode (Ljava/util/List;)Lio/drishti/haptics/EncodedPattern;
+	public final fun encodeComposition (Ljava/util/List;)Ljava/util/List;
+	public final fun encodeSDK (Ljava/util/List;)Lio/drishti/haptics/HapticSDKPattern;
+}
+
+public final class io/drishti/haptics/HapticEvent {
+	public fun <init> (JFF)V
+	public final fun component1 ()J
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun copy (JFF)Lio/drishti/haptics/HapticEvent;
+	public static synthetic fun copy$default (Lio/drishti/haptics/HapticEvent;JFFILjava/lang/Object;)Lio/drishti/haptics/HapticEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIntensity ()F
+	public final fun getSharpness ()F
+	public final fun getTime ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticEventSpec {
+	public fun <init> (FJLio/drishti/haptics/HapticWaveform;FFJ)V
+	public synthetic fun <init> (FJLio/drishti/haptics/HapticWaveform;FFJILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()F
+	public final fun component2 ()J
+	public final fun component3 ()Lio/drishti/haptics/HapticWaveform;
+	public final fun component4 ()F
+	public final fun component5 ()F
+	public final fun component6 ()J
+	public final fun copy (FJLio/drishti/haptics/HapticWaveform;FFJ)Lio/drishti/haptics/HapticEventSpec;
+	public static synthetic fun copy$default (Lio/drishti/haptics/HapticEventSpec;FJLio/drishti/haptics/HapticWaveform;FFJILjava/lang/Object;)Lio/drishti/haptics/HapticEventSpec;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDelay ()J
+	public final fun getDuration ()J
+	public final fun getIntensity ()F
+	public final fun getSpatialX ()F
+	public final fun getSpatialY ()F
+	public final fun getWaveform ()Lio/drishti/haptics/HapticWaveform;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticPattern {
+	public fun <init> (Ljava/lang/String;JLjava/util/List;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()J
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;JLjava/util/List;)Lio/drishti/haptics/HapticPattern;
+	public static synthetic fun copy$default (Lio/drishti/haptics/HapticPattern;Ljava/lang/String;JLjava/util/List;ILjava/lang/Object;)Lio/drishti/haptics/HapticPattern;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDuration ()J
+	public final fun getId ()Ljava/lang/String;
+	public final fun getPrimitives ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticPatternDefinition {
+	public static final field Companion Lio/drishti/haptics/HapticPatternDefinition$Companion;
+	public fun <init> (Ljava/util/List;JLjava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/util/List;JLjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()J
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/List;JLjava/lang/String;Ljava/lang/String;)Lio/drishti/haptics/HapticPatternDefinition;
+	public static synthetic fun copy$default (Lio/drishti/haptics/HapticPatternDefinition;Ljava/util/List;JLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/haptics/HapticPatternDefinition;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEvents ()Ljava/util/List;
+	public final fun getPatternName ()Ljava/lang/String;
+	public final fun getSourceNodeId ()Ljava/lang/String;
+	public final fun getTotalDuration ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticPatternDefinition$Companion {
+	public final fun empty ()Lio/drishti/haptics/HapticPatternDefinition;
+}
+
+public final class io/drishti/haptics/HapticPrimitive {
+	public fun <init> (Lio/drishti/haptics/HapticPrimitiveType;FFJJ)V
+	public final fun component1 ()Lio/drishti/haptics/HapticPrimitiveType;
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()J
+	public final fun component5 ()J
+	public final fun copy (Lio/drishti/haptics/HapticPrimitiveType;FFJJ)Lio/drishti/haptics/HapticPrimitive;
+	public static synthetic fun copy$default (Lio/drishti/haptics/HapticPrimitive;Lio/drishti/haptics/HapticPrimitiveType;FFJJILjava/lang/Object;)Lio/drishti/haptics/HapticPrimitive;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDelay ()J
+	public final fun getDuration ()J
+	public final fun getFrequency ()F
+	public final fun getIntensity ()F
+	public final fun getType ()Lio/drishti/haptics/HapticPrimitiveType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticPrimitiveType : java/lang/Enum {
+	public static final field CLICK Lio/drishti/haptics/HapticPrimitiveType;
+	public static final field LOW_TICK Lio/drishti/haptics/HapticPrimitiveType;
+	public static final field QUICK_FALL Lio/drishti/haptics/HapticPrimitiveType;
+	public static final field QUICK_RISE Lio/drishti/haptics/HapticPrimitiveType;
+	public static final field SLOW_FALL Lio/drishti/haptics/HapticPrimitiveType;
+	public static final field SLOW_RISE Lio/drishti/haptics/HapticPrimitiveType;
+	public static final field SPIN Lio/drishti/haptics/HapticPrimitiveType;
+	public static final field SWEEP Lio/drishti/haptics/HapticPrimitiveType;
+	public static final field THUD Lio/drishti/haptics/HapticPrimitiveType;
+	public static final field TICK Lio/drishti/haptics/HapticPrimitiveType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/haptics/HapticPrimitiveType;
+	public static fun values ()[Lio/drishti/haptics/HapticPrimitiveType;
+}
+
+public final class io/drishti/haptics/HapticRegion {
+	public fun <init> (FFFF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (FFFF)Lio/drishti/haptics/HapticRegion;
+	public static synthetic fun copy$default (Lio/drishti/haptics/HapticRegion;FFFFILjava/lang/Object;)Lio/drishti/haptics/HapticRegion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBottom ()F
+	public final fun getLeft ()F
+	public final fun getRight ()F
+	public final fun getTop ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticRenderer {
+	public fun <init> ()V
+	public final fun render (Ljava/util/List;I)Lio/drishti/core/HapticOutput;
+	public static synthetic fun render$default (Lio/drishti/haptics/HapticRenderer;Ljava/util/List;IILjava/lang/Object;)Lio/drishti/core/HapticOutput;
+	public final fun renderExploration (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/HapticOutput;
+	public static synthetic fun renderExploration$default (Lio/drishti/haptics/HapticRenderer;Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;IILjava/lang/Object;)Lio/drishti/core/HapticOutput;
+	public final fun renderFromSceneGraph (Lio/drishti/core/SceneGraph;)Lio/drishti/core/HapticOutput;
+	public final fun renderSceneGraphPatterns (Lio/drishti/core/SceneGraph;)Ljava/util/List;
+}
+
+public final class io/drishti/haptics/HapticSDKPattern {
+	public fun <init> (IJLjava/util/List;)V
+	public final fun component1 ()I
+	public final fun component2 ()J
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (IJLjava/util/List;)Lio/drishti/haptics/HapticSDKPattern;
+	public static synthetic fun copy$default (Lio/drishti/haptics/HapticSDKPattern;IJLjava/util/List;ILjava/lang/Object;)Lio/drishti/haptics/HapticSDKPattern;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChannels ()Ljava/util/List;
+	public final fun getDuration ()J
+	public final fun getVersion ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/haptics/HapticWaveform : java/lang/Enum {
+	public static final field DOUBLE_TAP Lio/drishti/haptics/HapticWaveform;
+	public static final field GRADIENT_SWEEP Lio/drishti/haptics/HapticWaveform;
+	public static final field PROXIMITY_BUZZ Lio/drishti/haptics/HapticWaveform;
+	public static final field PULSE Lio/drishti/haptics/HapticWaveform;
+	public static final field RAPID_TAP Lio/drishti/haptics/HapticWaveform;
+	public static final field SHARP_CLICK Lio/drishti/haptics/HapticWaveform;
+	public static final field SOFT_RUB Lio/drishti/haptics/HapticWaveform;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/haptics/HapticWaveform;
+	public static fun values ()[Lio/drishti/haptics/HapticWaveform;
+}
+
+public final class io/drishti/haptics/HapticsPlugin : io/drishti/core/HapticsRenderer {
+	public fun <init> ()V
+	public final fun encode (Lio/drishti/core/HapticOutput;)Lio/drishti/haptics/EncodedPattern;
+	public final fun encodeComposition (Lio/drishti/core/HapticOutput;)Ljava/util/List;
+	public final fun encodeSceneGraphPatterns (Lio/drishti/core/SceneGraph;)Ljava/util/List;
+	public fun getName ()Ljava/lang/String;
+	public fun renderExplorationHaptic (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/HapticOutput;
+	public fun renderHaptic (Ljava/util/List;I)Lio/drishti/core/HapticOutput;
+	public final fun renderSceneGraphHaptic (Lio/drishti/core/SceneGraph;)Lio/drishti/core/HapticOutput;
+}
+
+public final class io/drishti/haptics/NodeHapticType : java/lang/Enum {
+	public static final field AXIS Lio/drishti/haptics/NodeHapticType;
+	public static final field DATA_POINT Lio/drishti/haptics/NodeHapticType;
+	public static final field SHAPE Lio/drishti/haptics/NodeHapticType;
+	public static final field TEXT Lio/drishti/haptics/NodeHapticType;
+	public static final field UNKNOWN Lio/drishti/haptics/NodeHapticType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/haptics/NodeHapticType;
+	public static fun values ()[Lio/drishti/haptics/NodeHapticType;
+}
+
+public final class io/drishti/haptics/NodeWaveformMapper {
+	public static final field INSTANCE Lio/drishti/haptics/NodeWaveformMapper;
+	public final fun classifyNode (Lio/drishti/core/SceneNode;)Lio/drishti/haptics/NodeHapticType;
+	public final fun depthFrequencyModifier (I)F
+	public final fun mapBaseDuration (Lio/drishti/haptics/NodeHapticType;)J
+	public final fun mapIntensityModifier (Lio/drishti/haptics/NodeHapticType;)F
+	public final fun mapWaveform (Lio/drishti/haptics/NodeHapticType;)Lio/drishti/haptics/HapticWaveform;
+}
+
+public final class io/drishti/haptics/PatternBuilder {
+	public static final field Companion Lio/drishti/haptics/PatternBuilder$Companion;
+	public fun <init> ()V
+	public synthetic fun <init> (Lio/drishti/core/ContentType;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun addItem ()Lio/drishti/haptics/PatternBuilder;
+	public final fun addPrimitive (Lio/drishti/haptics/HapticPrimitiveType;FFJJ)Lio/drishti/haptics/PatternBuilder;
+	public static synthetic fun addPrimitive$default (Lio/drishti/haptics/PatternBuilder;Lio/drishti/haptics/HapticPrimitiveType;FFJJILjava/lang/Object;)Lio/drishti/haptics/PatternBuilder;
+	public final fun build ()Lio/drishti/haptics/HapticPattern;
+	public final fun buildExplorationPattern (Ljava/lang/String;)Ljava/lang/String;
+	public final fun buildNotificationPattern (Ljava/lang/String;)Ljava/lang/String;
+	public final fun buildPattern (II)Ljava/lang/String;
+	public final fun setFocus (I)Lio/drishti/haptics/PatternBuilder;
+}
+
+public final class io/drishti/haptics/PatternBuilder$Companion {
+	public final fun forContentType (Lio/drishti/core/ContentType;)Lio/drishti/haptics/PatternBuilder;
+}
+
+public final class io/drishti/haptics/SpatialMapper {
+	public fun <init> ()V
+	public final fun computeFalloff (FF)F
+	public static synthetic fun computeFalloff$default (Lio/drishti/haptics/SpatialMapper;FFILjava/lang/Object;)F
+	public final fun mapRegion (FFFF)Lio/drishti/haptics/HapticRegion;
+	public final fun mapToHaptic (Lio/drishti/core/Point;FFI)Lio/drishti/haptics/HapticCoordinate;
+	public static synthetic fun mapToHaptic$default (Lio/drishti/haptics/SpatialMapper;Lio/drishti/core/Point;FFIILjava/lang/Object;)Lio/drishti/haptics/HapticCoordinate;
+}
+

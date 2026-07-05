@@ -1,0 +1,912 @@
+public final class io/drishti/core/Atom {
+	public fun <init> (ILjava/lang/String;Lio/drishti/core/Point;ILjava/lang/String;F)V
+	public synthetic fun <init> (ILjava/lang/String;Lio/drishti/core/Point;ILjava/lang/String;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lio/drishti/core/Point;
+	public final fun component4 ()I
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()F
+	public final fun copy (ILjava/lang/String;Lio/drishti/core/Point;ILjava/lang/String;F)Lio/drishti/core/Atom;
+	public static synthetic fun copy$default (Lio/drishti/core/Atom;ILjava/lang/String;Lio/drishti/core/Point;ILjava/lang/String;FILjava/lang/Object;)Lio/drishti/core/Atom;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCharge ()I
+	public final fun getElement ()Ljava/lang/String;
+	public final fun getId ()I
+	public final fun getLabel ()Ljava/lang/String;
+	public final fun getPosition ()Lio/drishti/core/Point;
+	public final fun getZ ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/AudioOutput {
+	public fun <init> (Ljava/util/List;Z)V
+	public synthetic fun <init> (Ljava/util/List;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Z
+	public final fun copy (Ljava/util/List;Z)Lio/drishti/core/AudioOutput;
+	public static synthetic fun copy$default (Lio/drishti/core/AudioOutput;Ljava/util/List;ZILjava/lang/Object;)Lio/drishti/core/AudioOutput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSources ()Ljava/util/List;
+	public final fun getSpatial ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/drishti/core/AudioRenderer : io/drishti/core/RendererPlugin {
+	public abstract fun renderAudio (Ljava/util/List;I)Lio/drishti/core/AudioOutput;
+	public abstract fun renderExplorationAudio (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/AudioOutput;
+}
+
+public final class io/drishti/core/AudioRenderer$DefaultImpls {
+	public static synthetic fun renderAudio$default (Lio/drishti/core/AudioRenderer;Ljava/util/List;IILjava/lang/Object;)Lio/drishti/core/AudioOutput;
+	public static synthetic fun renderExplorationAudio$default (Lio/drishti/core/AudioRenderer;Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;IILjava/lang/Object;)Lio/drishti/core/AudioOutput;
+}
+
+public final class io/drishti/core/AudioSource {
+	public fun <init> (FFFFF)V
+	public synthetic fun <init> (FFFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun component5 ()F
+	public final fun copy (FFFFF)Lio/drishti/core/AudioSource;
+	public static synthetic fun copy$default (Lio/drishti/core/AudioSource;FFFFFILjava/lang/Object;)Lio/drishti/core/AudioSource;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAmplitude ()F
+	public final fun getFrequency ()F
+	public final fun getSpatialX ()F
+	public final fun getSpatialY ()F
+	public final fun getSpatialZ ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/Axes {
+	public fun <init> ()V
+	public fun <init> (Lio/drishti/core/Axis;Lio/drishti/core/Axis;)V
+	public synthetic fun <init> (Lio/drishti/core/Axis;Lio/drishti/core/Axis;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/core/Axis;
+	public final fun component2 ()Lio/drishti/core/Axis;
+	public final fun copy (Lio/drishti/core/Axis;Lio/drishti/core/Axis;)Lio/drishti/core/Axes;
+	public static synthetic fun copy$default (Lio/drishti/core/Axes;Lio/drishti/core/Axis;Lio/drishti/core/Axis;ILjava/lang/Object;)Lio/drishti/core/Axes;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getX ()Lio/drishti/core/Axis;
+	public final fun getY ()Lio/drishti/core/Axis;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/Axis {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Lkotlin/ranges/ClosedFloatingPointRange;)V
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/ranges/ClosedFloatingPointRange;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlin/ranges/ClosedFloatingPointRange;
+	public final fun copy (Ljava/lang/String;Lkotlin/ranges/ClosedFloatingPointRange;)Lio/drishti/core/Axis;
+	public static synthetic fun copy$default (Lio/drishti/core/Axis;Ljava/lang/String;Lkotlin/ranges/ClosedFloatingPointRange;ILjava/lang/Object;)Lio/drishti/core/Axis;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLabel ()Ljava/lang/String;
+	public final fun getRange ()Lkotlin/ranges/ClosedFloatingPointRange;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/Bond {
+	public fun <init> (IILio/drishti/core/BondType;F)V
+	public synthetic fun <init> (IILio/drishti/core/BondType;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Lio/drishti/core/BondType;
+	public final fun component4 ()F
+	public final fun copy (IILio/drishti/core/BondType;F)Lio/drishti/core/Bond;
+	public static synthetic fun copy$default (Lio/drishti/core/Bond;IILio/drishti/core/BondType;FILjava/lang/Object;)Lio/drishti/core/Bond;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFrom ()I
+	public final fun getStrength ()F
+	public final fun getTo ()I
+	public final fun getType ()Lio/drishti/core/BondType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/BondType : java/lang/Enum {
+	public static final field AROMATIC Lio/drishti/core/BondType;
+	public static final field DOUBLE Lio/drishti/core/BondType;
+	public static final field HYDROGEN Lio/drishti/core/BondType;
+	public static final field IONIC Lio/drishti/core/BondType;
+	public static final field SINGLE Lio/drishti/core/BondType;
+	public static final field TRIPLE Lio/drishti/core/BondType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/BondType;
+	public static fun values ()[Lio/drishti/core/BondType;
+}
+
+public final class io/drishti/core/BoundingBox {
+	public fun <init> (FFFF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun copy (FFFF)Lio/drishti/core/BoundingBox;
+	public static synthetic fun copy$default (Lio/drishti/core/BoundingBox;FFFFILjava/lang/Object;)Lio/drishti/core/BoundingBox;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHeight ()F
+	public final fun getWidth ()F
+	public final fun getX ()F
+	public final fun getY ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/BoundingBoxUtilsKt {
+	public static final fun computeBounds (Ljava/util/List;)Lio/drishti/core/SceneBounds;
+	public static final fun computeOverlapArea (Lio/drishti/core/BoundingBox;Lio/drishti/core/BoundingBox;)F
+	public static final fun distance (Lio/drishti/core/Point;Lio/drishti/core/Point;)F
+	public static final fun estimateBoundingBox (Lio/drishti/core/ContentItem;)Lio/drishti/core/BoundingBox;
+	public static final fun formulaBounds (Lio/drishti/core/FormulaContent;)Lio/drishti/core/BoundingBox;
+	public static final fun graphBounds (Lio/drishti/core/GraphContent;)Lio/drishti/core/BoundingBox;
+	public static final fun moleculeBounds (Lio/drishti/core/MoleculeContent;F)Lio/drishti/core/BoundingBox;
+	public static synthetic fun moleculeBounds$default (Lio/drishti/core/MoleculeContent;FILjava/lang/Object;)Lio/drishti/core/BoundingBox;
+}
+
+public abstract interface class io/drishti/core/ContentItem {
+	public abstract fun getConfidence ()F
+	public abstract fun getContentType ()Lio/drishti/core/ContentType;
+}
+
+public final class io/drishti/core/ContentType : java/lang/Enum {
+	public static final field CUSTOM Lio/drishti/core/ContentType;
+	public static final field FORMULA Lio/drishti/core/ContentType;
+	public static final field GRAPH Lio/drishti/core/ContentType;
+	public static final field MOLECULE Lio/drishti/core/ContentType;
+	public static final field SHAPE Lio/drishti/core/ContentType;
+	public static final field TABLE Lio/drishti/core/ContentType;
+	public static final field TEXT Lio/drishti/core/ContentType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/ContentType;
+	public static fun values ()[Lio/drishti/core/ContentType;
+}
+
+public final class io/drishti/core/DataPoint {
+	public fun <init> (FFLjava/lang/String;)V
+	public synthetic fun <init> (FFLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (FFLjava/lang/String;)Lio/drishti/core/DataPoint;
+	public static synthetic fun copy$default (Lio/drishti/core/DataPoint;FFLjava/lang/String;ILjava/lang/Object;)Lio/drishti/core/DataPoint;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLabel ()Ljava/lang/String;
+	public final fun getX ()F
+	public final fun getY ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/drishti/core/DetectorPlugin {
+	public abstract fun detect (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getConfidence ()F
+	public abstract fun getContentType ()Lio/drishti/core/ContentType;
+}
+
+public final class io/drishti/core/Drishti {
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Lio/drishti/core/Pipeline;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun readAsync (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/drishti/core/Drishti$Builder {
+	public fun <init> ()V
+	public final fun addDetector (Lio/drishti/core/DetectorPlugin;)Lio/drishti/core/Drishti$Builder;
+	public final fun addRenderer (Lio/drishti/core/RendererPlugin;)Lio/drishti/core/Drishti$Builder;
+	public final fun build ()Lio/drishti/core/Drishti;
+}
+
+public final class io/drishti/core/DrishtiDiagram {
+	public fun <init> (Ljava/util/List;Lio/drishti/core/SceneGraph;Ljava/util/List;Lio/drishti/core/Pipeline;)V
+	public final fun audio-d1pmJ48 ()Ljava/lang/Object;
+	public final fun explore ()Lio/drishti/core/ExplorationSession;
+	public final fun getContentItems ()Ljava/util/List;
+	public final fun getSceneGraph ()Lio/drishti/core/SceneGraph;
+	public final fun haptics-d1pmJ48 ()Ljava/lang/Object;
+	public final fun summary ()Lio/drishti/core/TextOutput;
+	public final fun voice-d1pmJ48 ()Ljava/lang/Object;
+}
+
+public final class io/drishti/core/EdgeGeneratorDefaults {
+	public static final field INSTANCE Lio/drishti/core/EdgeGeneratorDefaults;
+	public final fun getProximityScale ()F
+	public final fun setProximityScale (F)V
+}
+
+public final class io/drishti/core/EdgeGeneratorsKt {
+	public static final fun deduplicateEdges (Ljava/util/List;)Ljava/util/List;
+	public static final fun generateContainmentEdges (Ljava/util/List;Ljava/util/List;F)Ljava/util/List;
+	public static final fun generateEdges (Ljava/util/List;Ljava/util/List;Lio/drishti/core/PipelineConfig;)Ljava/util/List;
+	public static final fun generateSemanticEdges (Ljava/util/List;Ljava/util/List;)Ljava/util/List;
+	public static final fun generateSpatialEdges (Ljava/util/List;F)Ljava/util/List;
+	public static final fun generateTemporalEdges (Ljava/util/List;)Ljava/util/List;
+}
+
+public final class io/drishti/core/EdgeType : java/lang/Enum {
+	public static final field CONNECTS Lio/drishti/core/EdgeType;
+	public static final field CONTAINS Lio/drishti/core/EdgeType;
+	public static final field LABELS Lio/drishti/core/EdgeType;
+	public static final field MEASURES Lio/drishti/core/EdgeType;
+	public static final field SEMANTIC Lio/drishti/core/EdgeType;
+	public static final field SPATIAL Lio/drishti/core/EdgeType;
+	public static final field TEMPORAL Lio/drishti/core/EdgeType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/EdgeType;
+	public static fun values ()[Lio/drishti/core/EdgeType;
+}
+
+public final class io/drishti/core/ExplorationDirection : java/lang/Enum {
+	public static final field NEXT Lio/drishti/core/ExplorationDirection;
+	public static final field POSITION Lio/drishti/core/ExplorationDirection;
+	public static final field PREVIOUS Lio/drishti/core/ExplorationDirection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/ExplorationDirection;
+	public static fun values ()[Lio/drishti/core/ExplorationDirection;
+}
+
+public final class io/drishti/core/ExplorationPosition {
+	public fun <init> (II)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun copy (II)Lio/drishti/core/ExplorationPosition;
+	public static synthetic fun copy$default (Lio/drishti/core/ExplorationPosition;IIILjava/lang/Object;)Lio/drishti/core/ExplorationPosition;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCurrent ()I
+	public final fun getTotal ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class io/drishti/core/ExplorationResult {
+}
+
+public final class io/drishti/core/ExplorationResult$Beginning : io/drishti/core/ExplorationResult {
+	public static final field INSTANCE Lio/drishti/core/ExplorationResult$Beginning;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ExplorationResult$End : io/drishti/core/ExplorationResult {
+	public static final field INSTANCE Lio/drishti/core/ExplorationResult$End;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ExplorationResult$Item : io/drishti/core/ExplorationResult {
+	public fun <init> (Lio/drishti/core/ContentItem;Ljava/lang/String;)V
+	public final fun component1 ()Lio/drishti/core/ContentItem;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Lio/drishti/core/ContentItem;Ljava/lang/String;)Lio/drishti/core/ExplorationResult$Item;
+	public static synthetic fun copy$default (Lio/drishti/core/ExplorationResult$Item;Lio/drishti/core/ContentItem;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/ExplorationResult$Item;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getItem ()Lio/drishti/core/ContentItem;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ExplorationSession {
+	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public final fun audio (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun elementPosition (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun exploreAudio (Lio/drishti/core/ExplorationDirection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun exploreHaptic (Lio/drishti/core/ExplorationDirection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun exploreVoice (Lio/drishti/core/ExplorationDirection;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun haptic (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun next (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun nextElement (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun position (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun previous (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun previousElement (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun voice (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/drishti/core/FormulaContent : io/drishti/core/FormulaContentItem {
+	public fun <init> (Lio/drishti/core/FormulaType;Ljava/lang/String;Ljava/util/List;Lio/drishti/core/Geometry;F)V
+	public synthetic fun <init> (Lio/drishti/core/FormulaType;Ljava/lang/String;Ljava/util/List;Lio/drishti/core/Geometry;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/core/FormulaType;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Lio/drishti/core/Geometry;
+	public final fun component5 ()F
+	public final fun copy (Lio/drishti/core/FormulaType;Ljava/lang/String;Ljava/util/List;Lio/drishti/core/Geometry;F)Lio/drishti/core/FormulaContent;
+	public static synthetic fun copy$default (Lio/drishti/core/FormulaContent;Lio/drishti/core/FormulaType;Ljava/lang/String;Ljava/util/List;Lio/drishti/core/Geometry;FILjava/lang/Object;)Lio/drishti/core/FormulaContent;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+	public fun getExpression ()Ljava/lang/String;
+	public fun getFormulaType ()Lio/drishti/core/FormulaType;
+	public fun getGeometry ()Lio/drishti/core/Geometry;
+	public fun getSymbols ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/drishti/core/FormulaContentItem : io/drishti/core/ContentItem {
+	public abstract fun getExpression ()Ljava/lang/String;
+	public abstract fun getFormulaType ()Lio/drishti/core/FormulaType;
+	public abstract fun getGeometry ()Lio/drishti/core/Geometry;
+	public abstract fun getSymbols ()Ljava/util/List;
+}
+
+public final class io/drishti/core/FormulaSymbol {
+	public fun <init> (Lio/drishti/core/SymbolType;Lio/drishti/core/Point;Lio/drishti/core/BoundingBox;Ljava/lang/String;)V
+	public final fun component1 ()Lio/drishti/core/SymbolType;
+	public final fun component2 ()Lio/drishti/core/Point;
+	public final fun component3 ()Lio/drishti/core/BoundingBox;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Lio/drishti/core/SymbolType;Lio/drishti/core/Point;Lio/drishti/core/BoundingBox;Ljava/lang/String;)Lio/drishti/core/FormulaSymbol;
+	public static synthetic fun copy$default (Lio/drishti/core/FormulaSymbol;Lio/drishti/core/SymbolType;Lio/drishti/core/Point;Lio/drishti/core/BoundingBox;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/FormulaSymbol;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBoundingBox ()Lio/drishti/core/BoundingBox;
+	public final fun getPosition ()Lio/drishti/core/Point;
+	public final fun getType ()Lio/drishti/core/SymbolType;
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/FormulaType : java/lang/Enum {
+	public static final field ALGEBRAIC Lio/drishti/core/FormulaType;
+	public static final field CALCULUS Lio/drishti/core/FormulaType;
+	public static final field MATHEMATICAL Lio/drishti/core/FormulaType;
+	public static final field NOTATION Lio/drishti/core/FormulaType;
+	public static final field TRIGONOMETRIC Lio/drishti/core/FormulaType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/FormulaType;
+	public static fun values ()[Lio/drishti/core/FormulaType;
+}
+
+public final class io/drishti/core/Frame {
+	public fun <init> (IILio/drishti/core/FrameFormat;[BJ)V
+	public synthetic fun <init> (IILio/drishti/core/FrameFormat;[BJILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Lio/drishti/core/FrameFormat;
+	public final fun component4 ()[B
+	public final fun component5 ()J
+	public final fun copy (IILio/drishti/core/FrameFormat;[BJ)Lio/drishti/core/Frame;
+	public static synthetic fun copy$default (Lio/drishti/core/Frame;IILio/drishti/core/FrameFormat;[BJILjava/lang/Object;)Lio/drishti/core/Frame;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getData ()[B
+	public final fun getFormat ()Lio/drishti/core/FrameFormat;
+	public final fun getHeight ()I
+	public final fun getTimestamp ()J
+	public final fun getWidth ()I
+	public fun hashCode ()I
+	public final fun isNotEmpty ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/FrameFormat : java/lang/Enum {
+	public static final field GRAYSCALE Lio/drishti/core/FrameFormat;
+	public static final field JPEG Lio/drishti/core/FrameFormat;
+	public static final field PNG Lio/drishti/core/FrameFormat;
+	public static final field RGB_888 Lio/drishti/core/FrameFormat;
+	public static final field YUV_420_888 Lio/drishti/core/FrameFormat;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/FrameFormat;
+	public static fun values ()[Lio/drishti/core/FrameFormat;
+}
+
+public final class io/drishti/core/Geometry {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Lio/drishti/core/BoundingBox;)V
+	public synthetic fun <init> (Ljava/util/List;Lio/drishti/core/BoundingBox;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Lio/drishti/core/BoundingBox;
+	public final fun copy (Ljava/util/List;Lio/drishti/core/BoundingBox;)Lio/drishti/core/Geometry;
+	public static synthetic fun copy$default (Lio/drishti/core/Geometry;Ljava/util/List;Lio/drishti/core/BoundingBox;ILjava/lang/Object;)Lio/drishti/core/Geometry;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBoundingBox ()Lio/drishti/core/BoundingBox;
+	public final fun getPoints ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/GraphContent : io/drishti/core/ContentItem {
+	public fun <init> (Lio/drishti/core/GraphType;Ljava/lang/String;Lio/drishti/core/Axes;Ljava/util/List;Ljava/util/List;F)V
+	public synthetic fun <init> (Lio/drishti/core/GraphType;Ljava/lang/String;Lio/drishti/core/Axes;Ljava/util/List;Ljava/util/List;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/core/GraphType;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lio/drishti/core/Axes;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()F
+	public final fun copy (Lio/drishti/core/GraphType;Ljava/lang/String;Lio/drishti/core/Axes;Ljava/util/List;Ljava/util/List;F)Lio/drishti/core/GraphContent;
+	public static synthetic fun copy$default (Lio/drishti/core/GraphContent;Lio/drishti/core/GraphType;Ljava/lang/String;Lio/drishti/core/Axes;Ljava/util/List;Ljava/util/List;FILjava/lang/Object;)Lio/drishti/core/GraphContent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAxes ()Lio/drishti/core/Axes;
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+	public final fun getDataPoints ()Ljava/util/List;
+	public final fun getGraphType ()Lio/drishti/core/GraphType;
+	public final fun getLabels ()Ljava/util/List;
+	public final fun getTitle ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/GraphType : java/lang/Enum {
+	public static final field AREA_CHART Lio/drishti/core/GraphType;
+	public static final field BAR_CHART Lio/drishti/core/GraphType;
+	public static final field HISTOGRAM Lio/drishti/core/GraphType;
+	public static final field LINE_CHART Lio/drishti/core/GraphType;
+	public static final field PIE_CHART Lio/drishti/core/GraphType;
+	public static final field SCATTER_PLOT Lio/drishti/core/GraphType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/GraphType;
+	public static fun values ()[Lio/drishti/core/GraphType;
+}
+
+public final class io/drishti/core/HapticOutput {
+	public fun <init> (Ljava/util/List;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/util/List;Ljava/lang/String;)Lio/drishti/core/HapticOutput;
+	public static synthetic fun copy$default (Lio/drishti/core/HapticOutput;Ljava/util/List;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/HapticOutput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPattern ()Ljava/lang/String;
+	public final fun getPulses ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/HapticPulse {
+	public fun <init> (FJFFJ)V
+	public synthetic fun <init> (FJFFJILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()F
+	public final fun component2 ()J
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun component5 ()J
+	public final fun copy (FJFFJ)Lio/drishti/core/HapticPulse;
+	public static synthetic fun copy$default (Lio/drishti/core/HapticPulse;FJFFJILjava/lang/Object;)Lio/drishti/core/HapticPulse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDelay ()J
+	public final fun getDuration ()J
+	public final fun getIntensity ()F
+	public final fun getX ()F
+	public final fun getY ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/drishti/core/HapticsRenderer : io/drishti/core/RendererPlugin {
+	public abstract fun renderExplorationHaptic (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/HapticOutput;
+	public abstract fun renderHaptic (Ljava/util/List;I)Lio/drishti/core/HapticOutput;
+}
+
+public final class io/drishti/core/HapticsRenderer$DefaultImpls {
+	public static synthetic fun renderExplorationHaptic$default (Lio/drishti/core/HapticsRenderer;Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;IILjava/lang/Object;)Lio/drishti/core/HapticOutput;
+	public static synthetic fun renderHaptic$default (Lio/drishti/core/HapticsRenderer;Ljava/util/List;IILjava/lang/Object;)Lio/drishti/core/HapticOutput;
+}
+
+public final class io/drishti/core/Lock {
+	public fun <init> ()V
+	public final fun lock ()V
+	public final fun unlock ()V
+}
+
+public final class io/drishti/core/LockKt {
+	public static final fun withLock (Lio/drishti/core/Lock;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+}
+
+public final class io/drishti/core/MoleculeContent : io/drishti/core/ContentItem {
+	public fun <init> (Lio/drishti/core/MoleculeType;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lio/drishti/core/Geometry;ILjava/lang/String;DLjava/lang/String;Ljava/lang/String;Ljava/lang/String;F)V
+	public synthetic fun <init> (Lio/drishti/core/MoleculeType;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lio/drishti/core/Geometry;ILjava/lang/String;DLjava/lang/String;Ljava/lang/String;Ljava/lang/String;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/core/MoleculeType;
+	public final fun component10 ()Ljava/lang/String;
+	public final fun component11 ()Ljava/lang/String;
+	public final fun component12 ()F
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lio/drishti/core/Geometry;
+	public final fun component6 ()I
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()D
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (Lio/drishti/core/MoleculeType;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lio/drishti/core/Geometry;ILjava/lang/String;DLjava/lang/String;Ljava/lang/String;Ljava/lang/String;F)Lio/drishti/core/MoleculeContent;
+	public static synthetic fun copy$default (Lio/drishti/core/MoleculeContent;Lio/drishti/core/MoleculeType;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lio/drishti/core/Geometry;ILjava/lang/String;DLjava/lang/String;Ljava/lang/String;Ljava/lang/String;FILjava/lang/Object;)Lio/drishti/core/MoleculeContent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAtoms ()Ljava/util/List;
+	public final fun getBonds ()Ljava/util/List;
+	public final fun getCanonicalSmiles ()Ljava/lang/String;
+	public final fun getCid ()I
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+	public final fun getGeometry ()Lio/drishti/core/Geometry;
+	public final fun getInchiKey ()Ljava/lang/String;
+	public final fun getIupacName ()Ljava/lang/String;
+	public final fun getMolecularFormula ()Ljava/lang/String;
+	public final fun getMolecularWeight ()D
+	public final fun getMoleculeType ()Lio/drishti/core/MoleculeType;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/MoleculeType : java/lang/Enum {
+	public static final field COMPLEX Lio/drishti/core/MoleculeType;
+	public static final field INORGANIC Lio/drishti/core/MoleculeType;
+	public static final field ORGANIC Lio/drishti/core/MoleculeType;
+	public static final field SIMPLE Lio/drishti/core/MoleculeType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/MoleculeType;
+	public static fun values ()[Lio/drishti/core/MoleculeType;
+}
+
+public final class io/drishti/core/NodeBuildersKt {
+	public static final fun buildFormulaNode (Lio/drishti/core/FormulaContent;ILjava/util/List;)V
+	public static final fun buildGenericNode (Lio/drishti/core/ContentItem;ILjava/util/List;)V
+	public static final fun buildGraphNode (Lio/drishti/core/GraphContent;ILjava/util/List;)V
+	public static final fun buildMoleculeNode (Lio/drishti/core/MoleculeContent;ILjava/util/List;)V
+	public static final fun buildShapeNode (Lio/drishti/core/ShapeContent;ILjava/util/List;)V
+	public static final fun buildTableNode (Lio/drishti/core/TableContent;ILjava/util/List;)V
+	public static final fun orderPosition (I)Lio/drishti/core/Point;
+}
+
+public final class io/drishti/core/Pipeline {
+	public fun <init> ()V
+	public fun <init> (Lio/drishti/core/PipelineConfig;)V
+	public synthetic fun <init> (Lio/drishti/core/PipelineConfig;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun buildSceneGraph (Ljava/util/List;)Lio/drishti/core/SceneGraph;
+	public final fun detect (Lio/drishti/core/Frame;Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/drishti/core/PipelineConfig {
+	public fun <init> ()V
+	public fun <init> (FFFII)V
+	public synthetic fun <init> (FFFIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()I
+	public final fun component5 ()I
+	public final fun copy (FFFII)Lio/drishti/core/PipelineConfig;
+	public static synthetic fun copy$default (Lio/drishti/core/PipelineConfig;FFFIIILjava/lang/Object;)Lio/drishti/core/PipelineConfig;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContainmentOverlapRatio ()F
+	public final fun getExplorationElementLimit ()I
+	public final fun getMaxItemsPerFrame ()I
+	public final fun getMinConfidence ()F
+	public final fun getSpatialThreshold ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/PluginRegistry {
+	public fun <init> ()V
+	public final fun declareDependency (Lkotlin/reflect/KClass;Ljava/util/Set;)V
+	public final fun getAllDetectors ()Ljava/util/List;
+	public final fun getAllRenderers ()Ljava/util/List;
+	public final fun getContentTypesForRenderer (Lkotlin/reflect/KClass;)Ljava/util/Set;
+	public final fun getDependencies (Lkotlin/reflect/KClass;)Ljava/util/Set;
+	public final fun getDetector (Lio/drishti/core/ContentType;)Lio/drishti/core/DetectorPlugin;
+	public final fun getRenderer (Lkotlin/reflect/KClass;)Lio/drishti/core/RendererPlugin;
+	public final fun getRenderersForContentType (Lio/drishti/core/ContentType;)Ljava/util/Set;
+	public final fun linkDetectorToRenderer (Lio/drishti/core/ContentType;Lkotlin/reflect/KClass;)V
+	public final fun registerDetector (Lio/drishti/core/DetectorPlugin;)Lio/drishti/core/DetectorPlugin;
+	public final fun registerRenderer (Lio/drishti/core/RendererPlugin;)V
+	public final fun validate ()Lio/drishti/core/ValidationReport;
+}
+
+public final class io/drishti/core/Point {
+	public fun <init> (FF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun copy (FF)Lio/drishti/core/Point;
+	public static synthetic fun copy$default (Lio/drishti/core/Point;FFILjava/lang/Object;)Lio/drishti/core/Point;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getX ()F
+	public final fun getY ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/drishti/core/RendererPlugin {
+	public abstract fun getName ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/SceneBounds {
+	public fun <init> (FF)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun copy (FF)Lio/drishti/core/SceneBounds;
+	public static synthetic fun copy$default (Lio/drishti/core/SceneBounds;FFILjava/lang/Object;)Lio/drishti/core/SceneBounds;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getHeight ()F
+	public final fun getWidth ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/SceneEdge {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/drishti/core/EdgeType;F)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lio/drishti/core/EdgeType;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lio/drishti/core/EdgeType;
+	public final fun component4 ()F
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lio/drishti/core/EdgeType;F)Lio/drishti/core/SceneEdge;
+	public static synthetic fun copy$default (Lio/drishti/core/SceneEdge;Ljava/lang/String;Ljava/lang/String;Lio/drishti/core/EdgeType;FILjava/lang/Object;)Lio/drishti/core/SceneEdge;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEdgeType ()Lio/drishti/core/EdgeType;
+	public final fun getSourceId ()Ljava/lang/String;
+	public final fun getTargetId ()Ljava/lang/String;
+	public final fun getWeight ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/SceneGraph {
+	public fun <init> (Ljava/util/List;Ljava/util/List;Lio/drishti/core/SceneBounds;Ljava/util/Map;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Lio/drishti/core/SceneBounds;Ljava/util/Map;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Lio/drishti/core/SceneBounds;
+	public final fun component4 ()Ljava/util/Map;
+	public final fun copy (Ljava/util/List;Ljava/util/List;Lio/drishti/core/SceneBounds;Ljava/util/Map;)Lio/drishti/core/SceneGraph;
+	public static synthetic fun copy$default (Lio/drishti/core/SceneGraph;Ljava/util/List;Ljava/util/List;Lio/drishti/core/SceneBounds;Ljava/util/Map;ILjava/lang/Object;)Lio/drishti/core/SceneGraph;
+	public final fun describe ()Ljava/lang/String;
+	public final fun edgesFor (Ljava/lang/String;)Ljava/util/List;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBounds ()Lio/drishti/core/SceneBounds;
+	public final fun getEdges ()Ljava/util/List;
+	public final fun getMetadata ()Ljava/util/Map;
+	public final fun getNodes ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun neighbors (Ljava/lang/String;)Ljava/util/List;
+	public final fun nodeById (Ljava/lang/String;)Lio/drishti/core/SceneNode;
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class io/drishti/core/SceneNode {
+	public fun getDepth ()I
+	public abstract fun getId ()Ljava/lang/String;
+	public abstract fun getPosition ()Lio/drishti/core/Point;
+}
+
+public final class io/drishti/core/SceneNode$AxisNode : io/drishti/core/SceneNode {
+	public fun <init> (Ljava/lang/String;Lio/drishti/core/Point;Lio/drishti/core/Axis;I)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/drishti/core/Point;Lio/drishti/core/Axis;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/drishti/core/Point;
+	public final fun component3 ()Lio/drishti/core/Axis;
+	public final fun component4 ()I
+	public final fun copy (Ljava/lang/String;Lio/drishti/core/Point;Lio/drishti/core/Axis;I)Lio/drishti/core/SceneNode$AxisNode;
+	public static synthetic fun copy$default (Lio/drishti/core/SceneNode$AxisNode;Ljava/lang/String;Lio/drishti/core/Point;Lio/drishti/core/Axis;IILjava/lang/Object;)Lio/drishti/core/SceneNode$AxisNode;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAxis ()Lio/drishti/core/Axis;
+	public fun getDepth ()I
+	public fun getId ()Ljava/lang/String;
+	public fun getPosition ()Lio/drishti/core/Point;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/SceneNode$DataPointNode : io/drishti/core/SceneNode {
+	public fun <init> (Ljava/lang/String;Lio/drishti/core/Point;FFI)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/drishti/core/Point;FFIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/drishti/core/Point;
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun component5 ()I
+	public final fun copy (Ljava/lang/String;Lio/drishti/core/Point;FFI)Lio/drishti/core/SceneNode$DataPointNode;
+	public static synthetic fun copy$default (Lio/drishti/core/SceneNode$DataPointNode;Ljava/lang/String;Lio/drishti/core/Point;FFIILjava/lang/Object;)Lio/drishti/core/SceneNode$DataPointNode;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDepth ()I
+	public fun getId ()Ljava/lang/String;
+	public fun getPosition ()Lio/drishti/core/Point;
+	public final fun getX ()F
+	public final fun getY ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/SceneNode$ShapeNode : io/drishti/core/SceneNode {
+	public fun <init> (Ljava/lang/String;Lio/drishti/core/Point;Lio/drishti/core/ShapeType;I)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/drishti/core/Point;Lio/drishti/core/ShapeType;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/drishti/core/Point;
+	public final fun component3 ()Lio/drishti/core/ShapeType;
+	public final fun component4 ()I
+	public final fun copy (Ljava/lang/String;Lio/drishti/core/Point;Lio/drishti/core/ShapeType;I)Lio/drishti/core/SceneNode$ShapeNode;
+	public static synthetic fun copy$default (Lio/drishti/core/SceneNode$ShapeNode;Ljava/lang/String;Lio/drishti/core/Point;Lio/drishti/core/ShapeType;IILjava/lang/Object;)Lio/drishti/core/SceneNode$ShapeNode;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDepth ()I
+	public fun getId ()Ljava/lang/String;
+	public fun getPosition ()Lio/drishti/core/Point;
+	public final fun getShapeType ()Lio/drishti/core/ShapeType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/SceneNode$TextNode : io/drishti/core/SceneNode {
+	public fun <init> (Ljava/lang/String;Lio/drishti/core/Point;Ljava/lang/String;I)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/drishti/core/Point;Ljava/lang/String;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/drishti/core/Point;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()I
+	public final fun copy (Ljava/lang/String;Lio/drishti/core/Point;Ljava/lang/String;I)Lio/drishti/core/SceneNode$TextNode;
+	public static synthetic fun copy$default (Lio/drishti/core/SceneNode$TextNode;Ljava/lang/String;Lio/drishti/core/Point;Ljava/lang/String;IILjava/lang/Object;)Lio/drishti/core/SceneNode$TextNode;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDepth ()I
+	public fun getId ()Ljava/lang/String;
+	public fun getPosition ()Lio/drishti/core/Point;
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ShapeContent : io/drishti/core/ContentItem {
+	public fun <init> (Lio/drishti/core/ShapeType;FFFFFFF)V
+	public synthetic fun <init> (Lio/drishti/core/ShapeType;FFFFFFFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/core/ShapeType;
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun component5 ()F
+	public final fun component6 ()F
+	public final fun component7 ()F
+	public final fun component8 ()F
+	public final fun copy (Lio/drishti/core/ShapeType;FFFFFFF)Lio/drishti/core/ShapeContent;
+	public static synthetic fun copy$default (Lio/drishti/core/ShapeContent;Lio/drishti/core/ShapeType;FFFFFFFILjava/lang/Object;)Lio/drishti/core/ShapeContent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArea ()F
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+	public final fun getHeight ()F
+	public final fun getPerimeter ()F
+	public final fun getShapeType ()Lio/drishti/core/ShapeType;
+	public final fun getWidth ()F
+	public final fun getX ()F
+	public final fun getY ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ShapeType : java/lang/Enum {
+	public static final field CIRCLE Lio/drishti/core/ShapeType;
+	public static final field ELLIPSE Lio/drishti/core/ShapeType;
+	public static final field LINE Lio/drishti/core/ShapeType;
+	public static final field POLYGON Lio/drishti/core/ShapeType;
+	public static final field RECTANGLE Lio/drishti/core/ShapeType;
+	public static final field TRIANGLE Lio/drishti/core/ShapeType;
+	public static final field UNKNOWN Lio/drishti/core/ShapeType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/ShapeType;
+	public static fun values ()[Lio/drishti/core/ShapeType;
+}
+
+public final class io/drishti/core/SpeechSegment {
+	public fun <init> (Ljava/lang/String;FF)V
+	public synthetic fun <init> (Ljava/lang/String;FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun copy (Ljava/lang/String;FF)Lio/drishti/core/SpeechSegment;
+	public static synthetic fun copy$default (Lio/drishti/core/SpeechSegment;Ljava/lang/String;FFILjava/lang/Object;)Lio/drishti/core/SpeechSegment;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPitch ()F
+	public final fun getRate ()F
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/SymbolType : java/lang/Enum {
+	public static final field BRACKET Lio/drishti/core/SymbolType;
+	public static final field EQUALS Lio/drishti/core/SymbolType;
+	public static final field FRACTION Lio/drishti/core/SymbolType;
+	public static final field FUNCTION Lio/drishti/core/SymbolType;
+	public static final field GREEK_LETTER Lio/drishti/core/SymbolType;
+	public static final field INTEGRAL Lio/drishti/core/SymbolType;
+	public static final field NUMBER Lio/drishti/core/SymbolType;
+	public static final field OPERATOR Lio/drishti/core/SymbolType;
+	public static final field RELATION Lio/drishti/core/SymbolType;
+	public static final field SUBSCRIPT Lio/drishti/core/SymbolType;
+	public static final field SUMMATION Lio/drishti/core/SymbolType;
+	public static final field SUPERSCRIPT Lio/drishti/core/SymbolType;
+	public static final field VARIABLE Lio/drishti/core/SymbolType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/SymbolType;
+	public static fun values ()[Lio/drishti/core/SymbolType;
+}
+
+public final class io/drishti/core/TableContent : io/drishti/core/ContentItem {
+	public fun <init> (IILjava/util/List;F)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()F
+	public final fun copy (IILjava/util/List;F)Lio/drishti/core/TableContent;
+	public static synthetic fun copy$default (Lio/drishti/core/TableContent;IILjava/util/List;FILjava/lang/Object;)Lio/drishti/core/TableContent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCells ()Ljava/util/List;
+	public final fun getColumns ()I
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+	public final fun getRows ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/TextOutput {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/drishti/core/TextOutput;
+	public static synthetic fun copy$default (Lio/drishti/core/TextOutput;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/TextOutput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/TrendLine {
+	public fun <init> (Lio/drishti/core/Point;Lio/drishti/core/Point;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/drishti/core/Point;Lio/drishti/core/Point;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/core/Point;
+	public final fun component2 ()Lio/drishti/core/Point;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Lio/drishti/core/Point;Lio/drishti/core/Point;Ljava/lang/String;)Lio/drishti/core/TrendLine;
+	public static synthetic fun copy$default (Lio/drishti/core/TrendLine;Lio/drishti/core/Point;Lio/drishti/core/Point;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/TrendLine;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEnd ()Lio/drishti/core/Point;
+	public final fun getEquation ()Ljava/lang/String;
+	public final fun getStart ()Lio/drishti/core/Point;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ValidationReport {
+	public fun <init> (ZLjava/util/List;)V
+	public final fun component1 ()Z
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (ZLjava/util/List;)Lio/drishti/core/ValidationReport;
+	public static synthetic fun copy$default (Lio/drishti/core/ValidationReport;ZLjava/util/List;ILjava/lang/Object;)Lio/drishti/core/ValidationReport;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCompatible ()Z
+	public final fun getIssues ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/VoiceOutput {
+	public fun <init> (Lio/drishti/core/SpeechSegment;Ljava/lang/String;)V
+	public synthetic fun <init> (Lio/drishti/core/SpeechSegment;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/core/SpeechSegment;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Lio/drishti/core/SpeechSegment;Ljava/lang/String;)Lio/drishti/core/VoiceOutput;
+	public static synthetic fun copy$default (Lio/drishti/core/VoiceOutput;Lio/drishti/core/SpeechSegment;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/VoiceOutput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLanguage ()Ljava/lang/String;
+	public final fun getSpeech ()Lio/drishti/core/SpeechSegment;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class io/drishti/core/VoiceOutputRenderer : io/drishti/core/RendererPlugin {
+	public abstract fun renderExplorationVoice (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/VoiceOutput;
+	public abstract fun renderVoice (Ljava/util/List;I)Lio/drishti/core/VoiceOutput;
+}
+
+public final class io/drishti/core/VoiceOutputRenderer$DefaultImpls {
+	public static synthetic fun renderExplorationVoice$default (Lio/drishti/core/VoiceOutputRenderer;Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;IILjava/lang/Object;)Lio/drishti/core/VoiceOutput;
+	public static synthetic fun renderVoice$default (Lio/drishti/core/VoiceOutputRenderer;Ljava/util/List;IILjava/lang/Object;)Lio/drishti/core/VoiceOutput;
+}
+

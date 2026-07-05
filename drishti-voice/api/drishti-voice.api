@@ -1,0 +1,88 @@
+public final class io/drishti/voice/ContentDescriber {
+	public fun <init> ()V
+	public final fun describeFormula (Lio/drishti/core/FormulaContent;)Ljava/lang/String;
+	public final fun describeGraph (Lio/drishti/core/GraphContent;)Ljava/lang/String;
+	public final fun describeMolecule (Lio/drishti/core/MoleculeContent;)Ljava/lang/String;
+	public final fun describeShape (Lio/drishti/core/ShapeContent;)Ljava/lang/String;
+	public final fun describeTable (Lio/drishti/core/TableContent;)Ljava/lang/String;
+}
+
+public final class io/drishti/voice/FormulaSpeech {
+	public static final field INSTANCE Lio/drishti/voice/FormulaSpeech;
+	public final fun expressionOnly (Lio/drishti/core/FormulaContent;)Ljava/lang/String;
+	public final fun fromContent (Lio/drishti/core/FormulaContent;)Ljava/lang/String;
+	public final fun fromLatex (Ljava/lang/String;)Ljava/lang/String;
+	public final fun fromSymbols (Ljava/util/List;)Ljava/lang/String;
+}
+
+public final class io/drishti/voice/SpeechGenerator {
+	public fun <init> ()V
+	public final fun generate (Ljava/lang/String;FF)Lio/drishti/core/SpeechSegment;
+	public static synthetic fun generate$default (Lio/drishti/voice/SpeechGenerator;Ljava/lang/String;FFILjava/lang/Object;)Lio/drishti/core/SpeechSegment;
+	public final fun generateCoordinate (FF)Lio/drishti/core/SpeechSegment;
+	public final fun generateList (Ljava/util/List;)Lio/drishti/core/SpeechSegment;
+	public final fun generateNumber (FI)Lio/drishti/core/SpeechSegment;
+	public static synthetic fun generateNumber$default (Lio/drishti/voice/SpeechGenerator;FIILjava/lang/Object;)Lio/drishti/core/SpeechSegment;
+}
+
+public final class io/drishti/voice/VoiceData {
+	public static final field Companion Lio/drishti/voice/VoiceData$Companion;
+	public static final field DEFAULT_LANGUAGE Ljava/lang/String;
+	public static final field DEFAULT_PITCH F
+	public static final field DEFAULT_RATE F
+	public static final field DEFAULT_STT_MODEL Ljava/lang/String;
+	public static final field DEFAULT_TTS_MODEL Ljava/lang/String;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;FFLjava/util/Map;Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;FFLjava/util/Map;Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()Ljava/util/Map;
+	public final fun component5 ()Ljava/util/Map;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;FFLjava/util/Map;Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;)Lio/drishti/voice/VoiceData;
+	public static synthetic fun copy$default (Lio/drishti/voice/VoiceData;Ljava/lang/String;FFLjava/util/Map;Ljava/util/Map;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/voice/VoiceData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLanguage ()Ljava/lang/String;
+	public final fun getPitch ()F
+	public final fun getPitchAdjustments ()Ljava/util/Map;
+	public final fun getRate ()F
+	public final fun getRateAdjustments ()Ljava/util/Map;
+	public final fun getSttModel ()Ljava/lang/String;
+	public final fun getTtsModel ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun pitchForContentType (Lio/drishti/core/ContentType;)F
+	public final fun rateForContentType (Lio/drishti/core/ContentType;)F
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/voice/VoiceData$Companion {
+	public final fun default ()Lio/drishti/voice/VoiceData;
+	public final fun withLanguage (Ljava/lang/String;)Lio/drishti/voice/VoiceData;
+}
+
+public final class io/drishti/voice/VoicePlugin : io/drishti/core/VoiceOutputRenderer {
+	public fun <init> ()V
+	public fun <init> (Lio/drishti/voice/VoiceData;)V
+	public synthetic fun <init> (Lio/drishti/voice/VoiceData;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun describe (Lio/drishti/core/ContentItem;)Ljava/lang/String;
+	public final fun formulaToSpeech (Lio/drishti/core/FormulaContent;)Ljava/lang/String;
+	public final fun generateSpeech (Ljava/lang/String;)Lio/drishti/core/SpeechSegment;
+	public fun getName ()Ljava/lang/String;
+	public final fun latexToSpeech (Ljava/lang/String;)Ljava/lang/String;
+	public fun renderExplorationVoice (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/VoiceOutput;
+	public fun renderVoice (Ljava/util/List;I)Lio/drishti/core/VoiceOutput;
+}
+
+public final class io/drishti/voice/VoiceRenderer {
+	public fun <init> ()V
+	public fun <init> (Lio/drishti/voice/VoiceData;)V
+	public synthetic fun <init> (Lio/drishti/voice/VoiceData;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun render (Ljava/util/List;I)Lio/drishti/core/VoiceOutput;
+	public static synthetic fun render$default (Lio/drishti/voice/VoiceRenderer;Ljava/util/List;IILjava/lang/Object;)Lio/drishti/core/VoiceOutput;
+	public final fun renderExplorationVoice (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/VoiceOutput;
+	public static synthetic fun renderExplorationVoice$default (Lio/drishti/voice/VoiceRenderer;Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;IILjava/lang/Object;)Lio/drishti/core/VoiceOutput;
+}
+

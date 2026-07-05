@@ -1,0 +1,86 @@
+public final class io/drishti/android/AndroidPlatformDetector : io/drishti/android/PlatformDetector {
+	public fun <init> ()V
+	public fun detect ()Lio/drishti/android/DeviceCapabilities;
+}
+
+public final class io/drishti/android/AudioHAL {
+	public fun <init> (Landroid/content/Context;)V
+	public final fun getAudioLevel ()Lio/drishti/android/AudioLevel;
+	public final fun hasSpatialAudioSupport ()Z
+	public final fun playSpatial (Lio/drishti/core/AudioSource;)V
+	public final fun stop ()V
+}
+
+public final class io/drishti/android/AudioLevel : java/lang/Enum {
+	public static final field MONO_ONLY Lio/drishti/android/AudioLevel;
+	public static final field SPATIALIZER_BASIC Lio/drishti/android/AudioLevel;
+	public static final field SPATIALIZER_OBOE Lio/drishti/android/AudioLevel;
+	public static final field STEREO_ONLY Lio/drishti/android/AudioLevel;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/android/AudioLevel;
+	public static fun values ()[Lio/drishti/android/AudioLevel;
+}
+
+public final class io/drishti/android/CameraCapture {
+	public fun <init> (Landroid/content/Context;Landroidx/lifecycle/LifecycleOwner;Landroidx/camera/view/PreviewView;)V
+	public synthetic fun <init> (Landroid/content/Context;Landroidx/lifecycle/LifecycleOwner;Landroidx/camera/view/PreviewView;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun onFrame (Lkotlin/jvm/functions/Function1;)V
+	public final fun start (Landroidx/camera/core/CameraSelector;)V
+	public static synthetic fun start$default (Lio/drishti/android/CameraCapture;Landroidx/camera/core/CameraSelector;ILjava/lang/Object;)V
+	public final fun startAnalysis ()V
+	public final fun stop ()V
+	public final fun stopAnalysis ()V
+}
+
+public final class io/drishti/android/DeviceCapabilities {
+	public fun <init> (Lio/drishti/android/HapticLevel;Lio/drishti/android/AudioLevel;ZIJI)V
+	public final fun component1 ()Lio/drishti/android/HapticLevel;
+	public final fun component2 ()Lio/drishti/android/AudioLevel;
+	public final fun component3 ()Z
+	public final fun component4 ()I
+	public final fun component5 ()J
+	public final fun component6 ()I
+	public final fun copy (Lio/drishti/android/HapticLevel;Lio/drishti/android/AudioLevel;ZIJI)Lio/drishti/android/DeviceCapabilities;
+	public static synthetic fun copy$default (Lio/drishti/android/DeviceCapabilities;Lio/drishti/android/HapticLevel;Lio/drishti/android/AudioLevel;ZIJIILjava/lang/Object;)Lio/drishti/android/DeviceCapabilities;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAudioLevel ()Lio/drishti/android/AudioLevel;
+	public final fun getAvailableMemory ()J
+	public final fun getHapticLevel ()Lio/drishti/android/HapticLevel;
+	public final fun getMaxThreads ()I
+	public final fun getNpuAvailable ()Z
+	public final fun getSdkVersion ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/android/DrishtiClient {
+	public fun <init> (Landroid/content/Context;Landroidx/lifecycle/LifecycleOwner;)V
+	public final fun initialize (Ljava/util/List;Ljava/util/List;)Lio/drishti/android/DrishtiClient;
+	public static synthetic fun initialize$default (Lio/drishti/android/DrishtiClient;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/android/DrishtiClient;
+	public final fun read (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun startCamera (Landroidx/camera/view/PreviewView;Lkotlin/jvm/functions/Function1;)Lio/drishti/android/DrishtiClient;
+	public static synthetic fun startCamera$default (Lio/drishti/android/DrishtiClient;Landroidx/camera/view/PreviewView;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/drishti/android/DrishtiClient;
+	public final fun stop ()V
+}
+
+public final class io/drishti/android/HapticHAL {
+	public fun <init> (Landroid/content/Context;)V
+	public final fun hasHapticSupport ()Z
+	public final fun playPulse (Lio/drishti/core/HapticPulse;)V
+	public final fun playSequence (Ljava/util/List;)V
+}
+
+public final class io/drishti/android/HapticLevel : java/lang/Enum {
+	public static final field FULL_EFFECT_COMPOSITION Lio/drishti/android/HapticLevel;
+	public static final field LEGACY_VIBRATE Lio/drishti/android/HapticLevel;
+	public static final field NONE Lio/drishti/android/HapticLevel;
+	public static final field WAVEFORM_ONLY Lio/drishti/android/HapticLevel;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/android/HapticLevel;
+	public static fun values ()[Lio/drishti/android/HapticLevel;
+}
+
+public abstract interface class io/drishti/android/PlatformDetector {
+	public abstract fun detect ()Lio/drishti/android/DeviceCapabilities;
+}
+

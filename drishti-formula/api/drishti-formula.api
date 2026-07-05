@@ -1,0 +1,402 @@
+public final class io/drishti/formula/FormulaASTKt {
+	public static final fun depth (Lio/drishti/formula/FormulaNode;)I
+	public static final fun leafCount (Lio/drishti/formula/FormulaNode;)I
+	public static final fun visit (Lio/drishti/formula/FormulaNode;FFLkotlin/jvm/functions/Function3;)V
+}
+
+public final class io/drishti/formula/FormulaDetector : io/drishti/core/DetectorPlugin {
+	public static final field Companion Lio/drishti/formula/FormulaDetector$Companion;
+	public fun <init> ()V
+	public fun detect (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun detectFromLatex (Ljava/lang/String;Lio/drishti/core/FormulaType;)Lio/drishti/formula/ParsedFormula;
+	public static synthetic fun detectFromLatex$default (Lio/drishti/formula/FormulaDetector;Ljava/lang/String;Lio/drishti/core/FormulaType;ILjava/lang/Object;)Lio/drishti/formula/ParsedFormula;
+	public final fun detectFromOcrText (Ljava/lang/String;)Lio/drishti/formula/ParsedFormula;
+	public final fun detectFromUnicode (Ljava/lang/String;)Lio/drishti/formula/ParsedFormula;
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+}
+
+public final class io/drishti/formula/FormulaDetector$Companion {
+}
+
+public final class io/drishti/formula/FormulaEvaluator {
+	public static final field INSTANCE Lio/drishti/formula/FormulaEvaluator;
+	public final fun collectVariables (Lio/drishti/formula/FormulaNode;)Ljava/util/Set;
+	public final fun evaluate (Lio/drishti/formula/FormulaNode;Ljava/util/Map;)Ljava/lang/Double;
+	public static synthetic fun evaluate$default (Lio/drishti/formula/FormulaEvaluator;Lio/drishti/formula/FormulaNode;Ljava/util/Map;ILjava/lang/Object;)Ljava/lang/Double;
+	public final fun toMxparserExpression (Lio/drishti/formula/FormulaNode;)Ljava/lang/String;
+}
+
+public abstract class io/drishti/formula/FormulaNode {
+}
+
+public final class io/drishti/formula/FormulaNode$AbsoluteValue : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$AbsoluteValue;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$AbsoluteValue;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$AbsoluteValue;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContent ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Accent : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode$AccentType;Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode$AccentType;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode$AccentType;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$Accent;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Accent;Lio/drishti/formula/FormulaNode$AccentType;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Accent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContent ()Lio/drishti/formula/FormulaNode;
+	public final fun getType ()Lio/drishti/formula/FormulaNode$AccentType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$AccentType : java/lang/Enum {
+	public static final field BAR Lio/drishti/formula/FormulaNode$AccentType;
+	public static final field DOT Lio/drishti/formula/FormulaNode$AccentType;
+	public static final field DOTDOT Lio/drishti/formula/FormulaNode$AccentType;
+	public static final field HAT Lio/drishti/formula/FormulaNode$AccentType;
+	public static final field OVERLINE Lio/drishti/formula/FormulaNode$AccentType;
+	public static final field TILDE Lio/drishti/formula/FormulaNode$AccentType;
+	public static final field UNDERLINE Lio/drishti/formula/FormulaNode$AccentType;
+	public static final field VEC Lio/drishti/formula/FormulaNode$AccentType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/formula/FormulaNode$AccentType;
+	public static fun values ()[Lio/drishti/formula/FormulaNode$AccentType;
+}
+
+public final class io/drishti/formula/FormulaNode$BinaryOp : io/drishti/formula/FormulaNode {
+	public fun <init> (Ljava/lang/String;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun component3 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Ljava/lang/String;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$BinaryOp;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$BinaryOp;Ljava/lang/String;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$BinaryOp;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLeft ()Lio/drishti/formula/FormulaNode;
+	public final fun getOperator ()Ljava/lang/String;
+	public final fun getRight ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Binomial : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$Binomial;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Binomial;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Binomial;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getK ()Lio/drishti/formula/FormulaNode;
+	public final fun getN ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Cases : io/drishti/formula/FormulaNode {
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/drishti/formula/FormulaNode$Cases;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Cases;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Cases;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBranches ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Fraction : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$Fraction;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Fraction;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Fraction;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDenominator ()Lio/drishti/formula/FormulaNode;
+	public final fun getNumerator ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$FunctionCall : io/drishti/formula/FormulaNode {
+	public fun <init> (Ljava/lang/String;Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Ljava/lang/String;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$FunctionCall;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$FunctionCall;Ljava/lang/String;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$FunctionCall;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArgument ()Lio/drishti/formula/FormulaNode;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Group : io/drishti/formula/FormulaNode {
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lio/drishti/formula/FormulaNode$Group;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Group;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Group;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChildren ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Integral : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public synthetic fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun component3 ()Lio/drishti/formula/FormulaNode;
+	public final fun component4 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$Integral;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Integral;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Integral;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDifferential ()Lio/drishti/formula/FormulaNode;
+	public final fun getIntegrand ()Lio/drishti/formula/FormulaNode;
+	public final fun getLower ()Lio/drishti/formula/FormulaNode;
+	public final fun getUpper ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Limit : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun component3 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$Limit;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Limit;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Limit;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBody ()Lio/drishti/formula/FormulaNode;
+	public final fun getTarget ()Lio/drishti/formula/FormulaNode;
+	public final fun getVariable ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Matrix : io/drishti/formula/FormulaNode {
+	public fun <init> (IILjava/util/List;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (IILjava/util/List;)Lio/drishti/formula/FormulaNode$Matrix;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Matrix;IILjava/util/List;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Matrix;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getColumns ()I
+	public final fun getEntries ()Ljava/util/List;
+	public final fun getRows ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$NamedSymbol : io/drishti/formula/FormulaNode {
+	public fun <init> (Ljava/lang/String;Lio/drishti/core/SymbolType;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/drishti/core/SymbolType;
+	public final fun copy (Ljava/lang/String;Lio/drishti/core/SymbolType;)Lio/drishti/formula/FormulaNode$NamedSymbol;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$NamedSymbol;Ljava/lang/String;Lio/drishti/core/SymbolType;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$NamedSymbol;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getName ()Ljava/lang/String;
+	public final fun getSymbolType ()Lio/drishti/core/SymbolType;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Number : io/drishti/formula/FormulaNode {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/drishti/formula/FormulaNode$Number;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Number;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Number;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Power : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$Power;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Power;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Power;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBase ()Lio/drishti/formula/FormulaNode;
+	public final fun getExponent ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Product : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public synthetic fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun component3 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$Product;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Product;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Product;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLower ()Lio/drishti/formula/FormulaNode;
+	public final fun getTerm ()Lio/drishti/formula/FormulaNode;
+	public final fun getUpper ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$SquareRoot : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public synthetic fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$SquareRoot;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$SquareRoot;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$SquareRoot;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContent ()Lio/drishti/formula/FormulaNode;
+	public final fun getIndex ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Subscript : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$Subscript;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Subscript;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Subscript;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBase ()Lio/drishti/formula/FormulaNode;
+	public final fun getIndex ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Summation : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun component3 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$Summation;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Summation;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Summation;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLower ()Lio/drishti/formula/FormulaNode;
+	public final fun getTerm ()Lio/drishti/formula/FormulaNode;
+	public final fun getUpper ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$UnaryMinus : io/drishti/formula/FormulaNode {
+	public fun <init> (Lio/drishti/formula/FormulaNode;)V
+	public final fun component1 ()Lio/drishti/formula/FormulaNode;
+	public final fun copy (Lio/drishti/formula/FormulaNode;)Lio/drishti/formula/FormulaNode$UnaryMinus;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$UnaryMinus;Lio/drishti/formula/FormulaNode;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$UnaryMinus;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOperand ()Lio/drishti/formula/FormulaNode;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaNode$Variable : io/drishti/formula/FormulaNode {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/drishti/formula/FormulaNode$Variable;
+	public static synthetic fun copy$default (Lio/drishti/formula/FormulaNode$Variable;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/formula/FormulaNode$Variable;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/FormulaParseException : java/lang/Exception {
+	public fun <init> (Ljava/lang/String;ILjava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;ILjava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getPosition ()I
+}
+
+public final class io/drishti/formula/FormulaPlugin : io/drishti/core/AudioRenderer, io/drishti/core/DetectorPlugin, io/drishti/core/HapticsRenderer, io/drishti/core/VoiceOutputRenderer {
+	public fun <init> ()V
+	public fun detect (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun detectLatex (Ljava/lang/String;Lio/drishti/core/FormulaType;)Lio/drishti/formula/ParsedFormula;
+	public static synthetic fun detectLatex$default (Lio/drishti/formula/FormulaPlugin;Ljava/lang/String;Lio/drishti/core/FormulaType;ILjava/lang/Object;)Lio/drishti/formula/ParsedFormula;
+	public final fun detectUnicode (Ljava/lang/String;)Lio/drishti/formula/ParsedFormula;
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+	public fun getName ()Ljava/lang/String;
+	public final fun renderAudio (Lio/drishti/formula/ParsedFormula;)Lio/drishti/core/AudioOutput;
+	public fun renderAudio (Ljava/util/List;I)Lio/drishti/core/AudioOutput;
+	public fun renderExplorationAudio (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/AudioOutput;
+	public fun renderExplorationHaptic (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/HapticOutput;
+	public fun renderExplorationVoice (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/VoiceOutput;
+	public final fun renderHaptic (Lio/drishti/formula/ParsedFormula;)Lio/drishti/core/HapticOutput;
+	public fun renderHaptic (Ljava/util/List;I)Lio/drishti/core/HapticOutput;
+	public final fun renderVoice (Lio/drishti/formula/ParsedFormula;)Lio/drishti/core/VoiceOutput;
+	public fun renderVoice (Ljava/util/List;I)Lio/drishti/core/VoiceOutput;
+}
+
+public final class io/drishti/formula/FormulaRenderer {
+	public static final field Companion Lio/drishti/formula/FormulaRenderer$Companion;
+	public fun <init> ()V
+	public final fun renderAudio (Lio/drishti/core/FormulaContent;)Lio/drishti/core/AudioOutput;
+	public final fun renderAudio (Lio/drishti/formula/ParsedFormula;)Lio/drishti/core/AudioOutput;
+	public final fun renderHaptic (Lio/drishti/core/FormulaContent;)Lio/drishti/core/HapticOutput;
+	public final fun renderHaptic (Lio/drishti/formula/ParsedFormula;)Lio/drishti/core/HapticOutput;
+	public final fun renderVoice (Lio/drishti/core/FormulaContent;)Lio/drishti/core/VoiceOutput;
+	public final fun renderVoice (Lio/drishti/formula/ParsedFormula;)Lio/drishti/core/VoiceOutput;
+}
+
+public final class io/drishti/formula/FormulaRenderer$Companion {
+}
+
+public final class io/drishti/formula/LatexParser {
+	public static final field INSTANCE Lio/drishti/formula/LatexParser;
+	public final fun parse (Ljava/lang/String;)Lio/drishti/formula/FormulaNode;
+}
+
+public final class io/drishti/formula/MxparserBridge {
+	public static final field INSTANCE Lio/drishti/formula/MxparserBridge;
+	public final fun evaluate (Ljava/lang/String;Ljava/util/Map;)D
+}
+
+public final class io/drishti/formula/ParsedFormula : io/drishti/core/FormulaContentItem {
+	public static final field Companion Lio/drishti/formula/ParsedFormula$Companion;
+	public fun <init> (Ljava/lang/String;Lio/drishti/formula/FormulaNode;Ljava/lang/Double;Ljava/lang/String;Lio/drishti/core/FormulaContent;)V
+	public synthetic fun <init> (Ljava/lang/String;Lio/drishti/formula/FormulaNode;Ljava/lang/Double;Ljava/lang/String;Lio/drishti/core/FormulaContent;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lio/drishti/formula/FormulaNode;
+	public final fun component3 ()Ljava/lang/Double;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lio/drishti/core/FormulaContent;
+	public final fun copy (Ljava/lang/String;Lio/drishti/formula/FormulaNode;Ljava/lang/Double;Ljava/lang/String;Lio/drishti/core/FormulaContent;)Lio/drishti/formula/ParsedFormula;
+	public static synthetic fun copy$default (Lio/drishti/formula/ParsedFormula;Ljava/lang/String;Lio/drishti/formula/FormulaNode;Ljava/lang/Double;Ljava/lang/String;Lio/drishti/core/FormulaContent;ILjava/lang/Object;)Lio/drishti/formula/ParsedFormula;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAst ()Lio/drishti/formula/FormulaNode;
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+	public final fun getEvaluationResult ()Ljava/lang/Double;
+	public fun getExpression ()Ljava/lang/String;
+	public final fun getFormulaContent ()Lio/drishti/core/FormulaContent;
+	public fun getFormulaType ()Lio/drishti/core/FormulaType;
+	public fun getGeometry ()Lio/drishti/core/Geometry;
+	public final fun getLatex ()Ljava/lang/String;
+	public final fun getSpeechText ()Ljava/lang/String;
+	public fun getSymbols ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun isEvaluable ()Z
+	public final fun isSpeechAvailable ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/formula/ParsedFormula$Companion {
+	public final fun fromFormulaContent (Lio/drishti/core/FormulaContent;)Lio/drishti/formula/ParsedFormula;
+	public final fun fromLatex (Ljava/lang/String;Lio/drishti/core/FormulaType;Ljava/util/Map;)Lio/drishti/formula/ParsedFormula;
+	public static synthetic fun fromLatex$default (Lio/drishti/formula/ParsedFormula$Companion;Ljava/lang/String;Lio/drishti/core/FormulaType;Ljava/util/Map;ILjava/lang/Object;)Lio/drishti/formula/ParsedFormula;
+}
+
+public final class io/drishti/formula/SpeechRuleEngine {
+	public static final field INSTANCE Lio/drishti/formula/SpeechRuleEngine;
+	public final fun speechFromLatex (Ljava/lang/String;)Ljava/lang/String;
+	public final fun toSpeech (Lio/drishti/formula/FormulaNode;)Ljava/lang/String;
+}
+

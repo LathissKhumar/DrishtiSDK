@@ -1,0 +1,260 @@
+public final class io/drishti/graph/CsvParseResult {
+	public fun <init> (Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;Ljava/util/List;)Lio/drishti/graph/CsvParseResult;
+	public static synthetic fun copy$default (Lio/drishti/graph/CsvParseResult;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/graph/CsvParseResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDataPoints ()Ljava/util/List;
+	public final fun getErrors ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/graph/DataExtractor {
+	public fun <init> ()V
+	public final fun autoDetect (Ljava/lang/String;Ljava/lang/String;)Lio/drishti/graph/ExtractionResult;
+	public static synthetic fun autoDetect$default (Lio/drishti/graph/DataExtractor;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/graph/ExtractionResult;
+	public final fun fromCsv (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/drishti/graph/ExtractionResult;
+	public static synthetic fun fromCsv$default (Lio/drishti/graph/DataExtractor;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/graph/ExtractionResult;
+	public final fun fromDataPoints (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)Lio/drishti/graph/ExtractionResult;
+	public static synthetic fun fromDataPoints$default (Lio/drishti/graph/DataExtractor;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/graph/ExtractionResult;
+	public final fun fromJson (Ljava/lang/String;)Lio/drishti/graph/ExtractionResult;
+	public final fun fromProperties (Ljava/util/Map;)Lio/drishti/graph/ExtractionResult;
+}
+
+public final class io/drishti/graph/DataPointInput {
+	public static final field Companion Lio/drishti/graph/DataPointInput$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/drishti/graph/DataPointInput;
+	public static synthetic fun copy$default (Lio/drishti/graph/DataPointInput;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/graph/DataPointInput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLabel ()Ljava/lang/String;
+	public final fun getX ()Ljava/lang/String;
+	public final fun getY ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class io/drishti/graph/DataPointInput$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/drishti/graph/DataPointInput$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/drishti/graph/DataPointInput;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/drishti/graph/DataPointInput;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+}
+
+public final class io/drishti/graph/DataPointInput$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/drishti/graph/DataSource : java/lang/Enum {
+	public static final field CSV Lio/drishti/graph/DataSource;
+	public static final field JSON Lio/drishti/graph/DataSource;
+	public static final field PROGRAMMATIC Lio/drishti/graph/DataSource;
+	public static final field PROPERTIES Lio/drishti/graph/DataSource;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/graph/DataSource;
+	public static fun values ()[Lio/drishti/graph/DataSource;
+}
+
+public final class io/drishti/graph/DataSummary {
+	public fun <init> (FFFFILio/drishti/graph/TrendDirection;F)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun component3 ()F
+	public final fun component4 ()F
+	public final fun component5 ()I
+	public final fun component6 ()Lio/drishti/graph/TrendDirection;
+	public final fun component7 ()F
+	public final fun copy (FFFFILio/drishti/graph/TrendDirection;F)Lio/drishti/graph/DataSummary;
+	public static synthetic fun copy$default (Lio/drishti/graph/DataSummary;FFFFILio/drishti/graph/TrendDirection;FILjava/lang/Object;)Lio/drishti/graph/DataSummary;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCount ()I
+	public final fun getMax ()F
+	public final fun getMean ()F
+	public final fun getMedian ()F
+	public final fun getMin ()F
+	public final fun getTrend ()Lio/drishti/graph/TrendDirection;
+	public final fun getTrendStrength ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/graph/ExtractionResult {
+	public fun <init> (Lio/drishti/core/GraphContent;Lio/drishti/graph/DataSource;Ljava/util/List;Z)V
+	public synthetic fun <init> (Lio/drishti/core/GraphContent;Lio/drishti/graph/DataSource;Ljava/util/List;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/core/GraphContent;
+	public final fun component2 ()Lio/drishti/graph/DataSource;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Z
+	public final fun copy (Lio/drishti/core/GraphContent;Lio/drishti/graph/DataSource;Ljava/util/List;Z)Lio/drishti/graph/ExtractionResult;
+	public static synthetic fun copy$default (Lio/drishti/graph/ExtractionResult;Lio/drishti/core/GraphContent;Lio/drishti/graph/DataSource;Ljava/util/List;ZILjava/lang/Object;)Lio/drishti/graph/ExtractionResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getGraph ()Lio/drishti/core/GraphContent;
+	public final fun getInferredType ()Z
+	public final fun getSource ()Lio/drishti/graph/DataSource;
+	public final fun getWarnings ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/graph/GraphDataException : java/lang/IllegalArgumentException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class io/drishti/graph/GraphDataInput {
+	public static final field Companion Lio/drishti/graph/GraphDataInput$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/util/List;
+	public final fun component6 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)Lio/drishti/graph/GraphDataInput;
+	public static synthetic fun copy$default (Lio/drishti/graph/GraphDataInput;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/graph/GraphDataInput;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getData ()Ljava/util/List;
+	public final fun getLabels ()Ljava/util/List;
+	public final fun getTitle ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public final fun getX_label ()Ljava/lang/String;
+	public final fun getY_label ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public synthetic class io/drishti/graph/GraphDataInput$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lio/drishti/graph/GraphDataInput$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lio/drishti/graph/GraphDataInput;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lio/drishti/graph/GraphDataInput;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+}
+
+public final class io/drishti/graph/GraphDataInput$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class io/drishti/graph/GraphDataParser {
+	public static final field BAR_CHART_MAX_POINTS I
+	public static final field DEFAULT_CHART_TYPE Ljava/lang/String;
+	public static final field LINE_CHART_MIN_POINTS I
+	public static final field SCATTER_MIN_POINTS I
+	public fun <init> ()V
+	public final fun parseCsv (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/drishti/graph/ParseResult;
+	public static synthetic fun parseCsv$default (Lio/drishti/graph/GraphDataParser;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/graph/ParseResult;
+	public final fun parseDataPoints (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)Lio/drishti/core/GraphContent;
+	public static synthetic fun parseDataPoints$default (Lio/drishti/graph/GraphDataParser;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/core/GraphContent;
+	public final fun parseJson (Ljava/lang/String;)Lio/drishti/graph/ParseResult;
+}
+
+public final class io/drishti/graph/GraphDetector : io/drishti/core/DetectorPlugin {
+	public fun <init> ()V
+	public fun <init> (F)V
+	public synthetic fun <init> (FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun dataExtractor ()Lio/drishti/graph/DataExtractor;
+	public fun detect (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun detectAuto (Ljava/lang/String;Ljava/lang/String;)Lio/drishti/core/GraphContent;
+	public static synthetic fun detectAuto$default (Lio/drishti/graph/GraphDetector;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/GraphContent;
+	public final fun detectFromCsv (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/drishti/core/GraphContent;
+	public static synthetic fun detectFromCsv$default (Lio/drishti/graph/GraphDetector;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/GraphContent;
+	public final fun detectFromDataPoints (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/drishti/core/GraphContent;
+	public static synthetic fun detectFromDataPoints$default (Lio/drishti/graph/GraphDetector;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/core/GraphContent;
+	public final fun detectFromJson (Ljava/lang/String;)Lio/drishti/core/GraphContent;
+	public final fun detectFromOcrText (Ljava/lang/String;Ljava/lang/String;)Lio/drishti/core/GraphContent;
+	public static synthetic fun detectFromOcrText$default (Lio/drishti/graph/GraphDetector;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/GraphContent;
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+}
+
+public final class io/drishti/graph/GraphPlugin : io/drishti/core/AudioRenderer, io/drishti/core/DetectorPlugin, io/drishti/core/HapticsRenderer, io/drishti/core/VoiceOutputRenderer {
+	public fun <init> ()V
+	public final fun autoDetect (Ljava/lang/String;Ljava/lang/String;)Lio/drishti/core/GraphContent;
+	public static synthetic fun autoDetect$default (Lio/drishti/graph/GraphPlugin;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/GraphContent;
+	public fun detect (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun fromCsv (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lio/drishti/core/GraphContent;
+	public static synthetic fun fromCsv$default (Lio/drishti/graph/GraphPlugin;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/GraphContent;
+	public final fun fromDataPoints (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lio/drishti/core/GraphContent;
+	public static synthetic fun fromDataPoints$default (Lio/drishti/graph/GraphPlugin;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/core/GraphContent;
+	public final fun fromJson (Ljava/lang/String;)Lio/drishti/core/GraphContent;
+	public final fun getAccessibilityDescription (Lio/drishti/core/GraphContent;)Ljava/lang/String;
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+	public final fun getDataSummary (Lio/drishti/core/GraphContent;)Lio/drishti/graph/DataSummary;
+	public fun getName ()Ljava/lang/String;
+	public fun renderAudio (Ljava/util/List;I)Lio/drishti/core/AudioOutput;
+	public fun renderExplorationAudio (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/AudioOutput;
+	public fun renderExplorationHaptic (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/HapticOutput;
+	public fun renderExplorationVoice (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/VoiceOutput;
+	public fun renderHaptic (Ljava/util/List;I)Lio/drishti/core/HapticOutput;
+	public final fun renderVegaLiteSpec (Lio/drishti/core/GraphContent;)Ljava/lang/String;
+	public fun renderVoice (Ljava/util/List;I)Lio/drishti/core/VoiceOutput;
+}
+
+public final class io/drishti/graph/GraphRenderer {
+	public static final field MAX_FREQUENCY F
+	public static final field MIN_FREQUENCY F
+	public fun <init> ()V
+	public final fun getAccessibilityDescription (Lio/drishti/core/GraphContent;)Ljava/lang/String;
+	public final fun getDataSummary (Lio/drishti/core/GraphContent;)Lio/drishti/graph/DataSummary;
+	public final fun renderAudio (Lio/drishti/core/GraphContent;)Lio/drishti/core/AudioOutput;
+	public final fun renderHaptic (Lio/drishti/core/GraphContent;)Lio/drishti/core/HapticOutput;
+	public final fun renderVegaLiteSpec (Lio/drishti/core/GraphContent;)Ljava/lang/String;
+	public final fun renderVegaLiteSpecObject (Lio/drishti/core/GraphContent;)Lkotlinx/serialization/json/JsonObject;
+	public final fun renderVoice (Lio/drishti/core/GraphContent;)Lio/drishti/core/VoiceOutput;
+}
+
+public final class io/drishti/graph/ParseResult {
+	public fun <init> (Lio/drishti/core/GraphContent;Ljava/util/List;Z)V
+	public synthetic fun <init> (Lio/drishti/core/GraphContent;Ljava/util/List;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/drishti/core/GraphContent;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Z
+	public final fun copy (Lio/drishti/core/GraphContent;Ljava/util/List;Z)Lio/drishti/graph/ParseResult;
+	public static synthetic fun copy$default (Lio/drishti/graph/ParseResult;Lio/drishti/core/GraphContent;Ljava/util/List;ZILjava/lang/Object;)Lio/drishti/graph/ParseResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getGraph ()Lio/drishti/core/GraphContent;
+	public final fun getInferredType ()Z
+	public final fun getWarnings ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/graph/TrendDirection : java/lang/Enum {
+	public static final field DECREASING Lio/drishti/graph/TrendDirection;
+	public static final field INCREASING Lio/drishti/graph/TrendDirection;
+	public static final field STABLE Lio/drishti/graph/TrendDirection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/graph/TrendDirection;
+	public static fun values ()[Lio/drishti/graph/TrendDirection;
+}
+
+public final class io/drishti/graph/VegaLiteSpec {
+	public fun <init> ()V
+	public final fun generate (Lio/drishti/core/GraphContent;II)Lkotlinx/serialization/json/JsonObject;
+	public static synthetic fun generate$default (Lio/drishti/graph/VegaLiteSpec;Lio/drishti/core/GraphContent;IIILjava/lang/Object;)Lkotlinx/serialization/json/JsonObject;
+	public final fun generateString (Lio/drishti/core/GraphContent;II)Ljava/lang/String;
+	public static synthetic fun generateString$default (Lio/drishti/graph/VegaLiteSpec;Lio/drishti/core/GraphContent;IIILjava/lang/Object;)Ljava/lang/String;
+	public final fun markTypeForGraph (Lio/drishti/core/GraphType;)Ljava/lang/String;
+}
+
+public final class io/drishti/graph/VegaLiteSpecKt {
+	public static final fun computeDataSummary (Ljava/util/List;)Lio/drishti/graph/DataSummary;
+	public static final fun generateAccessibilityDescription (Lio/drishti/core/GraphContent;Lio/drishti/graph/DataSummary;)Ljava/lang/String;
+	public static synthetic fun generateAccessibilityDescription$default (Lio/drishti/core/GraphContent;Lio/drishti/graph/DataSummary;ILjava/lang/Object;)Ljava/lang/String;
+}
+

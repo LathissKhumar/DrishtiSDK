@@ -1,0 +1,228 @@
+public final class io/drishti/vision/AndroidImagePreprocessor {
+	public fun <init> ()V
+	public final fun binarize (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun detectEdges (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun enhanceContrast (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun grayscale (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun preprocess (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun reduceNoise (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+}
+
+public final class io/drishti/vision/Contour {
+	public fun <init> (Ljava/util/List;F)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()F
+	public final fun copy (Ljava/util/List;F)Lio/drishti/vision/Contour;
+	public static synthetic fun copy$default (Lio/drishti/vision/Contour;Ljava/util/List;FILjava/lang/Object;)Lio/drishti/vision/Contour;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArea ()F
+	public final fun getPoints ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/vision/DetectedShape {
+	public fun <init> (Lio/drishti/vision/ShapeKind;Ljava/util/List;Lio/drishti/core/BoundingBox;FFF)V
+	public final fun component1 ()Lio/drishti/vision/ShapeKind;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Lio/drishti/core/BoundingBox;
+	public final fun component4 ()F
+	public final fun component5 ()F
+	public final fun component6 ()F
+	public final fun copy (Lio/drishti/vision/ShapeKind;Ljava/util/List;Lio/drishti/core/BoundingBox;FFF)Lio/drishti/vision/DetectedShape;
+	public static synthetic fun copy$default (Lio/drishti/vision/DetectedShape;Lio/drishti/vision/ShapeKind;Ljava/util/List;Lio/drishti/core/BoundingBox;FFFILjava/lang/Object;)Lio/drishti/vision/DetectedShape;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArea ()F
+	public final fun getBoundingBox ()Lio/drishti/core/BoundingBox;
+	public final fun getConfidence ()F
+	public final fun getPerimeter ()F
+	public final fun getType ()Lio/drishti/vision/ShapeKind;
+	public final fun getVertices ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/vision/FeatureExtractor {
+	public static final field Companion Lio/drishti/vision/FeatureExtractor$Companion;
+	public fun <init> ()V
+	public final fun extractAll (Lio/drishti/core/Frame;)Lio/drishti/vision/VisionFeatures;
+	public final fun extractContours (Lio/drishti/core/Frame;)Ljava/util/List;
+	public final fun extractLines (Lio/drishti/core/Frame;)Ljava/util/List;
+	public final fun extractROIs (Lio/drishti/core/Frame;)Ljava/util/List;
+	public final fun extractShapes (Lio/drishti/core/Frame;)Ljava/util/List;
+	public final fun extractTextRegions (Lio/drishti/core/Frame;)Ljava/util/List;
+}
+
+public final class io/drishti/vision/FeatureExtractor$Companion {
+}
+
+public final class io/drishti/vision/FrameBuffer {
+	public fun <init> ()V
+	public fun <init> (I)V
+	public synthetic fun <init> (IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun add (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun clear (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun get (ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getAll (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun isFull (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun latest (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun size (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class io/drishti/vision/ImagePreprocessor {
+	public fun <init> ()V
+	public final fun binarize (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun detectEdges (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun enhanceContrast (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun grayscale (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun preprocess (Lio/drishti/core/Frame;)Lio/drishti/vision/ProcessedFrame;
+	public final fun reduceNoise (Lio/drishti/core/Frame;I)Lio/drishti/vision/ProcessedFrame;
+	public static synthetic fun reduceNoise$default (Lio/drishti/vision/ImagePreprocessor;Lio/drishti/core/Frame;IILjava/lang/Object;)Lio/drishti/vision/ProcessedFrame;
+}
+
+public final class io/drishti/vision/Line {
+	public fun <init> (Lio/drishti/core/Point;Lio/drishti/core/Point;F)V
+	public final fun component1 ()Lio/drishti/core/Point;
+	public final fun component2 ()Lio/drishti/core/Point;
+	public final fun component3 ()F
+	public final fun copy (Lio/drishti/core/Point;Lio/drishti/core/Point;F)Lio/drishti/vision/Line;
+	public static synthetic fun copy$default (Lio/drishti/vision/Line;Lio/drishti/core/Point;Lio/drishti/core/Point;FILjava/lang/Object;)Lio/drishti/vision/Line;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAngle ()F
+	public final fun getEnd ()Lio/drishti/core/Point;
+	public final fun getStart ()Lio/drishti/core/Point;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/vision/ProcessedFormat : java/lang/Enum {
+	public static final field BINARY Lio/drishti/vision/ProcessedFormat;
+	public static final field DENOISED Lio/drishti/vision/ProcessedFormat;
+	public static final field EDGES Lio/drishti/vision/ProcessedFormat;
+	public static final field ENHANCED Lio/drishti/vision/ProcessedFormat;
+	public static final field GRAYSCALE Lio/drishti/vision/ProcessedFormat;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/vision/ProcessedFormat;
+	public static fun values ()[Lio/drishti/vision/ProcessedFormat;
+}
+
+public final class io/drishti/vision/ProcessedFrame {
+	public fun <init> (II[BLio/drishti/vision/ProcessedFormat;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()[B
+	public final fun component4 ()Lio/drishti/vision/ProcessedFormat;
+	public final fun copy (II[BLio/drishti/vision/ProcessedFormat;)Lio/drishti/vision/ProcessedFrame;
+	public static synthetic fun copy$default (Lio/drishti/vision/ProcessedFrame;II[BLio/drishti/vision/ProcessedFormat;ILjava/lang/Object;)Lio/drishti/vision/ProcessedFrame;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getData ()[B
+	public final fun getFormat ()Lio/drishti/vision/ProcessedFormat;
+	public final fun getHeight ()I
+	public final fun getWidth ()I
+	public fun hashCode ()I
+	public final fun toFrame ()Lio/drishti/core/Frame;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/vision/RegionOfInterest {
+	public fun <init> (Lio/drishti/core/BoundingBox;F)V
+	public final fun component1 ()Lio/drishti/core/BoundingBox;
+	public final fun component2 ()F
+	public final fun copy (Lio/drishti/core/BoundingBox;F)Lio/drishti/vision/RegionOfInterest;
+	public static synthetic fun copy$default (Lio/drishti/vision/RegionOfInterest;Lio/drishti/core/BoundingBox;FILjava/lang/Object;)Lio/drishti/vision/RegionOfInterest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBoundingBox ()Lio/drishti/core/BoundingBox;
+	public final fun getConfidence ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/vision/ShapeKind : java/lang/Enum {
+	public static final field CIRCLE Lio/drishti/vision/ShapeKind;
+	public static final field ELLIPSE Lio/drishti/vision/ShapeKind;
+	public static final field HEXAGON Lio/drishti/vision/ShapeKind;
+	public static final field LINE_SEGMENT Lio/drishti/vision/ShapeKind;
+	public static final field PENTAGON Lio/drishti/vision/ShapeKind;
+	public static final field POLYGON Lio/drishti/vision/ShapeKind;
+	public static final field RECTANGLE Lio/drishti/vision/ShapeKind;
+	public static final field SQUARE Lio/drishti/vision/ShapeKind;
+	public static final field TRIANGLE Lio/drishti/vision/ShapeKind;
+	public static final field UNKNOWN Lio/drishti/vision/ShapeKind;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/drishti/vision/ShapeKind;
+	public static fun values ()[Lio/drishti/vision/ShapeKind;
+}
+
+public final class io/drishti/vision/TextRegion {
+	public fun <init> (Lio/drishti/core/BoundingBox;Ljava/lang/String;)V
+	public final fun component1 ()Lio/drishti/core/BoundingBox;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Lio/drishti/core/BoundingBox;Ljava/lang/String;)Lio/drishti/vision/TextRegion;
+	public static synthetic fun copy$default (Lio/drishti/vision/TextRegion;Lio/drishti/core/BoundingBox;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/vision/TextRegion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBoundingBox ()Lio/drishti/core/BoundingBox;
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/vision/VisionDetector : io/drishti/core/DetectorPlugin {
+	public fun <init> ()V
+	public fun detect (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun detectAll (Lio/drishti/core/Frame;)Ljava/util/List;
+	public final fun extractFeatures (Lio/drishti/core/Frame;)Lio/drishti/vision/VisionFeatures;
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+}
+
+public final class io/drishti/vision/VisionFeatures {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;)Lio/drishti/vision/VisionFeatures;
+	public static synthetic fun copy$default (Lio/drishti/vision/VisionFeatures;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lio/drishti/vision/VisionFeatures;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContours ()Ljava/util/List;
+	public final fun getLines ()Ljava/util/List;
+	public final fun getRegionsOfInterest ()Ljava/util/List;
+	public final fun getShapes ()Ljava/util/List;
+	public final fun getTextRegions ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun isNotEmpty ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/vision/VisionPlugin : io/drishti/core/AudioRenderer, io/drishti/core/DetectorPlugin, io/drishti/core/HapticsRenderer, io/drishti/core/VoiceOutputRenderer {
+	public fun <init> ()V
+	public fun detect (Lio/drishti/core/Frame;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun detectAll (Lio/drishti/core/Frame;)Ljava/util/List;
+	public final fun extractFeatures (Lio/drishti/core/Frame;)Lio/drishti/vision/VisionFeatures;
+	public fun getConfidence ()F
+	public fun getContentType ()Lio/drishti/core/ContentType;
+	public fun getName ()Ljava/lang/String;
+	public fun renderAudio (Ljava/util/List;I)Lio/drishti/core/AudioOutput;
+	public fun renderExplorationAudio (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/AudioOutput;
+	public fun renderExplorationHaptic (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/HapticOutput;
+	public fun renderExplorationVoice (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/VoiceOutput;
+	public fun renderHaptic (Ljava/util/List;I)Lio/drishti/core/HapticOutput;
+	public fun renderVoice (Ljava/util/List;I)Lio/drishti/core/VoiceOutput;
+}
+
+public final class io/drishti/vision/VisionRenderer {
+	public fun <init> ()V
+	public final fun renderAudio (Lio/drishti/vision/VisionFeatures;)Lio/drishti/core/AudioOutput;
+	public final fun renderAudio (Ljava/util/List;)Lio/drishti/core/AudioOutput;
+	public final fun renderExplorationAudio (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/AudioOutput;
+	public final fun renderExplorationHaptic (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/HapticOutput;
+	public final fun renderExplorationVoice (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/VoiceOutput;
+	public final fun renderHaptic (Lio/drishti/vision/VisionFeatures;)Lio/drishti/core/HapticOutput;
+	public final fun renderHaptic (Ljava/util/List;)Lio/drishti/core/HapticOutput;
+	public final fun renderVoice (Lio/drishti/vision/VisionFeatures;)Lio/drishti/core/VoiceOutput;
+	public final fun renderVoice (Ljava/util/List;)Lio/drishti/core/VoiceOutput;
+}
+
