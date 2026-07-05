@@ -27,7 +27,7 @@ subprojects {
                     pom {
                         name.set("Drishti ${this@subprojects.name.removePrefix("drishti-").replaceFirstChar { it.uppercase() }}")
                         description.set("Accessibility infrastructure for visual STEM content")
-                        url.set("https://github.com/lathiss/DrishtiSTEM")
+                        url.set("https://github.com/LathissKhumar/DrishtiSTEM")
                         licenses {
                             license {
                                 name.set("The Apache License, Version 2.0")
@@ -36,15 +36,15 @@ subprojects {
                         }
                         developers {
                             developer {
-                                id.set("lathiss")
+                                id.set("LathissKhumar")
                                 name.set("Lathiss")
-                                url.set("https://github.com/lathiss")
+                                url.set("https://github.com/LathissKhumar")
                             }
                         }
                         scm {
-                            connection.set("scm:git:https://github.com/lathiss/DrishtiSTEM.git")
-                            developerConnection.set("scm:git:ssh://github.com/lathiss/DrishtiSTEM.git")
-                            url.set("https://github.com/lathiss/DrishtiSTEM")
+                            connection.set("scm:git:https://github.com/LathissKhumar/DrishtiSTEM.git")
+                            developerConnection.set("scm:git:ssh://github.com/LathissKhumar/DrishtiSTEM.git")
+                            url.set("https://github.com/LathissKhumar/DrishtiSTEM")
                         }
                     }
                 }
