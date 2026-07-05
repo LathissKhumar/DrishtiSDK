@@ -6,7 +6,7 @@ If you discover a security vulnerability in Drishti SDK, please report it respon
 
 **Do NOT open a public GitHub issue for security vulnerabilities.**
 
-Instead, please email security concerns to: [your-email@example.com]
+Instead, please email security concerns to: [See profile for contact info](https://github.com/LathissKhumar)
 
 Include the following in your report:
 - Description of the vulnerability
