@@ -25,6 +25,16 @@ public class DrishtiDiagram(
     private val renderers: List<RendererPlugin>,
     private val pipeline: Pipeline
 ) {
+    /**
+     * Render haptic feedback for the diagram.
+     *
+     * Produces vibration patterns that represent the spatial layout and structure
+     * of the detected content items, allowing users to feel the diagram through
+     * touch on supported devices.
+     *
+     * @return [Result.success] with [HapticOutput] containing vibration patterns,
+     *         or [Result.failure] if no haptic renderer is registered or rendering fails
+     */
     public fun haptics(): Result<HapticOutput> {
         val hapticRenderer = renderers.filterIsInstance<HapticsRenderer>().firstOrNull()
             ?: return Result.failure(IllegalStateException("No haptic renderer registered. Add HapticsPlugin to Drishti.Builder."))
@@ -37,6 +47,16 @@ public class DrishtiDiagram(
         }
     }
 
+    /**
+     * Render spatial audio representation of the diagram.
+     *
+     * Produces a spatial audio mix where detected content items are positioned
+     * in the stereo field according to their spatial coordinates, enabling users
+     * to hear the layout of the diagram.
+     *
+     * @return [Result.success] with [AudioOutput] containing spatial audio data,
+     *         or [Result.failure] if no audio renderer is registered or rendering fails
+     */
     public fun audio(): Result<AudioOutput> {
         val audioRenderer = renderers.filterIsInstance<AudioRenderer>().firstOrNull()
             ?: return Result.failure(IllegalStateException("No audio renderer registered. Add AudioPlugin to Drishti.Builder."))
@@ -49,6 +69,15 @@ public class DrishtiDiagram(
         }
     }
 
+    /**
+     * Generate spoken description of the diagram content.
+     *
+     * Produces natural language text that describes the diagram's content,
+     * structure, and key relationships, suitable for text-to-speech output.
+     *
+     * @return [Result.success] with [VoiceOutput] containing speech text,
+     *         or [Result.failure] if no voice renderer is registered or rendering fails
+     */
     public fun voice(): Result<VoiceOutput> {
         val voiceRenderer = renderers.filterIsInstance<VoiceOutputRenderer>().firstOrNull()
             ?: return Result.failure(IllegalStateException("No voice renderer registered. Add VoicePlugin to Drishti.Builder."))
