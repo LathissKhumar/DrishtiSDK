@@ -1,0 +1,8 @@
+jdk:
+  - openjdk21
+
+before_install:
+  - sdk-manager --install "platforms;android-35" "build-tools;35.0.0"
+
+install:
+  - ./gradlew publishToMavenLocal --no-daemon -x test

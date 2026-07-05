@@ -1,17 +1,15 @@
-name: CI
+name: Release
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - 'v*'
 
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+permissions:
+  contents: write
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,11 +27,13 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
-      with:
-        cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
+    - name: Extract version from tag
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
     - name: Build
       run: ./gradlew assembleDebug --no-daemon
@@ -44,18 +44,15 @@ jobs:
     - name: Check API compatibility
       run: ./gradlew apiCheck --no-daemon
 
-    - name: Upload test results
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results
-        path: '**/build/reports/tests/'
-        retention-days: 7
+    - name: Generate API docs
+      run: ./gradlew dokkaHtmlMultiModule --no-daemon
 
-    - name: Upload API check results
-      if: failure()
-      uses: actions/upload-artifact@v4
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
       with:
-        name: api-check-results
-        path: '**/build/api/'
-        retention-days: 7
+        name: Drishti SDK ${{ steps.version.outputs.VERSION }}
+        generate_release_notes: true
+        files: |
+          drishti-demo/build/outputs/apk/debug/*.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
