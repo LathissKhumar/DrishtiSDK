@@ -35,24 +35,27 @@ jobs:
       id: version
       run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-    - name: Build
-      run: ./gradlew assembleDebug --no-daemon
-
-    - name: Run tests
-      run: ./gradlew testDebugUnitTest --no-daemon
-
-    - name: Check API compatibility
-      run: ./gradlew apiCheck --no-daemon
+    - name: Build and Test
+      run: ./gradlew assembleDebug testDebugUnitTest apiCheck --no-daemon -Dorg.gradle.jvmargs="-Xmx2g" -Dorg.gradle.workers.max=2
 
     - name: Generate API docs
-      run: ./gradlew dokkaHtmlMultiModule --no-daemon
+      run: ./gradlew dokkaHtmlMultiModule --no-daemon -Dorg.gradle.jvmargs="-Xmx2g" || echo "Dokka docs generation skipped"
+      continue-on-error: true
+
+    - name: Upload Dokka docs
+      if: success() || steps.last-step.outcome == 'success'
+      uses: actions/upload-artifact@v4
+      with:
+        name: dokka-docs
+        path: build/dokka/
+        retention-days: 30
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         name: Drishti SDK ${{ steps.version.outputs.VERSION }}
         generate_release_notes: true
-        files: |
-          drishti-demo/build/outputs/apk/debug/*.apk
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
