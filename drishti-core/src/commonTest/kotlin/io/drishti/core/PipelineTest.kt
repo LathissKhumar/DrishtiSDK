@@ -26,17 +26,17 @@ class PipelineTest {
     fun detectReturnsNonNullItems() = kotlinx.coroutines.test.runTest {
         val pipeline = Pipeline()
         val frame = TestFixtures.frame()
-        val detector = StubDetector(ContentType.GRAPH, createItem = TestFixtures.graphContent())
+        val detector = StubDetector(ContentType.Graph, createItem = TestFixtures.graphContent())
         val results = pipeline.detect(frame, listOf(detector))
         assertEquals(1, results.size)
-        assertEquals(ContentType.GRAPH, results[0].contentType)
+        assertEquals(ContentType.Graph, results[0].contentType)
     }
 
     @Test
     fun detectFiltersNullResults() = kotlinx.coroutines.test.runTest {
         val pipeline = Pipeline()
         val frame = TestFixtures.frame()
-        val detector = StubDetector(ContentType.GRAPH, createItem = null)
+        val detector = StubDetector(ContentType.Graph, createItem = null)
         val results = pipeline.detect(frame, listOf(detector))
         assertTrue(results.isEmpty())
     }
@@ -46,9 +46,9 @@ class PipelineTest {
         val pipeline = Pipeline()
         val frame = TestFixtures.frame()
         val detectors = listOf(
-            StubDetector(ContentType.GRAPH, createItem = TestFixtures.graphContent()),
-            StubDetector(ContentType.FORMULA, createItem = TestFixtures.formulaContent()),
-            StubDetector(ContentType.MOLECULE, createItem = TestFixtures.moleculeContent())
+            StubDetector(ContentType.Graph, createItem = TestFixtures.graphContent()),
+            StubDetector(ContentType.Formula, createItem = TestFixtures.formulaContent()),
+            StubDetector(ContentType.Molecule, createItem = TestFixtures.moleculeContent())
         )
         val results = pipeline.detect(frame, detectors)
         assertEquals(3, results.size)
@@ -67,7 +67,7 @@ class PipelineTest {
         val pipeline = Pipeline(config = PipelineConfig(minConfidence = 0.5f))
         val frame = TestFixtures.frame()
         val lowConfDetector = StubDetector(
-            ContentType.GRAPH,
+            ContentType.Graph,
             createItem = GraphContent(
                 graphType = GraphType.LINE_CHART,
                 dataPoints = listOf(DataPoint(10f, 20f)),
@@ -75,12 +75,12 @@ class PipelineTest {
             )
         )
         val highConfDetector = StubDetector(
-            ContentType.FORMULA,
+            ContentType.Formula,
             createItem = TestFixtures.formulaContent(confidence = 0.9f)
         )
         val results = pipeline.detect(frame, listOf(lowConfDetector, highConfDetector))
         assertEquals(1, results.size, "Should keep only confidence >= 0.5f")
-        assertEquals(ContentType.FORMULA, results[0].contentType)
+        assertEquals(ContentType.Formula, results[0].contentType)
     }
 
     @Test
@@ -88,9 +88,9 @@ class PipelineTest {
         val pipeline = Pipeline(config = PipelineConfig(maxItemsPerFrame = 2))
         val frame = TestFixtures.frame()
         val detectors = listOf(
-            StubDetector(ContentType.GRAPH, createItem = TestFixtures.graphContent()),
-            StubDetector(ContentType.FORMULA, createItem = TestFixtures.formulaContent()),
-            StubDetector(ContentType.MOLECULE, createItem = TestFixtures.moleculeContent())
+            StubDetector(ContentType.Graph, createItem = TestFixtures.graphContent()),
+            StubDetector(ContentType.Formula, createItem = TestFixtures.formulaContent()),
+            StubDetector(ContentType.Molecule, createItem = TestFixtures.moleculeContent())
         )
         val results = pipeline.detect(frame, detectors)
         assertEquals(2, results.size, "Should truncate to 2 items")

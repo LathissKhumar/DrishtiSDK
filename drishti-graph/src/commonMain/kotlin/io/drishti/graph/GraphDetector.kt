@@ -44,7 +44,7 @@ public class GraphDetector(
     private val defaultConfidence: Float = 0.95f
 ) : DetectorPlugin {
 
-    override val contentType: ContentType = ContentType.GRAPH
+    override val contentType: ContentType = ContentType.Graph
     override val confidence: Float get() = defaultConfidence
 
     private val extractor = DataExtractor()

@@ -35,7 +35,7 @@ public class VisionPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voic
     private val renderer = VisionRenderer()
 
     override val name: String = "vision"
-    override val contentType: ContentType = ContentType.SHAPE
+    override val contentType: ContentType = ContentType.Shape
     override val confidence: Float = detector.confidence
 
     override suspend fun detect(frame: Frame): ContentItem? {

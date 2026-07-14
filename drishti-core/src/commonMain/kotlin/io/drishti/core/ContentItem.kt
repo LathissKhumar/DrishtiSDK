@@ -52,7 +52,7 @@ public data class GraphContent(
     val labels: List<String> = emptyList(),
     override val confidence: Float
 ) : ContentItem {
-    override val contentType: ContentType = ContentType.GRAPH
+    override val contentType: ContentType = ContentType.Graph
 }
 
 /**
@@ -105,7 +105,7 @@ public data class FormulaContent(
     override val geometry: Geometry? = null,
     override val confidence: Float
 ) : FormulaContentItem {
-    override val contentType: ContentType = ContentType.FORMULA
+    override val contentType: ContentType = ContentType.Formula
 }
 
 /**
@@ -182,7 +182,7 @@ public data class MoleculeContent(
     val inchiKey: String = "",
     override val confidence: Float
 ) : ContentItem {
-    override val contentType: ContentType = ContentType.MOLECULE
+    override val contentType: ContentType = ContentType.Molecule
 }
 
 /**
@@ -220,7 +220,7 @@ public data class ShapeContent(
     val height: Float = 0f,
     override val confidence: Float
 ) : ContentItem {
-    override val contentType: ContentType = ContentType.SHAPE
+    override val contentType: ContentType = ContentType.Shape
 }
 
 /**
@@ -235,7 +235,7 @@ public data class TableContent(
     val cells: List<List<String>>,
     override val confidence: Float
 ) : ContentItem {
-    override val contentType: ContentType = ContentType.TABLE
+    override val contentType: ContentType = ContentType.Table
 }
 
 /**

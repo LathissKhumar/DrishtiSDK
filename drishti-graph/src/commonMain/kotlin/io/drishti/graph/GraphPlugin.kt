@@ -58,7 +58,7 @@ public class GraphPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voice
     private val renderer = GraphRenderer()
 
     override val name: String = "graph"
-    override val contentType: ContentType = ContentType.GRAPH
+    override val contentType: ContentType = ContentType.Graph
     override val confidence: Float = detector.confidence
 
     // ── DetectorPlugin interface ─────────────────────────────────────

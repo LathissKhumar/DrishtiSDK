@@ -124,10 +124,10 @@ public fun generateContainmentEdges(
 public fun generateSemanticEdges(items: List<ContentItem>, nodes: List<SceneNode>): List<SceneEdge> {
     val edges = mutableListOf<SceneEdge>()
     val complementaryPairs = setOf(
-        ContentType.FORMULA to ContentType.GRAPH,
-        ContentType.FORMULA to ContentType.MOLECULE,
-        ContentType.GRAPH to ContentType.TABLE,
-        ContentType.MOLECULE to ContentType.SHAPE
+        ContentType.Formula to ContentType.Graph,
+        ContentType.Formula to ContentType.Molecule,
+        ContentType.Graph to ContentType.Table,
+        ContentType.Molecule to ContentType.Shape
     )
 
     for (i in items.indices) {

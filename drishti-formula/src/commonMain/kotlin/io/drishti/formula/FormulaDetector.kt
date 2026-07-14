@@ -36,7 +36,7 @@ import kotlin.coroutines.cancellation.CancellationException
  */
 public class FormulaDetector : DetectorPlugin {
 
-    override val contentType: ContentType = ContentType.FORMULA
+    override val contentType: ContentType = ContentType.Formula
 
     override val confidence: Float = 0.95f
 

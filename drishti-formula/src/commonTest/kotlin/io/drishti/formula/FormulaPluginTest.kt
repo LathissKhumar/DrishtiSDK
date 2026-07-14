@@ -30,7 +30,7 @@ class FormulaPluginTest {
     @Test
     fun contentTypeIsFormula() {
         val plugin = FormulaPlugin()
-        assertEquals(ContentType.FORMULA, plugin.contentType)
+        assertEquals(ContentType.Formula, plugin.contentType)
     }
 
     @Test
@@ -97,7 +97,7 @@ class FormulaPluginTest {
         val plugin = FormulaPlugin()
         val formula = plugin.detectLatex("\\frac{1}{2}")
         assertNotNull(formula)
-        assertEquals(ContentType.FORMULA, formula.contentType)
+        assertEquals(ContentType.Formula, formula.contentType)
         assertNotNull(formula.ast)
         assertNotNull(formula.speechText)
     }
@@ -1049,7 +1049,7 @@ class ParsedFormulaTest {
         assertNotNull(formula.latex)
         assertNotNull(formula.ast)
         assertNotNull(formula.speechText)
-        assertEquals(ContentType.FORMULA, formula.contentType)
+        assertEquals(ContentType.Formula, formula.contentType)
     }
 
     @Test

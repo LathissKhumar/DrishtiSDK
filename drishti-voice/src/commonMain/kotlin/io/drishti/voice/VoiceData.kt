@@ -27,7 +27,7 @@ import io.drishti.core.ContentType
  * Usage:
  * ```
  * val params = VoiceData.default()
- * val formulaRate = params.rateForContentType(ContentType.FORMULA)
+ * val formulaRate = params.rateForContentType(ContentType.Formula)
  * ```
  */
 public data class VoiceData(
@@ -73,12 +73,11 @@ public data class VoiceData(
             VoiceData(language = language)
 
         private fun defaultRateAdjustments(): Map<ContentType, Float> = mapOf(
-            ContentType.FORMULA to 0.85f,
-            ContentType.GRAPH to 1.0f,
-            ContentType.MOLECULE to 0.95f,
-            ContentType.SHAPE to 1.0f,
-            ContentType.TABLE to 0.9f,
-            ContentType.CUSTOM to 1.0f
+            ContentType.Formula to 0.85f,
+            ContentType.Graph to 1.0f,
+            ContentType.Molecule to 0.95f,
+            ContentType.Shape to 1.0f,
+            ContentType.Table to 0.9f
         )
     }
 }

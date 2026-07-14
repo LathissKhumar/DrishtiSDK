@@ -410,20 +410,34 @@ public object LatexParser {
                     val upper = if (peek() is Token.Caret) {
                         advance(); parseAtom()
                     } else null
-                    val integrand = if (peek() !is Token.Command || (peek() as Token.Command).name != "int") {
-                        parseMulDiv()
-                    } else FormulaNode.Number("1")
-                    
+
+                    // Check for differential BEFORE parsing integrand to avoid
+                    // consuming 'd' as a variable in the integrand
                     var differential: FormulaNode? = null
+                    var hasDifferential = false
                     if (peek() is Token.Letter && (peek() as Token.Letter).ch == 'd') {
                         val nextPos = position + 1
                         if (nextPos < tokens.size && tokens[nextPos] is Token.Letter) {
-                            advance() // consume 'd'
-                            val varTok = advance() as Token.Letter
-                            differential = FormulaNode.Variable(varTok.ch.toString())
+                            differential = FormulaNode.Variable((tokens[nextPos] as Token.Letter).ch.toString())
+                            hasDifferential = true
                         }
                     }
-                    while (peek() is Token.Letter) advance()
+
+                    val integrand = if (hasDifferential) {
+                        // No integrand, just the differential: \int dx → integral of 1
+                        FormulaNode.Number("1")
+                    } else if (peek() !is Token.Command || (peek() as Token.Command).name != "int") {
+                        parseMulDiv()
+                    } else {
+                        FormulaNode.Number("1")
+                    }
+
+                    if (hasDifferential) {
+                        advance()
+                        advance()
+                    } else {
+                        while (peek() is Token.Letter) advance()
+                    }
                     FormulaNode.Integral(lower, upper, integrand, differential)
                 }
                 "sum" -> {
@@ -462,17 +476,32 @@ public object LatexParser {
                     val upper = if (peek() is Token.Caret) {
                         advance(); parseAtom()
                     } else null
-                    val integrand = parseMulDiv()
+
+                    // Check for differential BEFORE parsing integrand to avoid
+                    // consuming 'd' as a variable in the integrand
                     var differential: FormulaNode? = null
+                    var hasDifferential = false
                     if (peek() is Token.Letter && (peek() as Token.Letter).ch == 'd') {
                         val nextPos = position + 1
                         if (nextPos < tokens.size && tokens[nextPos] is Token.Letter) {
-                            advance() // consume 'd'
-                            val varTok = advance() as Token.Letter
-                            differential = FormulaNode.Variable(varTok.ch.toString())
+                            differential = FormulaNode.Variable((tokens[nextPos] as Token.Letter).ch.toString())
+                            hasDifferential = true
                         }
                     }
-                    while (peek() is Token.Letter) advance()
+
+                    val integrand = if (hasDifferential) {
+                        // No integrand, just the differential: \oint dx → integral of 1
+                        FormulaNode.Number("1")
+                    } else {
+                        parseMulDiv()
+                    }
+
+                    if (hasDifferential) {
+                        advance()
+                        advance()
+                    } else {
+                        while (peek() is Token.Letter) advance()
+                    }
                     FormulaNode.Integral(lower, upper, integrand, differential)
                 }
                 // Bold math — parse block, return as VariableNode (bold is a rendering concern)

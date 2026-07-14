@@ -88,7 +88,7 @@ public data class HapticPattern(
  *
  * Usage (new API):
  * ```
- * val pattern = PatternBuilder.forContentType(ContentType.GRAPH)
+ * val pattern = PatternBuilder.forContentType(ContentType.Graph)
  *     .addItem()
  *     .setFocus(0)
  *     .addPrimitive(HapticPrimitiveType.CLICK, intensity = 0.8f)

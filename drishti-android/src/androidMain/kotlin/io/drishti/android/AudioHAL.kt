@@ -35,6 +35,10 @@ import kotlin.math.sin
  * @param context Android context used to obtain system services.
  */
 public class AudioHAL(private val context: Context) {
+    private companion object {
+        const val MAX_SAMPLES = 44100 * 300 // 300 seconds at 44.1kHz
+    }
+
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private val capabilities = AndroidPlatformDetector().detect()
     @Volatile private var playbackThread: Thread? = null
@@ -138,6 +142,7 @@ public class AudioHAL(private val context: Context) {
         panning: Float = 0.5f
     ): ShortArray {
         val totalSamples = (sampleRate * durationMs / 1000).toInt()
+        require(totalSamples in 1..MAX_SAMPLES) { "Too many samples: $totalSamples" }
         val buffer = ShortArray(totalSamples * 2)
         val vol = amplitude.coerceIn(0f, 1f)
         val leftGain = 1.0f - (panning * 0.5f)
@@ -164,6 +169,7 @@ public class AudioHAL(private val context: Context) {
         durationMs: Long
     ): ShortArray {
         val totalSamples = (sampleRate * durationMs / 1000).toInt()
+        require(totalSamples in 1..MAX_SAMPLES) { "Too many samples: $totalSamples" }
         val buffer = ShortArray(totalSamples)
         val vol = amplitude.coerceIn(0f, 1f)
         for (i in 0 until totalSamples) {

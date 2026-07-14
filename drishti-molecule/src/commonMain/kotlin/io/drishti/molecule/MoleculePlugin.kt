@@ -47,7 +47,7 @@ public class MoleculePlugin(
 ) : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputRenderer {
 
     override val name: String = "molecule"
-    override val contentType: ContentType = ContentType.MOLECULE
+    override val contentType: ContentType = ContentType.Molecule
     override val confidence: Float = detector.confidence
 
     /**

@@ -45,7 +45,7 @@ public class MoleculeDetector(
     ),
     private val parser: MoleculeParser = MoleculeParser()
 ) : DetectorPlugin {
-    override val contentType: ContentType = ContentType.MOLECULE
+    override val contentType: ContentType = ContentType.Molecule
     override val confidence: Float = 0.95f
 
     /**

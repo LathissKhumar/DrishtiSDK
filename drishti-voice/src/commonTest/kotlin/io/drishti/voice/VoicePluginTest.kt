@@ -427,14 +427,14 @@ class VoiceDataTest {
     @Test
     fun rateForFormulaIsSlower() {
         val data = VoiceData.default()
-        val rate = data.rateForContentType(ContentType.FORMULA)
+        val rate = data.rateForContentType(ContentType.Formula)
         assertTrue(rate < 1.0f, "Formula rate should be slower than default")
     }
 
     @Test
     fun rateForGraphIsDefault() {
         val data = VoiceData.default()
-        val rate = data.rateForContentType(ContentType.GRAPH)
+        val rate = data.rateForContentType(ContentType.Graph)
         assertEquals(1.0f, rate)
     }
 
@@ -448,7 +448,7 @@ class VoiceDataTest {
     @Test
     fun pitchForContentType() {
         val data = VoiceData.default()
-        val pitch = data.pitchForContentType(ContentType.MOLECULE)
+        val pitch = data.pitchForContentType(ContentType.Molecule)
         assertEquals(1.0f, pitch)
     }
 }

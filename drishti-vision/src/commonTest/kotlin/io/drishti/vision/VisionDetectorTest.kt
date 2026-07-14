@@ -93,7 +93,7 @@ class VisionDetectorTest {
 
         val shapeContent = items.filterIsInstance<ShapeContent>()
         assertTrue(shapeContent.isNotEmpty(), "Should produce ShapeContent items")
-        assertEquals(ContentType.SHAPE, shapeContent.first().contentType)
+        assertEquals(ContentType.Shape, shapeContent.first().contentType)
     }
 
     @Test
@@ -101,7 +101,7 @@ class VisionDetectorTest {
         val frame = createTriangleFrame()
         val item = plugin.detect(frame)
         assertNotNull(item, "VisionPlugin should detect a shape from the triangle frame")
-        assertEquals(ContentType.SHAPE, item.contentType)
+        assertEquals(ContentType.Shape, item.contentType)
     }
 
     @Test

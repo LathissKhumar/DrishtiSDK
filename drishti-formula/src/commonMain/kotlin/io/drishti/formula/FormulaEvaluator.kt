@@ -27,6 +27,8 @@ import kotlin.coroutines.cancellation.CancellationException
  */
 public object FormulaEvaluator {
 
+    private const val MAX_PRODUCT_ITERATIONS = 10_000
+
     public fun evaluate(ast: FormulaNode, variables: Map<String, Double> = emptyMap()): Double? {
         // Handle node types that need direct evaluation (not expressible as mXparser strings)
         val directResult = evaluateDirectly(ast, variables)
@@ -72,11 +74,15 @@ public object FormulaEvaluator {
     }
 
     private fun evaluateCases(ast: FormulaNode.Cases, variables: Map<String, Double>): Double? {
-        for ((_, value) in ast.branches) {
-            val result = evaluate(value, variables)
-            if (result != null) return result
+        for ((condition, value) in ast.branches) {
+            val conditionResult = evaluate(condition, variables)
+            val isConditionTrue = conditionResult == null || conditionResult != 0.0
+            if (isConditionTrue) {
+                return evaluate(value, variables)
+            }
         }
-        return null
+        // Fallback: if no condition matched, return the last branch's value
+        return ast.branches.lastOrNull()?.let { evaluate(it.second, variables) }
     }
 
     private fun evaluateMatrix(ast: FormulaNode.Matrix, variables: Map<String, Double>): Double? {
@@ -93,6 +99,7 @@ public object FormulaEvaluator {
     private fun evaluateProduct(ast: FormulaNode.Product, variables: Map<String, Double>): Double? {
         val lower = ast.lower?.let { evaluate(it, variables) }?.toInt() ?: return null
         val upper = ast.upper?.let { evaluate(it, variables) }?.toInt() ?: return null
+        if (upper - lower + 1 > MAX_PRODUCT_ITERATIONS) return null
         val term = ast.term
 
         var product = 1.0

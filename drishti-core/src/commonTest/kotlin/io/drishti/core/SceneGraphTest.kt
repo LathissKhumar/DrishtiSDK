@@ -81,15 +81,23 @@ class SceneGraphTest {
 
     @Test
     fun contentTypeAllValues() {
-        val values = ContentType.entries
-        assertEquals(7, values.size)
-        assertTrue(values.contains(ContentType.GRAPH))
-        assertTrue(values.contains(ContentType.FORMULA))
-        assertTrue(values.contains(ContentType.MOLECULE))
-        assertTrue(values.contains(ContentType.SHAPE))
-        assertTrue(values.contains(ContentType.TABLE))
-        assertTrue(values.contains(ContentType.TEXT))
-        assertTrue(values.contains(ContentType.CUSTOM))
+        val builtInTypes = listOf(
+            ContentType.Graph,
+            ContentType.Formula,
+            ContentType.Molecule,
+            ContentType.Shape,
+            ContentType.Table,
+            ContentType.Text,
+            ContentType.Custom("test")
+        )
+        assertEquals(7, builtInTypes.size)
+        assertEquals("GRAPH", ContentType.Graph.name)
+        assertEquals("FORMULA", ContentType.Formula.name)
+        assertEquals("MOLECULE", ContentType.Molecule.name)
+        assertEquals("SHAPE", ContentType.Shape.name)
+        assertEquals("TABLE", ContentType.Table.name)
+        assertEquals("TEXT", ContentType.Text.name)
+        assertEquals("test", ContentType.Custom("test").name)
     }
 
     // --- New tests: bounds ---
@@ -241,8 +249,8 @@ class SceneGraphTest {
 
     @Test
     fun generateSemanticEdgesWithScaledWeights() {
-        val formulaItem = TestContentItem(ContentType.FORMULA, 0.9f)
-        val graphItem = TestContentItem(ContentType.GRAPH, 0.8f)
+        val formulaItem = TestContentItem(ContentType.Formula, 0.9f)
+        val graphItem = TestContentItem(ContentType.Graph, 0.8f)
         val items = listOf(formulaItem, graphItem)
 
         // Semantic edge between nodes at distance 0

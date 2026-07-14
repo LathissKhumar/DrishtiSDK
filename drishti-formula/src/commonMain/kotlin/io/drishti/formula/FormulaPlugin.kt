@@ -56,7 +56,7 @@ public class FormulaPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, Voi
     private val renderer = FormulaRenderer()
 
     override val name: String = "formula"
-    override val contentType: ContentType = ContentType.FORMULA
+    override val contentType: ContentType = ContentType.Formula
     override val confidence: Float = detector.confidence
 
     // ── DetectorPlugin ────────────────────────────────────────────────

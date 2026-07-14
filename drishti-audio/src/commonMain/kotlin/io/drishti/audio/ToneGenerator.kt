@@ -20,6 +20,11 @@ package io.drishti.audio
  * Generates audio tones for sonification.
  */
 public class ToneGenerator {
+
+    private companion object {
+        const val MAX_SAMPLES = 44100 * 300 // 300 seconds at 44.1kHz
+    }
+
     /**
      * Generate a sine wave tone.
      */
@@ -28,6 +33,7 @@ public class ToneGenerator {
         require(duration > 0) { "Duration must be positive, was $duration" }
         require(sampleRate > 0) { "Sample rate must be positive, was $sampleRate" }
         val samples = (sampleRate * duration / 1000).toInt()
+        require(samples in 1..MAX_SAMPLES) { "Too many samples: $samples (max $MAX_SAMPLES)" }
         return FloatArray(samples) { i ->
             val t = i.toFloat() / sampleRate
             (2.0 * Math.PI * frequency * t).toFloat().let { Math.sin(it.toDouble()).toFloat() }
@@ -42,6 +48,7 @@ public class ToneGenerator {
         require(duration > 0) { "Duration must be positive, was $duration" }
         require(sampleRate > 0) { "Sample rate must be positive, was $sampleRate" }
         val samples = (sampleRate * duration / 1000).toInt()
+        require(samples in 1..MAX_SAMPLES) { "Too many samples: $samples (max $MAX_SAMPLES)" }
         return FloatArray(samples) { i ->
             val t = i.toFloat() / sampleRate
             val phase = (2.0 * Math.PI * frequency * t).toFloat()
@@ -57,6 +64,7 @@ public class ToneGenerator {
         require(duration > 0) { "Duration must be positive, was $duration" }
         require(sampleRate > 0) { "Sample rate must be positive, was $sampleRate" }
         val samples = (sampleRate * duration / 1000).toInt()
+        require(samples in 1..MAX_SAMPLES) { "Too many samples: $samples (max $MAX_SAMPLES)" }
         return FloatArray(samples) { i ->
             val t = i.toFloat() / sampleRate
             val phase = (frequency * t) % 1f
@@ -72,6 +80,7 @@ public class ToneGenerator {
         require(duration > 0) { "Duration must be positive, was $duration" }
         require(sampleRate > 0) { "Sample rate must be positive, was $sampleRate" }
         val samples = (sampleRate * duration / 1000).toInt()
+        require(samples in 1..MAX_SAMPLES) { "Too many samples: $samples (max $MAX_SAMPLES)" }
         return FloatArray(samples) { i ->
             val t = i.toFloat() / sampleRate
             val phase = (frequency * t) % 1f

@@ -47,7 +47,7 @@ public data class ParsedFormula(
     val formulaContent: FormulaContent
 ) : FormulaContentItem {
 
-    override val contentType: ContentType = ContentType.FORMULA
+    override val contentType: ContentType = ContentType.Formula
 
     override val confidence: Float = 0.95f
 

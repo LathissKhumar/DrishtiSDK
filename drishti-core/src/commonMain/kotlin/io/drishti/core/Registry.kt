@@ -41,7 +41,7 @@ public data class ValidationReport(
  * val registry = PluginRegistry()
  * registry.registerDetector(graphDetector)
  * registry.registerRenderer(hapticsRenderer)
- * registry.linkDetectorToRenderer(ContentType.GRAPH, StubHapticsRenderer::class)
+ * registry.linkDetectorToRenderer(ContentType.Graph, StubHapticsRenderer::class)
  * ```
  */
 public class PluginRegistry {

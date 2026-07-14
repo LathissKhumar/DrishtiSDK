@@ -31,7 +31,7 @@ class GraphPluginTest {
     @Test
     fun contentTypeIsGraph() {
         val plugin = GraphPlugin()
-        assertEquals(ContentType.GRAPH, plugin.contentType)
+        assertEquals(ContentType.Graph, plugin.contentType)
     }
 
     @Test

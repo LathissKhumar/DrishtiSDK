@@ -27,7 +27,7 @@ class ExplorationSessionTest {
         val session = ExplorationSession(items, emptyList())
         val result = session.next()
         assertTrue(result is ExplorationResult.Item)
-        assertEquals(ContentType.GRAPH, (result as ExplorationResult.Item).item.contentType)
+        assertEquals(ContentType.Graph, (result as ExplorationResult.Item).item.contentType)
     }
 
     @Test

@@ -33,7 +33,7 @@ class MoleculeDetectorTest {
             pubChemClient = createClientWithResponse(null),
             parser = MoleculeParser()
         )
-        assertEquals(ContentType.MOLECULE, detector.contentType)
+        assertEquals(ContentType.Molecule, detector.contentType)
     }
 
     @Test

@@ -26,7 +26,7 @@ import io.drishti.core.ShapeType
 /** Vision-based detector for shapes using feature extraction. */
 public class VisionDetector : DetectorPlugin {
 
-    override val contentType: ContentType = ContentType.SHAPE
+    override val contentType: ContentType = ContentType.Shape
     override val confidence: Float = 0.85f
 
     private val extractor = FeatureExtractor()

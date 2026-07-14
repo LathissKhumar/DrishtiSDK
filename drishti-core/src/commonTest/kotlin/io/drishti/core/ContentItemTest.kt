@@ -23,7 +23,7 @@ class ContentItemTest {
     @Test
     fun graphContentHasCorrectContentType() {
         val content = TestFixtures.graphContent()
-        assertEquals(ContentType.GRAPH, content.contentType)
+        assertEquals(ContentType.Graph, content.contentType)
         assertEquals(0.85f, content.confidence)
     }
 
@@ -55,7 +55,7 @@ class ContentItemTest {
     @Test
     fun formulaContentHasCorrectContentType() {
         val content = TestFixtures.formulaContent()
-        assertEquals(ContentType.FORMULA, content.contentType)
+        assertEquals(ContentType.Formula, content.contentType)
         assertEquals(0.88f, content.confidence)
     }
 
@@ -76,7 +76,7 @@ class ContentItemTest {
     @Test
     fun moleculeContentHasCorrectContentType() {
         val content = TestFixtures.moleculeContent()
-        assertEquals(ContentType.MOLECULE, content.contentType)
+        assertEquals(ContentType.Molecule, content.contentType)
         assertEquals(0.92f, content.confidence)
     }
 
@@ -98,7 +98,7 @@ class ContentItemTest {
     @Test
     fun shapeContentHasCorrectContentType() {
         val content = ShapeContent(ShapeType.CIRCLE, area = 100f, perimeter = 35.4f, confidence = 0.9f)
-        assertEquals(ContentType.SHAPE, content.contentType)
+        assertEquals(ContentType.Shape, content.contentType)
         assertEquals(ShapeType.CIRCLE, content.shapeType)
         assertEquals(100f, content.area)
     }
@@ -107,7 +107,7 @@ class ContentItemTest {
     fun tableContentHasCorrectContentType() {
         val cells = listOf(listOf("A", "B"), listOf("1", "2"))
         val content = TableContent(rows = 2, columns = 2, cells = cells, confidence = 0.9f)
-        assertEquals(ContentType.TABLE, content.contentType)
+        assertEquals(ContentType.Table, content.contentType)
         assertEquals(2, content.rows)
         assertEquals(2, content.columns)
         assertEquals("A", content.cells[0][0])

@@ -211,6 +211,7 @@ public class SpatialRenderer {
      * Compute base frequency for a node.
      *
      * DataPointNode: Y value mapped to [MIN_FREQUENCY]..[MAX_FREQUENCY].
+     * Y is normalized to 0-100 range; values outside are clamped via [Float.coerceIn].
      * TextNode: fixed speech-synthesis range (440 Hz reference).
      * ShapeNode/AxisNode: low ambient drone (150 Hz).
      */

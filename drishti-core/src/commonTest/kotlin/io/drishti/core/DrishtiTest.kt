@@ -30,7 +30,7 @@ class DrishtiTest {
     @Test
     fun builderWithDetectorAndRenderer() {
         val drishti = Drishti.Builder()
-            .addDetector(StubDetector(ContentType.GRAPH))
+            .addDetector(StubDetector(ContentType.Graph))
             .addRenderer(StubHapticsRenderer())
             .build()
         assertNotNull(drishti)
@@ -39,7 +39,7 @@ class DrishtiTest {
     @Test
     fun readAsyncReturnsDiagram() = kotlinx.coroutines.test.runTest {
         val drishti = Drishti.Builder()
-            .addDetector(StubDetector(ContentType.GRAPH, TestFixtures.graphContent()))
+            .addDetector(StubDetector(ContentType.Graph, TestFixtures.graphContent()))
             .addRenderer(StubHapticsRenderer())
             .build()
         val frame = TestFixtures.frame()
@@ -51,7 +51,7 @@ class DrishtiTest {
     @Test
     fun readAsyncWithNoMatchingDetectors() = kotlinx.coroutines.test.runTest {
         val drishti = Drishti.Builder()
-            .addDetector(StubDetector(ContentType.FORMULA))
+            .addDetector(StubDetector(ContentType.Formula))
             .build()
         val frame = TestFixtures.frame()
         val diagram = drishti.readAsync(frame)

@@ -32,7 +32,7 @@ class MoleculePluginTest {
 
     @Test
     fun contentTypeIsMolecule() {
-        assertEquals(ContentType.MOLECULE, plugin.contentType)
+        assertEquals(ContentType.Molecule, plugin.contentType)
     }
 
     @Test

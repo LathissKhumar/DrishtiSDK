@@ -27,8 +27,16 @@ import kotlinx.coroutines.coroutineScope
  * The pipeline runs detectors concurrently on a [Frame], then builds a
  * [SceneGraph] with real spatial positions and meaningful edges between
  * related content items.
+ *
+ * @param config Pipeline configuration parameters.
+ * @param onError Optional callback invoked when a detector throws a non-fatal exception.
+ *   Fatal exceptions ([IllegalStateException], [IllegalArgumentException],
+ *   [UnsupportedOperationException]) are always re-thrown regardless of this callback.
  */
-public class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
+public class Pipeline(
+    private val config: PipelineConfig = PipelineConfig(),
+    private val onError: ((DetectorPlugin, Exception) -> Unit)? = null
+) {
 
     /**
      * Run all detectors on the frame concurrently.
@@ -59,7 +67,10 @@ public class Pipeline(private val config: PipelineConfig = PipelineConfig()) {
                             is IllegalStateException,
                             is IllegalArgumentException,
                             is UnsupportedOperationException -> throw e
-                            else -> null
+                            else -> {
+                                onError?.invoke(detector, e)
+                                null
+                            }
                         }
                     }
                 }

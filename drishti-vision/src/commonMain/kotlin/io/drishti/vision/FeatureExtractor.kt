@@ -217,6 +217,15 @@ public class FeatureExtractor {
     ): List<Contour> {
         if (edges.isEmpty()) return emptyList()
 
+        // Build spatial hash grid for O(1) neighbor lookups
+        val cellSize = contourGap + 1
+        val grid = mutableMapOf<Pair<Int, Int>, MutableList<Int>>()
+        for (i in edges.indices) {
+            val (x, y) = edges[i]
+            val cellKey = (x / cellSize) to (y / cellSize)
+            grid.getOrPut(cellKey) { mutableListOf() }.add(i)
+        }
+
         val visited = BooleanArray(edges.size)
         val contours = mutableListOf<Contour>()
 
@@ -232,12 +241,20 @@ public class FeatureExtractor {
                 val (ex, ey) = edges[idx]
                 region.add(Point(ex.toFloat(), ey.toFloat()))
 
-                // Check neighbors within contourGap
-                for (j in edges.indices) {
-                    if (visited[j]) continue
-                    val (nx, ny) = edges[j]
-                    if (abs(nx - ex) <= contourGap && abs(ny - ey) <= contourGap) {
-                        stack.add(j)
+                // Check only neighboring grid cells (3x3 neighborhood)
+                val cellX = ex / cellSize
+                val cellY = ey / cellSize
+                for (dx in -1..1) {
+                    for (dy in -1..1) {
+                        val cellKey = (cellX + dx) to (cellY + dy)
+                        val cellIndices = grid[cellKey] ?: continue
+                        for (j in cellIndices) {
+                            if (visited[j]) continue
+                            val (nx, ny) = edges[j]
+                            if (abs(nx - ex) <= contourGap && abs(ny - ey) <= contourGap) {
+                                stack.add(j)
+                            }
+                        }
                     }
                 }
             }

@@ -25,17 +25,17 @@ class RegistryTest {
     @Test
     fun registerAndRetrieveDetector() {
         val registry = PluginRegistry()
-        val detector = StubDetector(ContentType.GRAPH)
+        val detector = StubDetector(ContentType.Graph)
         registry.registerDetector(detector)
-        val retrieved = registry.getDetector(ContentType.GRAPH)
+        val retrieved = registry.getDetector(ContentType.Graph)
         assertNotNull(retrieved)
-        assertEquals(ContentType.GRAPH, retrieved?.contentType)
+        assertEquals(ContentType.Graph, retrieved?.contentType)
     }
 
     @Test
     fun getDetectorReturnsNullForUnregistered() {
         val registry = PluginRegistry()
-        assertNull(registry.getDetector(ContentType.GRAPH))
+        assertNull(registry.getDetector(ContentType.Graph))
     }
 
     @Test
@@ -56,8 +56,8 @@ class RegistryTest {
     @Test
     fun getAllDetectors() {
         val registry = PluginRegistry()
-        registry.registerDetector(StubDetector(ContentType.GRAPH))
-        registry.registerDetector(StubDetector(ContentType.FORMULA))
+        registry.registerDetector(StubDetector(ContentType.Graph))
+        registry.registerDetector(StubDetector(ContentType.Formula))
         val all = registry.getAllDetectors()
         assertEquals(2, all.size)
     }
@@ -74,8 +74,8 @@ class RegistryTest {
     @Test
     fun registerDetectorOverwritesExisting() {
         val registry = PluginRegistry()
-        registry.registerDetector(StubDetector(ContentType.GRAPH))
-        registry.registerDetector(StubDetector(ContentType.GRAPH))
+        registry.registerDetector(StubDetector(ContentType.Graph))
+        registry.registerDetector(StubDetector(ContentType.Graph))
         val all = registry.getAllDetectors()
         assertEquals(1, all.size)
     }
@@ -83,8 +83,8 @@ class RegistryTest {
     @Test
     fun registerDetectorReturnsPreviousInstance() {
         val registry = PluginRegistry()
-        val first = StubDetector(ContentType.GRAPH)
-        val second = StubDetector(ContentType.GRAPH)
+        val first = StubDetector(ContentType.Graph)
+        val second = StubDetector(ContentType.Graph)
         registry.registerDetector(first)
         val previous = registry.registerDetector(second)
         assertNotNull(previous)
@@ -96,11 +96,11 @@ class RegistryTest {
     @Test
     fun linkDetectorToRendererAndRetrieve() {
         val registry = PluginRegistry()
-        registry.registerDetector(StubDetector(ContentType.GRAPH))
+        registry.registerDetector(StubDetector(ContentType.Graph))
         registry.registerRenderer(StubHapticsRenderer())
-        registry.linkDetectorToRenderer(ContentType.GRAPH, StubHapticsRenderer::class)
+        registry.linkDetectorToRenderer(ContentType.Graph, StubHapticsRenderer::class)
 
-        val renderers = registry.getRenderersForContentType(ContentType.GRAPH)
+        val renderers = registry.getRenderersForContentType(ContentType.Graph)
         assertEquals(1, renderers.size)
         assertTrue(renderers.contains(StubHapticsRenderer::class))
     }
@@ -108,30 +108,30 @@ class RegistryTest {
     @Test
     fun multipleRenderersForSameContentType() {
         val registry = PluginRegistry()
-        registry.linkDetectorToRenderer(ContentType.GRAPH, StubHapticsRenderer::class)
-        registry.linkDetectorToRenderer(ContentType.GRAPH, StubAudioRenderer::class)
+        registry.linkDetectorToRenderer(ContentType.Graph, StubHapticsRenderer::class)
+        registry.linkDetectorToRenderer(ContentType.Graph, StubAudioRenderer::class)
 
-        val renderers = registry.getRenderersForContentType(ContentType.GRAPH)
+        val renderers = registry.getRenderersForContentType(ContentType.Graph)
         assertEquals(2, renderers.size)
     }
 
     @Test
     fun getRenderersForUnlinkedContentType() {
         val registry = PluginRegistry()
-        val renderers = registry.getRenderersForContentType(ContentType.FORMULA)
+        val renderers = registry.getRenderersForContentType(ContentType.Formula)
         assertTrue(renderers.isEmpty())
     }
 
     @Test
     fun getContentTypesForRenderer() {
         val registry = PluginRegistry()
-        registry.linkDetectorToRenderer(ContentType.GRAPH, StubHapticsRenderer::class)
-        registry.linkDetectorToRenderer(ContentType.FORMULA, StubHapticsRenderer::class)
+        registry.linkDetectorToRenderer(ContentType.Graph, StubHapticsRenderer::class)
+        registry.linkDetectorToRenderer(ContentType.Formula, StubHapticsRenderer::class)
 
         val types = registry.getContentTypesForRenderer(StubHapticsRenderer::class)
         assertEquals(2, types.size)
-        assertTrue(types.contains(ContentType.GRAPH))
-        assertTrue(types.contains(ContentType.FORMULA))
+        assertTrue(types.contains(ContentType.Graph))
+        assertTrue(types.contains(ContentType.Formula))
     }
 
     @Test
@@ -148,13 +148,13 @@ class RegistryTest {
         val registry = PluginRegistry()
         registry.declareDependency(
             StubHapticsRenderer::class,
-            setOf(ContentType.GRAPH, ContentType.FORMULA)
+            setOf(ContentType.Graph, ContentType.Formula)
         )
 
         val deps = registry.getDependencies(StubHapticsRenderer::class)
         assertEquals(2, deps.size)
-        assertTrue(deps.contains(ContentType.GRAPH))
-        assertTrue(deps.contains(ContentType.FORMULA))
+        assertTrue(deps.contains(ContentType.Graph))
+        assertTrue(deps.contains(ContentType.Formula))
     }
 
     @Test
@@ -169,9 +169,9 @@ class RegistryTest {
     @Test
     fun validateReturnsCompatibleWhenAllSatisfied() {
         val registry = PluginRegistry()
-        registry.registerDetector(StubDetector(ContentType.GRAPH))
+        registry.registerDetector(StubDetector(ContentType.Graph))
         registry.registerRenderer(StubHapticsRenderer())
-        registry.linkDetectorToRenderer(ContentType.GRAPH, StubHapticsRenderer::class)
+        registry.linkDetectorToRenderer(ContentType.Graph, StubHapticsRenderer::class)
 
         val report = registry.validate()
         assertTrue(report.compatible)
@@ -182,37 +182,37 @@ class RegistryTest {
     fun validateReportsMissingDetector() {
         val registry = PluginRegistry()
         registry.registerRenderer(StubHapticsRenderer())
-        registry.linkDetectorToRenderer(ContentType.GRAPH, StubHapticsRenderer::class)
-        // No detector registered for GRAPH
+        registry.linkDetectorToRenderer(ContentType.Graph, StubHapticsRenderer::class)
+        // No detector registered for Graph
 
         val report = registry.validate()
         assertFalse(report.compatible)
         assertTrue(report.issues.isNotEmpty())
-        assertTrue(report.issues.any { it.contains("GRAPH") })
+        assertTrue(report.issues.any { it.contains("Graph") })
     }
 
     @Test
     fun validateReportsUnsatisfiedDependency() {
         val registry = PluginRegistry()
-        registry.registerDetector(StubDetector(ContentType.GRAPH))
+        registry.registerDetector(StubDetector(ContentType.Graph))
         registry.registerRenderer(StubHapticsRenderer())
         // Declare that haptics renderer depends on FORMULA (which has no detector)
         registry.declareDependency(
             StubHapticsRenderer::class,
-            setOf(ContentType.GRAPH, ContentType.FORMULA)
+            setOf(ContentType.Graph, ContentType.Formula)
         )
 
         val report = registry.validate()
         assertFalse(report.compatible)
-        assertTrue(report.issues.any { it.contains("FORMULA") })
+        assertTrue(report.issues.any { it.contains("Formula") })
     }
 
     @Test
     fun validateReportsUnregisteredRendererClass() {
         val registry = PluginRegistry()
-        registry.registerDetector(StubDetector(ContentType.GRAPH))
+        registry.registerDetector(StubDetector(ContentType.Graph))
         // Link but don't register the renderer
-        registry.linkDetectorToRenderer(ContentType.GRAPH, StubHapticsRenderer::class)
+        registry.linkDetectorToRenderer(ContentType.Graph, StubHapticsRenderer::class)
 
         val report = registry.validate()
         assertFalse(report.compatible)
@@ -222,7 +222,7 @@ class RegistryTest {
     @Test
     fun registerDetectorRejectsOutOfRangeConfidence() {
         val registry = PluginRegistry()
-        val detector = StubDetector(ContentType.GRAPH, confidence = 1.5f)
+        val detector = StubDetector(ContentType.Graph, confidence = 1.5f)
         val ex = kotlin.test.assertFailsWith<IllegalArgumentException> {
             registry.registerDetector(detector)
         }

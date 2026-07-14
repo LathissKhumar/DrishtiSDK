@@ -343,6 +343,7 @@ public class HapticRenderer {
     }
 
     private fun renderTableHaptic(table: TableContent): List<HapticPulse> {
+        if (table.rows <= 0 || table.columns <= 0) return emptyList()
         val pulses = mutableListOf<HapticPulse>()
         val cellWidth = 1.0f / table.columns
         val cellHeight = 1.0f / table.rows
@@ -396,6 +397,7 @@ public class HapticRenderer {
         direction: ExplorationDirection,
         elementIndex: Int
     ): List<HapticPulse> {
+        if (table.rows <= 0 || table.columns <= 0) return emptyList()
         val cellWidth = 1.0f / table.columns
         val cellHeight = 1.0f / table.rows
         return when (direction) {

@@ -71,6 +71,11 @@ public class MoleculeParser {
     public fun parse(input: String): ParsedMoleculeInput {
         val trimmed = input.trim()
         require(trimmed.isNotEmpty()) { "Molecule input must not be blank" }
+        if (trimmed.length > 200) return ParsedMoleculeInput(
+            type = MoleculeInputType.COMMON_NAME,
+            value = trimmed,
+            normalizedValue = trimmed
+        )
         return when {
             isInchi(trimmed) -> ParsedMoleculeInput(
                 type = MoleculeInputType.INCHI,
