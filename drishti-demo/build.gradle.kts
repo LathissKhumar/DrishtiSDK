@@ -41,7 +41,7 @@ kotlin {
                 implementation(libs.camerax.view)
 
                 // Compose (BOM via string — KMP source sets can't use platform(libs.xxx))
-                implementation(platform("androidx.compose:compose-bom:2025.05.01"))
+                implementation(platform("androidx.compose:compose-bom:2026.06.01"))
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.graphics)
                 implementation(libs.compose.ui.tooling.preview)
