@@ -8,7 +8,7 @@ plugins {
 }
 
 allprojects {
-    group = "io.github.LathissKhumar"
+    group = "io.github.lathisskhumar"
     version = "1.0.0"
 }
 
