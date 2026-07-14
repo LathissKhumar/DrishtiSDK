@@ -2,19 +2,21 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![API Level](https://img.shields.io/badge/API-30%2B-brightgreen)](https://developer.android.com/about/versions/11)
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.1-purple?logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.1.20-purple?logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![Tests](https://img.shields.io/badge/Tests-1203-blue)]()
+[![Modules](https://img.shields.io/badge/Modules-9-brightgreen)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-orange)](CONTRIBUTING.md)
 
-**Accessibility infrastructure for visual STEM content.** Convert graphs, formulas, molecules, and diagrams into haptic feedback, spatial audio, and voice guidance. Plugin-based. Fully offline. Developer-first.
+**Accessibility infrastructure for visual STEM content.** Convert graphs, formulas, and molecules into haptic feedback, spatial audio, and voice guidance. Plugin-based. Fully offline. Developer-first.
 
 ```
-Visual Content (Image/PDF/Camera)
-        |
-   Drishti SDK (Plugin Pipeline)
-        |
-+-------+-------+---------+----------+
-|               |         |          |
-Haptics     Spatial Audio  Voice    Text
+Visual Content (Camera/Bitmap/File)
+         |
+    Drishti Pipeline
+         |
++--------+--------+---------+
+|        |        |         |
+Haptics  Audio   Voice    Text
 ```
 
 ## Install
@@ -25,7 +27,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
     }
 }
 
@@ -34,17 +35,17 @@ dependencies {
     // Core SDK
     implementation("io.drishti:drishti-core:1.0.0")
 
-    // Plugins (pick what you need)
+    // Detector plugins (pick what you need)
     implementation("io.drishti:drishti-graph:1.0.0")
     implementation("io.drishti:drishti-formula:1.0.0")
     implementation("io.drishti:drishti-molecule:1.0.0")
 
-    // Renderers
+    // Standalone renderers (optional — detector plugins include their own renderers)
     implementation("io.drishti:drishti-haptics:1.0.0")
     implementation("io.drishti:drishti-audio:1.0.0")
     implementation("io.drishti:drishti-voice:1.0.0")
 
-    // Android integration
+    // Android integration (CameraX pipeline, HAL)
     implementation("io.drishti:drishti-android:1.0.0")
 }
 ```
@@ -53,55 +54,84 @@ dependencies {
 
 ```kotlin
 import io.drishti.core.Drishti
+import io.drishti.core.Frame
 import io.drishti.graph.GraphPlugin
 import io.drishti.haptics.HapticsPlugin
 import io.drishti.audio.AudioPlugin
 
 // 1. Initialize with plugins
 val drishti = Drishti.Builder()
-    .addDetector(GraphPlugin())
-    .addRenderer(HapticsPlugin())
-    .addRenderer(AudioPlugin())
+    .addDetector(GraphPlugin())   // detects graphs in frames
+    .addRenderer(HapticsPlugin()) // renders haptic output
+    .addRenderer(AudioPlugin())   // renders spatial audio
     .build()
 
-// 2. Read any visual content
-val diagram = drishti.read(frame)
+// 2. Read visual content (suspend function)
+val diagram = drishti.readAsync(frame)
 
-// 3. Make it accessible
-diagram.haptics()   // Feel the structure
-diagram.audio()     // Hear the spatial layout
-diagram.voice()     // Get spoken description
-diagram.explore()   // Interactive exploration mode
+// 3. Access outputs
+val hapticResult = diagram.haptics()   // Result<HapticOutput>
+val audioResult = diagram.audio()      // Result<AudioOutput>
+val voiceResult = diagram.voice()      // Result<VoiceOutput>
+val summary = diagram.summary()        // TextOutput (always available)
+val session = diagram.explore()        // ExplorationSession
+
+// 4. Pattern match on results
+hapticResult.getOrNull()?.let { haptic ->
+    // use haptic.vibrations, haptic.durations
+}
 ```
 
 ## Plugins
 
 | Plugin | Module | Detects | Output |
 |:---|:---|:---|:---|
-| **Graph** | `drishti-graph` | Line charts, scatter plots, bar charts, function plots | Axes, data points, trends, intersections |
-| **Formula** | `drishti-formula` | LaTeX formulas, handwritten math, printed equations | Parsed AST, LaTeX string, evaluated values |
-| **Molecule** | `drishti-molecule` | Chemical structures, bond diagrams, SMILES | Atom/bond graph, 3D coordinates, PubChem data |
+| **GraphPlugin** | `drishti-graph` | Line charts, scatter plots, bar charts, function plots | Axes, data points, trends, intersections |
+| **FormulaPlugin** | `drishti-formula` | LaTeX formulas, handwritten math, printed equations | Parsed AST, LaTeX string, evaluated values |
+| **MoleculePlugin** | `drishti-molecule` | Chemical structures, bond diagrams, SMILES | Atom/bond graph, 3D coordinates, PubChem data |
+
+Each detector plugin implements **all renderer interfaces** (`HapticsRenderer`, `AudioRenderer`, `VoiceOutputRenderer`) — so `GraphPlugin()` alone can produce haptic, audio, and voice output. Standalone renderer plugins (`HapticsPlugin`, `AudioPlugin`, `VoicePlugin`) provide additional rendering strategies for custom detector plugins.
 
 ### Write Your Own Plugin
 
 ```kotlin
 class MyPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputRenderer {
-    override val contentType = ContentType.CUSTOM("my-type")
+    override val contentType: ContentType = ContentType.Custom("my-type")
+    override val confidence: Float = 0.8f
+    override val name: String = "MyPlugin"
 
-    override fun detect(frame: Frame): List<ContentItem> {
-        // Your detection logic
-        return listOf(...)
+    override suspend fun detect(frame: Frame): ContentItem? {
+        // Your detection logic — return null if nothing found
+        return MyContent(...)
     }
 
-    override fun renderHaptics(item: ContentItem): HapticOutput {
+    override fun renderHaptic(items: List<ContentItem>, focusIndex: Int): HapticOutput {
         // Your haptic rendering
     }
 
-    // ... implement other renderers as needed
+    override fun renderAudio(items: List<ContentItem>, focusIndex: Int): AudioOutput {
+        // Your spatial audio rendering
+    }
+
+    override fun renderVoice(items: List<ContentItem>, focusIndex: Int): VoiceOutput {
+        // Your voice rendering
+    }
+
+    override fun renderExplorationHaptic(
+        item: ContentItem, direction: ExplorationDirection, elementIndex: Int
+    ): HapticOutput { ... }
+
+    override fun renderExplorationAudio(
+        item: ContentItem, direction: ExplorationDirection, elementIndex: Int
+    ): AudioOutput { ... }
+
+    override fun renderExplorationVoice(
+        item: ContentItem, direction: ExplorationDirection, elementIndex: Int
+    ): VoiceOutput { ... }
 }
 
 // Register
-Drishti.Builder()
+val drishti = Drishti.Builder()
     .addDetector(MyPlugin())
     .build()
 ```
@@ -110,30 +140,30 @@ Drishti.Builder()
 
 ```
 Input (Camera/Bitmap/File)
-        |
-        v
+         |
+         v
 +-------------------+
-|  Vision Pipeline  |  drishti-vision (OpenCV, CameraX, preprocessing)
+|  Vision Pipeline  |  drishti-vision (frame preprocessing, feature extraction)
 +--------+----------+
          | Frame + Features
          v
 +-------------------+
-|  Detector Registry|  Parallel execution of all registered detectors
+| Detector Registry |  Parallel execution of all registered detectors
 +--------+----------+
          | ContentItems
          v
 +-------------------+
-|  Scene Graph      |  Unified semantic representation
+|    Scene Graph     |  Unified semantic representation
 +--------+----------+
          | SceneGraph
          v
 +-------------------+
-|  Renderer Registry|  Parallel rendering to all outputs
+| Renderer Registry |  Parallel rendering to all outputs
 +--------+----------+
-         | MultimodalOutput
+         | HapticOutput / AudioOutput / VoiceOutput
          v
 +-------------------+
-|  Drishti Diagram  |  .haptics()  .audio()  .voice()  .explore()
+|  DrishtiDiagram   |  .haptics()  .audio()  .voice()  .summary()  .explore()
 +-------------------+
 ```
 
@@ -143,13 +173,13 @@ Every content type is a plugin. Core knows nothing about graphs, formulas, or mo
 
 ```
 drishti-core/          Plugin interfaces, registry, pipeline, scene graph
-drishti-vision/        Shared vision pipeline (OpenCV, CameraX, preprocessing)
-drishti-graph/         Graph detection plugin
-drishti-formula/       Formula OCR plugin
-drishti-molecule/      Molecule detection + PubChem plugin
-drishti-haptics/       Haptic rendering engine
-drishti-audio/         Spatial audio engine
-drishti-voice/         Voice assistant (Sherpa-ONNX)
+drishti-vision/        Shared vision pipeline (frame preprocessing, feature extraction)
+drishti-graph/         Graph detection plugin (bar, line, scatter, function plots)
+drishti-formula/       Formula detection plugin (LaTeX parsing, math evaluation)
+drishti-molecule/      Molecule detection plugin (OpenChemLib, PubChem)
+drishti-haptics/       Haptic rendering engine (VibrationEffect API 30+)
+drishti-audio/         Spatial audio engine (Oboe + waveform synthesis)
+drishti-voice/         Voice guidance engine (content description, formula speech)
 drishti-android/       Android HAL + CameraX integration
 drishti-demo/          Demo app
 ```
@@ -158,13 +188,29 @@ drishti-demo/          Demo app
 
 | Layer | Technology |
 |:---|:---|
-| Language | Kotlin 2.1 + C++ (NDK for audio) |
-| Build | Gradle 8.11 + KMP (commonMain + androidMain) |
-| Vision | OpenCV 4.13 + CameraX 1.5 |
-| ML | LiteRT + ONNX Runtime |
-| Haptics | VibrationEffect.Composition (API 30+) + Waveform fallback |
-| Audio | Oboe 1.9.3 + Android Spatializer |
-| Voice | Sherpa-ONNX (offline STT/TTS) |
+| Language | Kotlin 2.1.20 (KMP: commonMain + androidMain) |
+| Build | Gradle 8.7 + Kotlin Multiplatform + Binary Compatibility Validator |
+| Vision | CameraX 1.5 (drishti-android) + custom frame preprocessing |
+| Haptics | Android VibrationEffect.Composition (API 30+) |
+| Audio | Oboe 1.9.3 + waveform synthesis (sine, square, sawtooth, triangle) |
+| Voice | Pure Kotlin content description + formula verbalization |
+| Chemistry | OpenChemLib (molecule parsing) + Ktor (PubChem API) |
+| Math | mXparser (expression evaluation) |
+| Serialization | kotlinx.serialization 1.8.1 |
+| Concurrency | kotlinx.coroutines 1.10.1 |
+| Testing | JUnit 5 + MockK + Turbine |
+
+## Project Stats
+
+| Metric | Value |
+|:---|:---|
+| Production files | 80 |
+| Lines of code | ~15,700 |
+| Test files | 29 |
+| Test assertions | 1,203 |
+| Publishable modules | 9 |
+| Min SDK | 30 (Android 11) |
+| License | Apache 2.0 |
 
 ## Contributing
 
