@@ -11,16 +11,29 @@ allprojects {
     version = "1.0.0"
 }
 
-// Configure maven-publish for all library modules (excludes demo and test)
+// Configure maven-publish + signing for all library modules (excludes demo and test)
 subprojects {
     if (name != "drishti-demo" && name != "drishti-test") {
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             apply(plugin = "maven-publish")
+            apply(plugin = "signing")
 
             extensions.configure<PublishingExtension> {
                 repositories {
                     mavenLocal()
+
+                    maven {
+                        name = "OSSRH"
+                        val releasesUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                        val snapshotsUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                        url = if (version.toString().endsWith("SNAPSHOT")) snapshotsUrl else releasesUrl
+                        credentials {
+                            username = System.getenv("OSSRH_USERNAME") ?: ""
+                            password = System.getenv("OSSRH_TOKEN") ?: ""
+                        }
+                    }
                 }
+
                 publications.withType<MavenPublication>().configureEach {
                     artifactId = "drishti-${this@subprojects.name.removePrefix("drishti-")}"
 
@@ -47,6 +60,16 @@ subprojects {
                             url.set("https://github.com/LathissKhumar/DrishtiSTEM")
                         }
                     }
+                }
+            }
+
+            // GPG signing — uses in-memory key from environment variables
+            extensions.configure<org.gradle.plugins.signing.SigningExtension> {
+                val signingKey = System.getenv("GPG_PRIVATE_KEY")
+                val signingPassword = System.getenv("GPG_PASSPHRASE")
+                if (signingKey != null) {
+                    useInMemoryPgpKeys(signingKey, signingPassword)
+                    sign(the<PublishingExtension>().publications)
                 }
             }
         }
