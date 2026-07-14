@@ -16,7 +16,11 @@
 
 package io.drishti.android
 
-import io.drishti.core.*
+import io.drishti.core.DetectorPlugin
+import io.drishti.core.Drishti
+import io.drishti.core.DrishtiDiagram
+import io.drishti.core.Frame
+import io.drishti.core.RendererPlugin
 
 /**
  * High-level Drishti client for Android.

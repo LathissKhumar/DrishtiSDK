@@ -19,6 +19,7 @@ package io.drishti.graph
 import io.drishti.core.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * JSON-serializable representation of graph data input.
@@ -134,6 +135,8 @@ public class GraphDataParser {
 
         val element = try {
             json.parseToJsonElement(trimmed)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             throw GraphDataException("Invalid JSON syntax: ${e.message}", e)
         }

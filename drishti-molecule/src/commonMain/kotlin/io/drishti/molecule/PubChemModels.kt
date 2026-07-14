@@ -16,7 +16,7 @@
 
 package io.drishti.molecule
 
-import io.drishti.core.*
+import io.drishti.core.BondType
 import kotlinx.serialization.SerializationException
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.serialization.json.*

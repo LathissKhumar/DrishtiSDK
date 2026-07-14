@@ -29,7 +29,10 @@ import kotlinx.coroutines.coroutineScope
  * related content items.
  *
  * @param config Pipeline configuration parameters.
- * @param onError Optional callback invoked when a detector throws a non-fatal exception.
+ * @param onError Optional callback invoked when a detector throws an exception during detection.
+ *   When null (default), exceptions are silently caught and the detector returns no results.
+ *   When set, exceptions are reported via this callback before returning empty results.
+ *   The callback receives the [DetectorPlugin] that threw and the [Exception] it threw.
  *   Fatal exceptions ([IllegalStateException], [IllegalArgumentException],
  *   [UnsupportedOperationException]) are always re-thrown regardless of this callback.
  */

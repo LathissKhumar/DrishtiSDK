@@ -16,7 +16,10 @@
 
 package io.drishti.molecule
 
-import io.drishti.core.*
+import io.drishti.core.Atom
+import io.drishti.core.Bond
+import io.drishti.core.MoleculeType
+import io.drishti.core.Point
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

@@ -16,7 +16,15 @@
 
 package io.drishti.molecule
 
-import io.drishti.core.*
+import io.drishti.core.Atom
+import io.drishti.core.AudioOutput
+import io.drishti.core.AudioSource
+import io.drishti.core.BondType
+import io.drishti.core.HapticOutput
+import io.drishti.core.HapticPulse
+import io.drishti.core.MoleculeContent
+import io.drishti.core.SpeechSegment
+import io.drishti.core.VoiceOutput
 
 /**
  * Renders molecule content as haptic, audio, and voice outputs.

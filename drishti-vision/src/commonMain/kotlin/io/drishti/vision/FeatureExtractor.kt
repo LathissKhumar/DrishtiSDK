@@ -63,8 +63,7 @@ public class FeatureExtractor {
      *         Returns an empty list when [Frame.data] is null or too small.
      */
     public fun extractContours(frame: Frame): List<Contour> {
-        val data = frame.data ?: return emptyList()
-        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return emptyList()
+        val data = validateFrame(frame) ?: return emptyList()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
@@ -81,8 +80,7 @@ public class FeatureExtractor {
      * @return Detected [Line] objects using gradient-based line detection.
      */
     public fun extractLines(frame: Frame): List<Line> {
-        val data = frame.data ?: return emptyList()
-        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return emptyList()
+        val data = validateFrame(frame) ?: return emptyList()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
@@ -101,8 +99,7 @@ public class FeatureExtractor {
      *         ML Kit or Tesseract integration).
      */
     public fun extractTextRegions(frame: Frame): List<TextRegion> {
-        val data = frame.data ?: return emptyList()
-        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return emptyList()
+        val data = validateFrame(frame) ?: return emptyList()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)
@@ -121,8 +118,7 @@ public class FeatureExtractor {
      *         and contrast-based confidence scores.
      */
     public fun extractROIs(frame: Frame): List<RegionOfInterest> {
-        val data = frame.data ?: return emptyList()
-        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return emptyList()
+        val data = validateFrame(frame) ?: return emptyList()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         return findROIs(gray, frame.width, frame.height)
@@ -130,9 +126,15 @@ public class FeatureExtractor {
 
     // --- Internal: frame validation ---
 
-    private fun bytesPerPixelFor(format: FrameFormat): Int = when (format) {
-        FrameFormat.YUV_420_888, FrameFormat.GRAYSCALE -> 1
-        else -> 3
+    private fun validateFrame(frame: Frame): ByteArray? {
+        val data = frame.data ?: return null
+        val bytesPerPixel = when (frame.format) {
+            FrameFormat.YUV_420_888, FrameFormat.GRAYSCALE -> 1
+            else -> 3
+        }
+        val expectedSize = frame.width * frame.height * bytesPerPixel
+        if (data.size < expectedSize) return null
+        return data
     }
 
     // --- Internal: grayscale conversion ---
@@ -540,8 +542,7 @@ public class FeatureExtractor {
     }
 
     public fun extractAll(frame: Frame): VisionFeatures {
-        val data = frame.data ?: return VisionFeatures()
-        if (data.size < frame.width * frame.height * bytesPerPixelFor(frame.format)) return VisionFeatures()
+        val data = validateFrame(frame) ?: return VisionFeatures()
 
         val gray = toGrayscale(data, frame.width, frame.height, frame.format)
         val edges = detectEdges(gray, frame.width, frame.height)

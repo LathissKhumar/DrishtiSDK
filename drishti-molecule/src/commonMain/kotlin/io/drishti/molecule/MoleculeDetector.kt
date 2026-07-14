@@ -16,7 +16,11 @@
 
 package io.drishti.molecule
 
-import io.drishti.core.*
+import io.drishti.core.ContentItem
+import io.drishti.core.ContentType
+import io.drishti.core.DetectorPlugin
+import io.drishti.core.Frame
+import io.drishti.core.MoleculeContent
 import io.ktor.client.*
 import io.ktor.client.plugins.HttpTimeout
 

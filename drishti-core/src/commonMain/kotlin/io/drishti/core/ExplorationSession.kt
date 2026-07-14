@@ -25,6 +25,11 @@ import kotlinx.coroutines.sync.withLock
  * Thread-safe navigation through content items using [Mutex] to prevent
  * race conditions when multiple coroutines explore simultaneously.
  *
+ * **Thread safety:** The [Mutex] is non-reentrant — if a coroutine already
+ * holds the lock, a second `withLock` call from the same coroutine will
+ * suspend rather than deadlock. This is safe because each suspend point
+ * releases the coroutine, allowing the lock holder to complete.
+ *
  * @property contentItems The list of content items to explore.
  * @property renderers Available renderers for haptic/audio/voice output.
  */
@@ -141,13 +146,14 @@ public class ExplorationSession(
      *
      * @return [HapticOutput] if a renderer is available and item exists, null otherwise.
      */
-    public suspend fun haptic(): HapticOutput? = mutex.withLock {
-        if (currentItemIndex !in contentItems.indices) {
-            return@withLock null
+    public suspend fun haptic(): HapticOutput? {
+        val (renderer, item) = mutex.withLock {
+            if (currentItemIndex !in contentItems.indices) return null
+            val r = renderers.filterIsInstance<HapticsRenderer>().firstOrNull()
+                ?: return null
+            r to contentItems[currentItemIndex]
         }
-        val renderer = renderers.filterIsInstance<HapticsRenderer>().firstOrNull()
-            ?: return@withLock null
-        renderer.renderHaptic(listOf(contentItems[currentItemIndex]))
+        return renderer.renderHaptic(listOf(item))
     }
 
     /**
@@ -155,13 +161,14 @@ public class ExplorationSession(
      *
      * @return [AudioOutput] if a renderer is available and item exists, null otherwise.
      */
-    public suspend fun audio(): AudioOutput? = mutex.withLock {
-        if (currentItemIndex !in contentItems.indices) {
-            return@withLock null
+    public suspend fun audio(): AudioOutput? {
+        val (renderer, item) = mutex.withLock {
+            if (currentItemIndex !in contentItems.indices) return null
+            val r = renderers.filterIsInstance<AudioRenderer>().firstOrNull()
+                ?: return null
+            r to contentItems[currentItemIndex]
         }
-        val renderer = renderers.filterIsInstance<AudioRenderer>().firstOrNull()
-            ?: return@withLock null
-        renderer.renderAudio(listOf(contentItems[currentItemIndex]))
+        return renderer.renderAudio(listOf(item))
     }
 
     /**
@@ -169,13 +176,14 @@ public class ExplorationSession(
      *
      * @return [VoiceOutput] if a renderer is available and item exists, null otherwise.
      */
-    public suspend fun voice(): VoiceOutput? = mutex.withLock {
-        if (currentItemIndex !in contentItems.indices) {
-            return@withLock null
+    public suspend fun voice(): VoiceOutput? {
+        val (renderer, item) = mutex.withLock {
+            if (currentItemIndex !in contentItems.indices) return null
+            val r = renderers.filterIsInstance<VoiceOutputRenderer>().firstOrNull()
+                ?: return null
+            r to contentItems[currentItemIndex]
         }
-        val renderer = renderers.filterIsInstance<VoiceOutputRenderer>().firstOrNull()
-            ?: return@withLock null
-        renderer.renderVoice(listOf(contentItems[currentItemIndex]))
+        return renderer.renderVoice(listOf(item))
     }
 
     /**
@@ -246,7 +254,7 @@ public class ExplorationSession(
             val atom = item.atoms[index]
             "Atom ${index + 1} of ${item.atoms.size}: ${atom.element} at x = ${atom.position.x}, y = ${atom.position.y}"
         }
-        else -> ""
+        else -> error("Cannot describe elements for unsupported content type: ${item::class.simpleName}")
     }
 
     private fun describeItem(item: ContentItem): String {

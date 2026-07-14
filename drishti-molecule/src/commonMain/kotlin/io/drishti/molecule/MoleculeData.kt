@@ -16,7 +16,12 @@
 
 package io.drishti.molecule
 
-import io.drishti.core.*
+import io.drishti.core.Atom
+import io.drishti.core.Bond
+import io.drishti.core.BoundingBox
+import io.drishti.core.Geometry
+import io.drishti.core.MoleculeContent
+import io.drishti.core.MoleculeType
 
 /**
  * Rich molecule data from PubChem API, extending beyond [MoleculeContent].
