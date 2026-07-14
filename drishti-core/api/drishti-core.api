@@ -157,17 +157,61 @@ public abstract interface class io/drishti/core/ContentItem {
 	public abstract fun getContentType ()Lio/drishti/core/ContentType;
 }
 
-public final class io/drishti/core/ContentType : java/lang/Enum {
-	public static final field CUSTOM Lio/drishti/core/ContentType;
-	public static final field FORMULA Lio/drishti/core/ContentType;
-	public static final field GRAPH Lio/drishti/core/ContentType;
-	public static final field MOLECULE Lio/drishti/core/ContentType;
-	public static final field SHAPE Lio/drishti/core/ContentType;
-	public static final field TABLE Lio/drishti/core/ContentType;
-	public static final field TEXT Lio/drishti/core/ContentType;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lio/drishti/core/ContentType;
-	public static fun values ()[Lio/drishti/core/ContentType;
+public abstract class io/drishti/core/ContentType {
+	public final fun getName ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ContentType$Custom : io/drishti/core/ContentType {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/drishti/core/ContentType$Custom;
+	public static synthetic fun copy$default (Lio/drishti/core/ContentType$Custom;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/ContentType$Custom;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getTypeName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ContentType$Formula : io/drishti/core/ContentType {
+	public static final field INSTANCE Lio/drishti/core/ContentType$Formula;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ContentType$Graph : io/drishti/core/ContentType {
+	public static final field INSTANCE Lio/drishti/core/ContentType$Graph;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ContentType$Molecule : io/drishti/core/ContentType {
+	public static final field INSTANCE Lio/drishti/core/ContentType$Molecule;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ContentType$Shape : io/drishti/core/ContentType {
+	public static final field INSTANCE Lio/drishti/core/ContentType$Shape;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ContentType$Table : io/drishti/core/ContentType {
+	public static final field INSTANCE Lio/drishti/core/ContentType$Table;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/drishti/core/ContentType$Text : io/drishti/core/ContentType {
+	public static final field INSTANCE Lio/drishti/core/ContentType$Text;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class io/drishti/core/DataPoint {
@@ -560,8 +604,8 @@ public final class io/drishti/core/NodeBuildersKt {
 
 public final class io/drishti/core/Pipeline {
 	public fun <init> ()V
-	public fun <init> (Lio/drishti/core/PipelineConfig;)V
-	public synthetic fun <init> (Lio/drishti/core/PipelineConfig;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Lio/drishti/core/PipelineConfig;Lkotlin/jvm/functions/Function2;)V
+	public synthetic fun <init> (Lio/drishti/core/PipelineConfig;Lkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun buildSceneGraph (Ljava/util/List;)Lio/drishti/core/SceneGraph;
 	public final fun detect (Lio/drishti/core/Frame;Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }

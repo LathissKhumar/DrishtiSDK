@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.kotlinx.binary.compatibility.validator) apply false
+    id("com.vanniktech.maven.publish") version "0.34.0" apply false
 }
 
 allprojects {
@@ -11,68 +12,11 @@ allprojects {
     version = "1.0.0"
 }
 
-// Configure maven-publish + signing for all library modules (excludes demo and test)
 subprojects {
-    if (name != "drishti-demo" && name != "drishti-test") {
-        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            apply(plugin = "maven-publish")
-            apply(plugin = "signing")
+    if (name == "drishti-demo" || name == "drishti-test") return@subprojects
 
-            extensions.configure<PublishingExtension> {
-                repositories {
-                    mavenLocal()
-
-                    maven {
-                        name = "OSSRH"
-                        val releasesUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                        val snapshotsUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                        url = if (version.toString().endsWith("SNAPSHOT")) snapshotsUrl else releasesUrl
-                        credentials {
-                            username = System.getenv("OSSRH_USERNAME") ?: ""
-                            password = System.getenv("OSSRH_TOKEN") ?: ""
-                        }
-                    }
-                }
-
-                publications.withType<MavenPublication>().configureEach {
-                    artifactId = "drishti-${this@subprojects.name.removePrefix("drishti-")}"
-
-                    pom {
-                        name.set("Drishti ${this@subprojects.name.removePrefix("drishti-").replaceFirstChar { it.uppercase() }}")
-                        description.set("Accessibility infrastructure for visual STEM content")
-                        url.set("https://github.com/LathissKhumar/DrishtiSTEM")
-                        licenses {
-                            license {
-                                name.set("The Apache License, Version 2.0")
-                                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                            }
-                        }
-                        developers {
-                            developer {
-                                id.set("LathissKhumar")
-                                name.set("Lathiss")
-                                url.set("https://github.com/LathissKhumar")
-                            }
-                        }
-                        scm {
-                            connection.set("scm:git:https://github.com/LathissKhumar/DrishtiSTEM.git")
-                            developerConnection.set("scm:git:ssh://github.com/LathissKhumar/DrishtiSTEM.git")
-                            url.set("https://github.com/LathissKhumar/DrishtiSTEM")
-                        }
-                    }
-                }
-            }
-
-            // GPG signing — uses in-memory key from environment variables
-            extensions.configure<org.gradle.plugins.signing.SigningExtension> {
-                val signingKey = System.getenv("GPG_PRIVATE_KEY")
-                val signingPassword = System.getenv("GPG_PASSPHRASE")
-                if (signingKey != null) {
-                    useInMemoryPgpKeys(signingKey, signingPassword)
-                    sign(the<PublishingExtension>().publications)
-                }
-            }
-        }
+    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+        apply(plugin = "com.vanniktech.maven.publish")
     }
 }
 

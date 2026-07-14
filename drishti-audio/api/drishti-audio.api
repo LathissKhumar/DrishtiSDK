@@ -185,6 +185,7 @@ public final class io/drishti/audio/SpeechDescription {
 }
 
 public final class io/drishti/audio/ToneGenerator {
+	public static final field MAX_SAMPLES I
 	public fun <init> ()V
 	public final fun applyEnvelope ([FFFFF)[F
 	public static synthetic fun applyEnvelope$default (Lio/drishti/audio/ToneGenerator;[FFFFFILjava/lang/Object;)[F

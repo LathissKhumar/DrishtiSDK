@@ -4,6 +4,7 @@ public final class io/drishti/android/AndroidPlatformDetector : io/drishti/andro
 }
 
 public final class io/drishti/android/AudioHAL {
+	public static final field MAX_SAMPLES I
 	public fun <init> (Landroid/content/Context;)V
 	public final fun getAudioLevel ()Lio/drishti/android/AudioLevel;
 	public final fun hasSpatialAudioSupport ()Z
