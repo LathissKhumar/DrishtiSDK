@@ -33,6 +33,19 @@ public interface DetectorPlugin {
     public val confidence: Float
 
     /**
+     * Optional factory for building [SceneNode]s from this plugin's content type.
+     *
+     * When set, the [Pipeline] uses this factory instead of the generic fallback
+     * when constructing the scene graph. This gives your custom content type
+     * first-class spatial positioning and node shape in the SceneGraph.
+     *
+     * When null, the item falls through to [SceneNode.TextNode] with just the type name.
+     *
+     * @see SceneNodeFactory
+     */
+    public val sceneNodeFactory: SceneNodeFactory? get() = null
+
+    /**
      * Detect content in the given frame.
      *
      * @param frame The input image frame

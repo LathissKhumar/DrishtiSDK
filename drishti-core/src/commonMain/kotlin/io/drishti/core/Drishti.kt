@@ -53,7 +53,10 @@ public class Drishti private constructor(
 
         public fun build(): Drishti {
             require(detectors.isNotEmpty()) { "At least one DetectorPlugin is required" }
-            val pipeline = Pipeline()
+            val factories = detectors
+                .filter { it.sceneNodeFactory != null }
+                .associate { it.contentType to it.sceneNodeFactory!! }
+            val pipeline = Pipeline(nodeFactories = factories)
             return Drishti(detectors.toList(), renderers.toList(), pipeline)
         }
     }
