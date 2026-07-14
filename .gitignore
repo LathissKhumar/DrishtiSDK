@@ -61,3 +61,6 @@ captures/
 # External native build folder
 .externalNativeBuild/
 .cxx/
+
+#OMO
+.omo
