@@ -1,0 +1,51 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! Please describe what you'd like to see.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      description: "What kind of feature is this?"
+      options:
+        - New plugin (new content type)
+        - Renderer improvement (better haptics/audio/voice)
+        - Core API change
+        - Build/CI improvement
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: "What problem does this solve? What use case needs this?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: "How would you implement this? Any API design ideas?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: "Any other approaches you considered?"
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: "Links, screenshots, code snippets, related issues."

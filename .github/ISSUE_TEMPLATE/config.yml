@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/LathissKhumar/DrishtiSDK/discussions
+    about: Ask questions, discuss architecture, share ideas
+  - name: Stack Overflow
+    url: https://stackoverflow.com/questions/tagged/drishti-sdk
+    about: Tag your questions with "drishti-sdk" for community help

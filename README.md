@@ -1,7 +1,34 @@
 <p align="center">
-  <strong>An accessibility SDK for Android.</strong><br>
-  Convert any visual content into haptic feedback, spatial audio, and voice guidance.<br>
-  Built for developers shipping accessible apps.
+  <img src="https://raw.githubusercontent.com/LathissKhumar/DrishtiSDK/master/docs/logo.png" width="120" alt="DrishtiSDK Logo" onerror="this.style.display='none'">
+</p>
+
+<h1 align="center">DrishtiSDK</h1>
+
+<p align="center">
+  <strong>Touch what you can't see.</strong><br>
+  An accessibility SDK that converts any visual content into haptic feedback,<br>
+  spatial audio, and voice guidance — fully offline, plugin-driven, open source.
+</p>
+
+<p align="center">
+  <a href="https://github.com/LathissKhumar/DrishtiSDK/actions/workflows/ci.yml"><img src="https://github.com/LathissKhumar/DrishtiSDK/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License"></a>
+  <a href="https://developer.android.com/about/versions/11"><img src="https://img.shields.io/badge/API-30%2B-brightgreen" alt="API Level"></a>
+  <a href="https://kotlinlang.org"><img src="https://img.shields.io/badge/Kotlin-2.1.20-purple?logo=kotlin&logoColor=white" alt="Kotlin"></a>
+  <img src="https://img.shields.io/badge/Tests-1203-blue" alt="Tests">
+  <img src="https://img.shields.io/badge/Modules-9-brightgreen" alt="Modules">
+  <a href="https://central.sonatype.com/artifact/io.github.lathisskhumar/drishti-core/1.0.0"><img src="https://img.shields.io/badge/Maven_Central-1.0.0-brightgreen" alt="Maven Central"></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-Welcome-orange" alt="PRs Welcome"></a>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Install</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#demo">Demo</a> ·
+  <a href="#available-plugins">Plugins</a> ·
+  <a href="#write-your-own-plugin">Build a plugin</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#contributing">Contribute</a>
 </p>
 
 <p align="center">
@@ -43,6 +70,20 @@ Haptics  Audio   Voice     Text
 
 > [!TIP]
 > Touch, listen, ask. No screen required.
+
+---
+
+## Demo
+
+> [!NOTE]
+> 📹 **Recording a demo GIF is the single highest-impact thing you can do for this project.** Record a short video of the demo app: point camera at a graph → haptic buzzes trace the line → audio places elements in 3D space → voice says "Line chart with 3 data points, rising trend." Replace the placeholder below with `assets/demo.gif`.
+
+<!-- TODO: Record demo GIF and replace this placeholder -->
+<!-- ![DrishtiSDK Demo](assets/demo.gif) -->
+<p align="center">
+  <em>Demo: Point your camera at a graph, formula, or molecule. Feel it. Hear it. Understand it.</em><br>
+  <sub>📹 Replace this section with an actual GIF — <a href="https://github.com/LathissKhumar/DrishtiSDK/issues/new?template=bug_report.md&title=Record+demo+GIF">track progress here</a></sub>
+</p>
 
 ---
 
@@ -370,6 +411,13 @@ ANDROID_HOME=$ANDROID_SDK JAVA_HOME=$JAVA_HOME ./gradlew test
 - **Issues:** [GitHub Issues](https://github.com/LathissKhumar/DrishtiSDK/issues) for bugs, feature requests, questions
 - **Discussions:** [GitHub Discussions](https://github.com/LathissKhumar/DrishtiSDK/discussions) for architecture and ideas
 - **Pull Requests:** [PRs Welcome](CONTRIBUTING.md)
+- **Blog:** [dev.to/@lathisskhumar](https://dev.to/lathisskhumar) for tutorials and deep dives
+
+---
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=LathissKhumar/DrishtiSDK&type=Date)](https://star-history.com/#LathissKhumar/DrishtiSDK&Date)
 
 ---
 

@@ -1,0 +1,60 @@
+name: Plugin Request
+description: Request a new content type plugin for DrishtiSDK
+labels: ["plugin", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        DrishtiSDK is plugin-driven. Any visual content type can be added without touching core.
+
+        Describe the content type you want to make accessible, and we'll help you build the plugin or prioritize it.
+
+  - type: input
+    id: content-type
+    attributes:
+      label: Content type
+      description: "What visual content should Drishti detect?"
+      placeholder: "Circuit diagrams, maps, UI wireframes, etc."
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: "What does this content look like? How is it structured?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: "Who benefits from this? What's the real-world scenario?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: existing
+    attributes:
+      label: Existing work
+      description: "Any existing libraries, models, or approaches for detecting this content type?"
+
+  - type: textarea
+    id: output-ideas
+    attributes:
+      label: Output ideas
+      description: "How should haptic/audio/voice output represent this content?"
+
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you contribute this plugin?
+      description: "We provide templates and mentoring for new plugins."
+      options:
+        - Yes, I'd like to try
+        - Yes, with some guidance
+        - No, but I'd review it
+        - Just adding to the backlog
+    validations:
+      required: true

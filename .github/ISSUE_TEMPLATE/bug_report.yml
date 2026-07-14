@@ -1,0 +1,106 @@
+name: Bug Report
+description: Report a bug to help us improve DrishtiSDK
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill out the sections below.
+
+  - type: input
+    id: version
+    attributes:
+      label: DrishtiSDK version
+      description: "Which version are you using?"
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: "What device are you testing on?"
+      placeholder: "Pixel 7, Samsung S24, etc."
+    validations:
+      required: true
+
+  - type: input
+    id: android-version
+    attributes:
+      label: Android version
+      description: "What Android version?"
+      placeholder: "14"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug description
+      description: "A clear description of what the bug is."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: "How can we reproduce this?"
+      value: |
+        1. Initialize SDK with...
+        2. Feed frame with...
+        3. Call...
+        4. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: "What did you expect to happen?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: "What actually happened?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Stack trace
+      description: "Paste any relevant logs or crash reports."
+      render: kotlin
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module affected
+      description: "Which module is this related to?"
+      options:
+        - drishti-core
+        - drishti-graph
+        - drishti-formula
+        - drishti-molecule
+        - drishti-haptics
+        - drishti-audio
+        - drishti-voice
+        - drishti-android
+        - drishti-vision
+        - drishti-demo
+        - Multiple modules
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: "Any other context — screenshots, code snippets, etc."
