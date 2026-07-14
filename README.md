@@ -33,20 +33,20 @@ dependencyResolutionManagement {
 // build.gradle.kts
 dependencies {
     // Core SDK
-    implementation("io.drishti:drishti-core:1.0.0")
+    implementation("io.github.LathissKhumar:drishti-core:1.0.0")
 
     // Detector plugins (pick what you need)
-    implementation("io.drishti:drishti-graph:1.0.0")
-    implementation("io.drishti:drishti-formula:1.0.0")
-    implementation("io.drishti:drishti-molecule:1.0.0")
+    implementation("io.github.LathissKhumar:drishti-graph:1.0.0")
+    implementation("io.github.LathissKhumar:drishti-formula:1.0.0")
+    implementation("io.github.LathissKhumar:drishti-molecule:1.0.0")
 
     // Standalone renderers (optional — detector plugins include their own renderers)
-    implementation("io.drishti:drishti-haptics:1.0.0")
-    implementation("io.drishti:drishti-audio:1.0.0")
-    implementation("io.drishti:drishti-voice:1.0.0")
+    implementation("io.github.LathissKhumar:drishti-haptics:1.0.0")
+    implementation("io.github.LathissKhumar:drishti-audio:1.0.0")
+    implementation("io.github.LathissKhumar:drishti-voice:1.0.0")
 
     // Android integration (CameraX pipeline, HAL)
-    implementation("io.drishti:drishti-android:1.0.0")
+    implementation("io.github.LathissKhumar:drishti-android:1.0.0")
 }
 ```
 

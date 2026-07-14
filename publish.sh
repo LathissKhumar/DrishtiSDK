@@ -3,7 +3,7 @@
 # ========================================
 # Prerequisites:
 #   1. GPG key generated and uploaded to keyserver
-#   2. Sonatype OSSRH account created, namespace io.drishti verified
+#   2. Sonatype OSSRH account created, namespace io.github.LathissKhumar verified
 #   3. API token generated at https://central.sonatype.com → Settings → API Keys
 #   4. Environment variables set (see below)
 #
@@ -29,7 +29,7 @@ done
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "=== DrishtiSDK Maven Central Publish ==="
-echo "Group: io.drishti"
+echo "Group: io.github.LathissKhumar"
 echo "Version: 1.0.0"
 echo ""
 
@@ -71,10 +71,10 @@ echo ""
 echo "Next steps (manual):"
 echo "  1. Go to https://central.sonatype.com"
 echo "  2. Publishing → Staging Repositories"
-echo "  3. Find your staging repo (io.drishti-XXXX)"
+echo "  3. Find your staging repo (io.github.lathisskhumar-XXXX)"
 echo "  4. Click 'Close' (runs automated validation)"
 echo "  5. If validation passes, click 'Release'"
 echo "  6. Wait ~30 minutes for sync to Maven Central"
 echo ""
 echo "Verify publication:"
-echo "  https://repo1.maven.org/maven2/io/drishti/"
+echo "  https://repo1.maven.org/maven2/io/github/lathisskhumar/"
