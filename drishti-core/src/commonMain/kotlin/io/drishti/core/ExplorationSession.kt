@@ -229,7 +229,9 @@ public class ExplorationSession(
         is GraphContent -> item.dataPoints.size
         is FormulaContentItem -> item.symbols.size
         is MoleculeContent -> item.atoms.size
-        else -> 0
+        is ShapeContent -> 1
+        is TableContent -> item.rows * item.columns
+        else -> 1
     }
 
     internal fun describeElement(item: ContentItem, index: Int): String = when (item) {
@@ -254,7 +256,7 @@ public class ExplorationSession(
             val atom = item.atoms[index]
             "Atom ${index + 1} of ${item.atoms.size}: ${atom.element} at x = ${atom.position.x}, y = ${atom.position.y}"
         }
-        else -> error("Cannot describe elements for unsupported content type: ${item::class.simpleName}")
+        else -> "${item.contentType.name} element ${index + 1}"
     }
 
     private fun describeItem(item: ContentItem): String {

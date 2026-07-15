@@ -38,7 +38,8 @@ import kotlinx.coroutines.coroutineScope
  */
 public class Pipeline(
     private val config: PipelineConfig = PipelineConfig(),
-    private val onError: ((DetectorPlugin, Exception) -> Unit)? = null
+    private val onError: ((DetectorPlugin, Exception) -> Unit)? = null,
+    private val nodeFactories: Map<ContentType, SceneNodeFactory> = emptyMap()
 ) {
 
     /**
@@ -123,7 +124,14 @@ public class Pipeline(
                 is MoleculeContent -> buildMoleculeNode(item, index, nodes)
                 is ShapeContent -> buildShapeNode(item, index, nodes)
                 is TableContent -> buildTableNode(item, index, nodes)
-                else -> buildGenericNode(item, index, nodes)
+                else -> {
+                    val factory = nodeFactories[item.contentType]
+                    if (factory != null) {
+                        factory.buildNodes(item, index, nodes)
+                    } else {
+                        buildGenericNode(item, index, nodes)
+                    }
+                }
             }
         }
 

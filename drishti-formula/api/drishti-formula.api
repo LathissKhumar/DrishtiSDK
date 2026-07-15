@@ -14,6 +14,7 @@ public final class io/drishti/formula/FormulaDetector : io/drishti/core/Detector
 	public final fun detectFromUnicode (Ljava/lang/String;)Lio/drishti/formula/ParsedFormula;
 	public fun getConfidence ()F
 	public fun getContentType ()Lio/drishti/core/ContentType;
+	public fun getSceneNodeFactory ()Lio/drishti/core/SceneNodeFactory;
 }
 
 public final class io/drishti/formula/FormulaDetector$Companion {
@@ -324,6 +325,7 @@ public final class io/drishti/formula/FormulaPlugin : io/drishti/core/AudioRende
 	public fun getConfidence ()F
 	public fun getContentType ()Lio/drishti/core/ContentType;
 	public fun getName ()Ljava/lang/String;
+	public fun getSceneNodeFactory ()Lio/drishti/core/SceneNodeFactory;
 	public final fun renderAudio (Lio/drishti/formula/ParsedFormula;)Lio/drishti/core/AudioOutput;
 	public fun renderAudio (Ljava/util/List;I)Lio/drishti/core/AudioOutput;
 	public fun renderExplorationAudio (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/AudioOutput;

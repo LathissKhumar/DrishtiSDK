@@ -179,6 +179,7 @@ public final class io/drishti/graph/GraphDetector : io/drishti/core/DetectorPlug
 	public static synthetic fun detectFromOcrText$default (Lio/drishti/graph/GraphDetector;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lio/drishti/core/GraphContent;
 	public fun getConfidence ()F
 	public fun getContentType ()Lio/drishti/core/ContentType;
+	public fun getSceneNodeFactory ()Lio/drishti/core/SceneNodeFactory;
 }
 
 public final class io/drishti/graph/GraphPlugin : io/drishti/core/AudioRenderer, io/drishti/core/DetectorPlugin, io/drishti/core/HapticsRenderer, io/drishti/core/VoiceOutputRenderer {
@@ -196,6 +197,7 @@ public final class io/drishti/graph/GraphPlugin : io/drishti/core/AudioRenderer,
 	public fun getContentType ()Lio/drishti/core/ContentType;
 	public final fun getDataSummary (Lio/drishti/core/GraphContent;)Lio/drishti/graph/DataSummary;
 	public fun getName ()Ljava/lang/String;
+	public fun getSceneNodeFactory ()Lio/drishti/core/SceneNodeFactory;
 	public fun renderAudio (Ljava/util/List;I)Lio/drishti/core/AudioOutput;
 	public fun renderExplorationAudio (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/AudioOutput;
 	public fun renderExplorationHaptic (Lio/drishti/core/ContentItem;Lio/drishti/core/ExplorationDirection;I)Lio/drishti/core/HapticOutput;

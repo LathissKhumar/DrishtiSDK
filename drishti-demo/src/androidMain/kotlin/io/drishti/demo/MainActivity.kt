@@ -16,23 +16,39 @@
 
 package io.drishti.demo
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import io.drishti.android.DrishtiClient
 import io.drishti.core.*
+import kotlinx.coroutines.launch
 
-/**
- * DrishtiSTEM Demo App - Showcases the Drishti SDK capabilities.
- */
 class MainActivity : ComponentActivity() {
     private lateinit var client: DrishtiClient
+    internal var previewView: PreviewView? = null
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                startCameraWithPermission()
+            } else {
+                Toast.makeText(this, "Camera permission is required", Toast.LENGTH_LONG).show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,8 +69,20 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MaterialTheme {
-                DrishtiDemoScreen(client)
+                DrishtiDemoScreen(
+                    client = client,
+                    onStartCamera = { startCameraWithPermission() },
+                    onStopCamera = { client.stop() }
+                )
             }
+        }
+    }
+
+    private fun startCameraWithPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            client.startCamera(previewView)
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -66,15 +94,20 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrishtiDemoScreen(client: DrishtiClient) {
+fun DrishtiDemoScreen(
+    client: DrishtiClient,
+    onStartCamera: () -> Unit,
+    onStopCamera: () -> Unit
+) {
     var status by remember { mutableStateOf("Ready") }
     var lastContent by remember { mutableStateOf<ContentItem?>(null) }
-    var outputMode by remember { mutableStateOf("haptic") }
+    var lastSummary by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("DrishtiSTEM Demo") },
+                title = { Text("Drishti Demo") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
@@ -87,28 +120,28 @@ fun DrishtiDemoScreen(client: DrishtiClient) {
                 .padding(padding)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Status card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Status",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        text = status,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
+            // Camera preview
+            AndroidView(
+                factory = { ctx ->
+                    PreviewView(ctx).also { preview ->
+                        (ctx as? MainActivity)?.previewView = preview
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp)
+            )
 
-            // Content info card
+            // Status
+            Text(
+                text = status,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            // Detected content
             lastContent?.let { content ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -117,65 +150,75 @@ fun DrishtiDemoScreen(client: DrishtiClient) {
                     )
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Detected Content",
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                        Text("Detected", style = MaterialTheme.typography.titleSmall)
                         Text(
                             text = when (content) {
-                                is GraphContent -> "Graph: ${content.graphType.name}"
-                                is FormulaContent -> "Formula: ${content.formulaType.name}"
-                                is MoleculeContent -> "Molecule: ${content.name.ifEmpty { "Unknown" }}"
+                                is GraphContent -> "${content.graphType.name.lowercase().replaceFirstChar { it.uppercase() }} — ${content.dataPoints.size} points"
+                                is FormulaContent -> "${content.formulaType.name.lowercase().replaceFirstChar { it.uppercase() }}: ${content.expression}"
+                                is MoleculeContent -> "Molecule: ${content.name.ifEmpty { "Unknown" }} — ${content.atoms.size} atoms"
                                 else -> content.contentType.name
                             },
                             style = MaterialTheme.typography.bodyMedium
                         )
+                        if (lastSummary.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(lastSummary, style = MaterialTheme.typography.bodySmall)
+                        }
                     }
                 }
             }
 
-            // Output mode selector
+            // Buttons
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                FilterChip(
-                    selected = outputMode == "haptic",
-                    onClick = { outputMode = "haptic" },
-                    label = { Text("Haptic") }
-                )
-                FilterChip(
-                    selected = outputMode == "audio",
-                    onClick = { outputMode = "audio" },
-                    label = { Text("Audio") }
-                )
-                FilterChip(
-                    selected = outputMode == "voice",
-                    onClick = { outputMode = "voice" },
-                    label = { Text("Voice") }
-                )
-            }
-
-            // Action buttons
-            Button(
-                onClick = {
-                    status = "Starting camera..."
-                    client.startCamera { frame ->
-                        status = "Processing frame..."
-                    }
-                },
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Start Camera")
-            }
+                Button(
+                    onClick = {
+                        status = "Starting camera..."
+                        onStartCamera()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Start")
+                }
 
-            OutlinedButton(
-                onClick = {
-                    client.stop()
-                    status = "Stopped"
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Stop Camera")
+                OutlinedButton(
+                    onClick = {
+                        onStopCamera()
+                        status = "Stopped"
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Stop")
+                }
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            status = "Processing..."
+                            val diagram = client.read(
+                                Frame(
+                                    width = 640,
+                                    height = 480,
+                                    format = FrameFormat.GRAYSCALE,
+                                    data = ByteArray(0),
+                                    timestamp = System.currentTimeMillis()
+                                )
+                            )
+                            if (diagram != null) {
+                                lastContent = diagram.contentItems.firstOrNull()
+                                lastSummary = diagram.summary().text
+                                status = "Found ${diagram.contentItems.size} item(s)"
+                            } else {
+                                status = "No content detected"
+                            }
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Read")
+                }
             }
         }
     }

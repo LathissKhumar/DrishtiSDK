@@ -58,38 +58,68 @@ drishti-demo/          Demo application
 
 ## Writing a Plugin
 
-Plugins implement both detection and rendering. Here is the minimal structure:
+Plugins implement detection and rendering for a content type. Here is a complete template:
 
 ```kotlin
 package io.drishti.myplugin
 
 import io.drishti.core.*
 
+// 1. Define your content type
+data class MyContent(
+    val data: List<String>,
+    override val confidence: Float
+) : ContentItem {
+    override val contentType = ContentType.Custom("my-type")
+}
+
+// 2. Implement detection + rendering
 class MyPlugin : DetectorPlugin, HapticsRenderer, AudioRenderer, VoiceOutputRenderer {
 
-    override val contentType = ContentType.CUSTOM("my-content-type")
+    override val contentType = ContentType.Custom("my-type")
+    override val confidence = 0.8f
+    override val name = "MyPlugin"
 
-    override fun detect(frame: Frame): List<ContentItem> {
-        // Analyze the frame and return detected content
-        return listOf(...)
+    // Gives your content first-class SceneGraph positioning (optional but recommended)
+    override val sceneNodeFactory = SceneNodeFactory { item, index, nodes ->
+        nodes.add(SceneNode.TextNode(
+            id = "my-$index",
+            position = orderPosition(index),
+            text = item.contentType.name
+        ))
     }
 
-    override fun renderHaptics(item: ContentItem): HapticOutput {
-        // Convert content to haptic pulses
-        return HapticOutput(pulses = listOf(...), pattern = "my-pattern")
+    override suspend fun detect(frame: Frame): ContentItem? {
+        val result = analyze(frame) ?: return null
+        return MyContent(result, confidence = 0.8f)
     }
 
-    override fun renderAudio(item: ContentItem): AudioOutput {
-        // Convert content to spatial audio
-        return AudioOutput(sources = listOf(...), spatial = true)
+    override fun renderHaptic(items: List<ContentItem>, focusIndex: Int): HapticOutput {
+        return HapticOutput(pulses = listOf(
+            HapticPulse(intensity = 0.5f, duration = 100L)
+        ))
     }
 
-    override fun renderVoice(item: ContentItem): VoiceOutput {
-        // Convert content to spoken description
-        return VoiceOutput(
-            speech = SpeechSegment(text = "Description of content", rate = 1.0f, pitch = 1.0f),
-            language = "en-US"
-        )
+    override fun renderAudio(items: List<ContentItem>, focusIndex: Int): AudioOutput {
+        return AudioOutput(sources = listOf(
+            AudioSource(frequency = 440f, amplitude = 0.5f)
+        ))
+    }
+
+    override fun renderVoice(items: List<ContentItem>, focusIndex: Int): VoiceOutput {
+        return VoiceOutput(speech = SpeechSegment(text = "Content description"))
+    }
+
+    override fun renderExplorationHaptic(item: ContentItem, direction: ExplorationDirection, elementIndex: Int): HapticOutput {
+        return HapticOutput(pulses = listOf(HapticPulse(intensity = 0.3f, duration = 50L)))
+    }
+
+    override fun renderExplorationAudio(item: ContentItem, direction: ExplorationDirection, elementIndex: Int): AudioOutput {
+        return AudioOutput(sources = listOf(AudioSource(frequency = 220f, amplitude = 0.3f)))
+    }
+
+    override fun renderExplorationVoice(item: ContentItem, direction: ExplorationDirection, elementIndex: Int): VoiceOutput {
+        return VoiceOutput(speech = SpeechSegment(text = "Navigating element $elementIndex"))
     }
 }
 ```
@@ -101,6 +131,17 @@ val drishti = Drishti.Builder()
     .addDetector(MyPlugin())
     .build()
 ```
+
+### Output constraints
+
+| Field | Range | Throws on violation |
+|:---|:---|:---|
+| `HapticPulse.intensity` | 0.0–1.0 | `IllegalArgumentException` |
+| `HapticPulse.duration` | > 0 ms | `IllegalArgumentException` |
+| `AudioSource.frequency` | 20–20,000 Hz | `IllegalArgumentException` |
+| `AudioSource.amplitude` | 0.0–1.0 | `IllegalArgumentException` |
+| `SpeechSegment.rate` | 0.1–3.0 | `IllegalArgumentException` |
+| `SpeechSegment.pitch` | 0.1–3.0 | `IllegalArgumentException` |
 
 ## Code Style
 
