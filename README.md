@@ -4,24 +4,8 @@
   Built for developers shipping accessible apps.
 </p>
 
-<p align="center">
-  <a href="#quick-start">Install</a> ·
-  <a href="#how-it-works">How it works</a> ·
-  <a href="#available-plugins">Plugins</a> ·
-  <a href="#write-your-own-plugin">Build a plugin</a> ·
-  <a href="#architecture">Architecture</a> ·
-  <a href="#contributing">Contribute</a>
-</p>
-
-<p align="center">
-  <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License"></a>
-  <a href="https://developer.android.com/about/versions/11"><img src="https://img.shields.io/badge/API-30%2B-brightgreen" alt="API Level"></a>
-  <a href="https://kotlinlang.org"><img src="https://img.shields.io/badge/Kotlin-2.1.20-purple?logo=kotlin&logoColor=white" alt="Kotlin"></a>
-  <img src="https://img.shields.io/badge/Tests-1203-blue" alt="Tests">
-  <img src="https://img.shields.io/badge/Modules-9-brightgreen" alt="Modules">
-  <a href="https://central.sonatype.com/artifact/io.github.lathisskhumar/drishti-core/1.0.0"><img src="https://img.shields.io/badge/Maven_Central-published-brightgreen" alt="Maven Central"></a>
-  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-Welcome-orange" alt="PRs Welcome"></a>
-</p>
+> [!IMPORTANT]
+> **Available on [Maven Central](https://central.sonatype.com/artifact/io.github.lathisskhumar/drishti-core/1.0.0).** All 9 modules published under `io.github.lathisskhumar`. Just add `mavenCentral()` to your repositories — no custom repos needed.
 
 ---
 
@@ -335,10 +319,10 @@ git clone https://github.com/LathissKhumar/DrishtiSDK.git
 cd DrishtiSDK
 
 # Build all modules
-ANDROID_HOME=$ANDROID_SDK JAVA_HOME=$JAVA_HOME ./gradlew build
+./gradlew assembleDebug
 
 # Run all tests (must pass before any PR)
-ANDROID_HOME=$ANDROID_SDK JAVA_HOME=$JAVA_HOME ./gradlew test
+./gradlew testDebugUnitTest
 ```
 
 > [!NOTE]
